@@ -9,3 +9,10 @@ target
 syntax: regexp
 ^wicket-modelfactory/target$
 ^target$
+
+syntax: regexp
+^pom\.xml\.releaseBackup$
+syntax: regexp
+^release\.properties$
+syntax: regexp
+^wicket-modelfactory/pom\.xml\.releaseBackup$
