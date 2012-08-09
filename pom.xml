@@ -59,26 +59,40 @@
   <module>wicket-modelfactory</module>
  </modules>
  <distributionManagement>
-  <!-- <site>
-   <id>chronic4j</id>
-   <url>scp://codesmell.de/home/uwe/web/chronic4j.org/chronic4j-mvn-website</url>
+  <site>
+   <id>wicket-modelfactory</id>
+   <url>scp://root@codesmell.de/home/uwe/web/www.codesmell.org/</url>
    <name>webserver</name>
-   </site>
-   -->
-   <repository>
+  </site>
+  <repository>
    <id>codesmell</id>
    <url>scp://root@codesmell.de/home/uwe/web/www.codesmell.org/maven</url>
-   </repository>
-   <snapshotRepository>
+  </repository>
+  <snapshotRepository>
    <id>codesmell</id>
    <url>scp://root@codesmell.de/home/uwe/web/www.codesmell.org/maven</url>
    <name>webserver</name>
-   </snapshotRepository>
-  
+  </snapshotRepository>
  </distributionManagement>
  <build>
+  <pluginManagement>
+   <plugins>
+    <plugin>
+     <groupId>org.apache.maven.plugins</groupId>
+     <artifactId>maven-site-plugin</artifactId>
+     <version>3.1</version>
+     <dependencies>
+      <dependency><!-- add support for ssh/scp -->
+       <groupId>org.apache.maven.wagon</groupId>
+       <artifactId>wagon-ssh</artifactId>
+       <version>1.0</version>
+      </dependency>
+     </dependencies>
+    </plugin>
+   </plugins>
+  </pluginManagement>
   <plugins>
-<!--   <plugin>
+   <plugin>
     <groupId>org.apache.maven.plugins</groupId>
     <artifactId>maven-site-plugin</artifactId>
     <version>3.1</version>
@@ -118,7 +132,46 @@
      </execution>
     </executions>
    </plugin>
-   -->
+   <plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-site-plugin</artifactId>
+    <version>3.1</version>
+    <configuration>
+     <reportPlugins>
+      <plugin>
+       <groupId>org.apache.maven.plugins</groupId>
+       <artifactId>maven-project-info-reports-plugin</artifactId>
+       <version>2.4</version>
+      </plugin>
+      <plugin>
+       <groupId>org.apache.maven.plugins</groupId>
+       <artifactId>maven-javadoc-plugin</artifactId>
+       <version>2.8</version>
+      </plugin>
+     </reportPlugins>
+    </configuration>
+    <dependencies>
+     <dependency>
+      <groupId>org.apache.maven.wagon</groupId>
+      <artifactId>wagon-ssh</artifactId>
+      <version>1.0</version>
+     </dependency>
+     <dependency>
+      <groupId>org.apache.maven.doxia</groupId>
+      <artifactId>doxia-module-confluence</artifactId>
+      <version>1.0</version>
+     </dependency>
+    </dependencies>
+    <executions>
+     <execution>
+      <phase>deploy</phase>
+      <goals>
+       <goal>site</goal>
+       <goal>deploy</goal>
+      </goals>
+     </execution>
+    </executions>
+   </plugin>
    <plugin>
     <groupId>org.apache.maven.plugins</groupId>
     <artifactId>maven-javadoc-plugin</artifactId>
@@ -204,24 +257,24 @@
    <version>1.6.4</version>
   </dependency>
   <dependency>
-  	<groupId>org.apache.wicket</groupId>
-  	<artifactId>wicket</artifactId>
-  	<version>1.4.20</version>
+   <groupId>org.apache.wicket</groupId>
+   <artifactId>wicket</artifactId>
+   <version>1.4.20</version>
   </dependency>
   <dependency>
-  	<groupId>com.googlecode.gentyref</groupId>
-  	<artifactId>gentyref</artifactId>
-  	<version>1.1.0</version>
+   <groupId>com.googlecode.gentyref</groupId>
+   <artifactId>gentyref</artifactId>
+   <version>1.1.0</version>
   </dependency>
   <dependency>
-  	<groupId>cglib</groupId>
-  	<artifactId>cglib-nodep</artifactId>
-  	<version>2.2.2</version>
+   <groupId>cglib</groupId>
+   <artifactId>cglib-nodep</artifactId>
+   <version>2.2.2</version>
   </dependency>
   <dependency>
-  	<groupId>org.objenesis</groupId>
-  	<artifactId>objenesis</artifactId>
-  	<version>1.2</version>
+   <groupId>org.objenesis</groupId>
+   <artifactId>objenesis</artifactId>
+   <version>1.2</version>
   </dependency>
  </dependencies>
  <profiles>
