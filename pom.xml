@@ -24,8 +24,8 @@
   </license>
  </licenses>
  <scm>
-  <developerConnection>scm:hg:https://bitbucket.org/uwe_schaefer/wicket-modelfactory</developerConnection>
-  <url>https://bitbucket.org/uwe_schaefer/wicket-modelfactory</url>
+  <developerConnection>scm:hg:https://hg@bitbucket.org/uweschaefer/wicket-modelfactory</developerConnection>
+  <url>https://hg@bitbucket.org/uweschaefer/wicket-modelfactory</url>
  </scm>
  <!-- <ciManagement>
   <system>jenkins</system>
