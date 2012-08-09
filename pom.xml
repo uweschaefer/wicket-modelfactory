@@ -2,7 +2,7 @@
  <modelVersion>4.0.0</modelVersion>
  <groupId>org.codesmell</groupId>
  <artifactId>wicket-modelfactory-parent</artifactId>
- <version>0.1</version>
+ <version>0.1-SNAPSHOT</version>
  <packaging>pom</packaging>
  <name>wicket-modelfactory-parent</name>
  <url>http://codesmell.org/wicket-modelfactory</url>
@@ -24,8 +24,8 @@
   </license>
  </licenses>
  <scm>
-  <developerConnection>scm:hg:https://bitbucket.org/uwe_schaefer/wicket-modelfactory</developerConnection>
-  <url>https://bitbucket.org/uwe_schaefer/wicket-modelfactory</url>
+  <developerConnection>scm:hg:https://hg@bitbucket.org/uweschaefer/wicket-modelfactory</developerConnection>
+  <url>https://hg@bitbucket.org/uweschaefer/wicket-modelfactory</url>
  </scm>
  <!-- <ciManagement>
   <system>jenkins</system>
