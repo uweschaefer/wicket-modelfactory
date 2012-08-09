@@ -6,3 +6,6 @@ target
 .settings
 *~
 
+
+syntax: regexp
+^wicket-modelfactory/target$
