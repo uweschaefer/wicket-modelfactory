@@ -61,7 +61,7 @@
  <distributionManagement>
   <site>
    <id>wicket-modelfactory</id>
-   <url>scp://root@codesmell.de/home/uwe/web/www.codesmell.org/</url>
+   <url>scp://root@codesmell.de/home/uwe/web/www.codesmell.org/maven-site/wicket-modelfactory</url>
    <name>webserver</name>
   </site>
   <repository>
