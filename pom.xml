@@ -260,6 +260,7 @@
    <groupId>org.apache.wicket</groupId>
    <artifactId>wicket</artifactId>
    <version>1.4.20</version>
+   <scope>provided</scope>
   </dependency>
   <dependency>
    <groupId>com.googlecode.gentyref</groupId>
