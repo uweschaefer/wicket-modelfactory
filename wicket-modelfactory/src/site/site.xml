@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="wicket-modelfactory" xmlns="http://maven.apache.org/DECORATION/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://maven.apache.org/DECORATION/1.0.0 http://maven.apache.org/xsd/decoration-1.0.0.xsd">
+ <!-- <bannerLeft> <name>Chronic4j</name> <src>images/biglogo.png</src> <href>http://chronic4j.org/</href>
+  </bannerLeft> -->
+ <!-- <bannerRight> <src>http://maven.apache.org/images/maven-small.gif</src>
+  </bannerRight> -->
+ <skin>
+  <groupId>org.apache.maven.skins</groupId>
+  <artifactId>maven-fluido-skin</artifactId>
+  <version>1.2.1</version>
+ </skin>
+ <publishDate position="right"/>
+ <version position="left"/>
+ <poweredBy>
+  <logo name="Maven" href="http://maven.apache.org/" img="http://maven.apache.org/images/logos/maven-feather.png"/>
+ </poweredBy>
+ <custom>
+  <fluidoSkin>
+   <!-- <profile>pre-release</profile> -->
+   <googlePlusOne/>
+   <topBarEnabled>true</topBarEnabled>
+   <!-- <topBarIcon>
+    <name>wicket-modelfactory</name>
+    <alt>wicket-modelfactory</alt>
+    <src>/images/logo.png</src>
+    <href>/</href>
+   </topBarIcon> -->
+   <sideBarEnabled>false</sideBarEnabled>
+   <url>http://codesmell.org/wicket-modelfactory/</url>
+   <sourceLineNumbersEnabled>true</sourceLineNumbersEnabled>
+   <googleSearch>
+    <sitesearch/>
+   </googleSearch>
+  </fluidoSkin>
+ </custom>
+ <body>
+  <!-- <links> <item name="Chronic4j Website" href="http://chronic4j.org/"
+   /> </links> -->
+  <menu name="Quick">
+   <!-- <item name="Motivation" href="motivation.html" />
+    <item name="2 Minutes Howto" href="2min.html" />
+    <item name="5 Minutes Howto" href="5min.html" /> -->
+  </menu>
+  <menu name="Documentation">
+   <item name="FAQ" href="faq.html"/>
+   <item name="Team" href="team-list.html"></item>
+   <item name="License" href="license.html"></item>
+  </menu>
+  <menu name="Tools">
+   <item name="Javadoc" href="apidocs/"></item>
+   <item name="Source" href="http://bitbucket.org/uweschaefer/wicket-modelfactory"/>
+   <!-- <item name="Issue Tracker" href="http://issues.chronic4j.org" /> -->
+  </menu>
+  <!-- <menu ref="reports" name="Maven reports" /> -->
+ </body>
+</project>
