@@ -64,20 +64,21 @@
    <url>scp://codesmell.de/home/uwe/web/chronic4j.org/chronic4j-mvn-website</url>
    <name>webserver</name>
    </site>
+   -->
    <repository>
-   <id>chronic4j</id>
-   <url>scp://codesmell.de/home/uwe/web/chronic4j.org/repository/stable</url>
+   <id>codesmell</id>
+   <url>scp://root@codesmell.de/home/uwe/web/www.codesmell.org/maven</url>
    </repository>
    <snapshotRepository>
-   <id>chronic4j</id>
-   <url>scp://codesmell.de/home/uwe/web/chronic4j.org/repository/snapshot</url>
+   <id>codesmell</id>
+   <url>scp://root@codesmell.de/home/uwe/web/www.codesmell.org/maven</url>
    <name>webserver</name>
    </snapshotRepository>
-  -->
+  
  </distributionManagement>
  <build>
   <plugins>
-   <plugin>
+<!--   <plugin>
     <groupId>org.apache.maven.plugins</groupId>
     <artifactId>maven-site-plugin</artifactId>
     <version>3.1</version>
@@ -117,6 +118,7 @@
      </execution>
     </executions>
    </plugin>
+   -->
    <plugin>
     <groupId>org.apache.maven.plugins</groupId>
     <artifactId>maven-javadoc-plugin</artifactId>
