@@ -87,14 +87,6 @@ public class ModelFactory
         }
     }
 
-    public static <T> IModel<T> model(final Object value, final T proxiedValue)
-    {
-        Argument<T> a = ArgumentsFactory.actualArgument(proxiedValue);
-        String invokedPN = a.getInkvokedPropertyName();
-        PropertyModel<T> m = new PropertyModel<T>(value, invokedPN);
-        return m;
-    }
-
     public static <T> IModel<T> model(final T path)
     {
         Object t = chain.get();
