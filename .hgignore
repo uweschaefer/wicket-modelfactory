@@ -1,5 +1,4 @@
 
-
 syntax: glob
 .tmp*
 target
@@ -9,3 +8,4 @@ target
 
 syntax: regexp
 ^wicket-modelfactory/target$
+^target$
