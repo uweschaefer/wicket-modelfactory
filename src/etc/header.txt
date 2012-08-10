@@ -1,5 +1,5 @@
 
-Copyright ${year}-2012 Chronic4j-Team <team@chronic4j.org>
+Copyright ${year}-2012 Uwe Schäfer <uwe@codesmell.de>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
