@@ -65,11 +65,11 @@
   </site>
   <repository>
    <id>wicketeer.org</id>
-   <url>scp://root@codesmell.de/home/uwe/web/www.wicketeer.org/maven</url>
+   <url>scp://root@codesmell.de/home/uwe/web/www.wicketeer.org/maven/release</url>
   </repository>
   <snapshotRepository>
-   <id>wicketeer.org</id>
-   <url>scp://root@codesmell.de/home/uwe/web/www.wicketeer.org/maven</url>
+   <id>wicketeer.org-SNAPSHOT</id>
+   <url>scp://root@codesmell.de/home/uwe/web/www.wicketeer.org/maven/snapshot</url>
    <name>webserver</name>
   </snapshotRepository>
  </distributionManagement>

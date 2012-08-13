@@ -105,16 +105,26 @@ public class ModelFactory
             Reference ref = (Reference) super.get();
             if (ref != null)
             {
-                throw new IllegalStateException(
-                        "mutliple from() calls. need to call model(); Original invokation path "
-                                + render(ref.getInvokationPath()));
+                throw new IllegalStateException("mutliple from() calls. need to call model(); Original invokation at "
+                        + render(ref.getInvokationPath()));
             }
             super.set(new Reference(checkNotNull(value)));
         }
 
         private String render(final Exception invokationPath)
         {
-            // FIXME us implement me
+            StackTraceElement[] st = invokationPath.getStackTrace();
+            for (StackTraceElement stackTraceElement : st)
+            {
+                String cn = stackTraceElement.getClassName();
+                if (!cn.contains("ModelFactory") && !(cn.contains("org.wicketeer.modelfactory")))
+                {
+                    String mn = stackTraceElement.getMethodName();
+                    int ln = stackTraceElement.getLineNumber();
+                    String scn = cn.substring(cn.lastIndexOf('.') + 1);
+                    return scn + "." + mn + " (" + scn + ":" + ln + ")";
+                }
+            }
             invokationPath.printStackTrace();
             return "";
         }
