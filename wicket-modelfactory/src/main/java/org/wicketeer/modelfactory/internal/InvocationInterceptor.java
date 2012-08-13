@@ -15,17 +15,23 @@
 // limitations under the License.
 //
 
-package org.codesmell.wicket.modelfactory.internal;
+package org.wicketeer.modelfactory.internal;
+
+import java.lang.reflect.Method;
+
+import net.sf.cglib.proxy.MethodInterceptor;
+import net.sf.cglib.proxy.MethodProxy;
 
 /**
- * This invocation is thrown while trying to proxy an object of an unproxeable (final) class.
+ * An intercptor that seamlessly manages invocations on both a native Java proxy and a cglib one.
  * @author Mario Fusco
  */
-public class UnproxableClassException extends RuntimeException {
+public abstract class InvocationInterceptor implements MethodInterceptor, java.lang.reflect.InvocationHandler {
 
-	private static final long serialVersionUID = 1L;
-
-    UnproxableClassException(Class<?> clazz) {
-        super("Unable to proxy the final class " + clazz.getName());
-    }
+    /**
+     * {@inheritDoc}
+     */
+	public final Object intercept(Object proxy, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
+		return invoke(proxy, method, args);
+	}
 }

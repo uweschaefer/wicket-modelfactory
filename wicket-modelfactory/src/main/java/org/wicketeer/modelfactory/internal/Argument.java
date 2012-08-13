@@ -15,7 +15,7 @@
 // limitations under the License.
 //
 
-package org.codesmell.wicket.modelfactory.internal;
+package org.wicketeer.modelfactory.internal;
 
 /**
  * An Argument represents a statically defined sequence of method invocations on

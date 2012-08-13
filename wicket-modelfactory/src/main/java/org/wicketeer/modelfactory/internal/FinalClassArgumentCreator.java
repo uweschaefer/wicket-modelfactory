@@ -15,19 +15,18 @@
 // limitations under the License.
 //
 
-package org.codesmell.wicket.modelfactory.internal;
+package org.wicketeer.modelfactory.internal;
 
 /**
- * This exception is thrown when is not possible to convert a placeholder object in an Argument
+ * A factpry for creating arguments placeholder for final classes
  * @author Mario Fusco
  */
-public class ArgumentConversionException extends RuntimeException {
+public interface FinalClassArgumentCreator<T> {
 
-    ArgumentConversionException(String message) {
-    	super(message);
-    }
-
-    ArgumentConversionException(String message, Throwable cause) {
-        super(message, cause);
-    }
+    /**
+     * Create a placeholder for an argument of the final class T using the given seed.
+     * @param seed  The seed to generate the unique placeholder
+     * @return A placeholder for an argument of class T
+     */
+    T createArgumentPlaceHolder(int seed);
 }

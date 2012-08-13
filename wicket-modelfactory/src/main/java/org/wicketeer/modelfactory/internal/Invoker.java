@@ -15,25 +15,8 @@
 // limitations under the License.
 //
 
-package org.codesmell.wicket.modelfactory.internal;
+package org.wicketeer.modelfactory.internal;
 
-import java.util.*;
-
-/**
- * An Iterator that can reset its cursor to its initial position
- * @author Mario Fusco
- */
-public abstract class ResettableIterator<T> implements Iterator<T> {
-
-    /**
-     * Resets the cursor of this Iterator to its initial position
-     */
-    public abstract void reset();
-
-    /**
-     * {@inheritDoc}
-     */
-    public void remove() {
-        throw new UnsupportedOperationException();
-    }
+public interface Invoker {
+    Object invokeOn(Object object);
 }

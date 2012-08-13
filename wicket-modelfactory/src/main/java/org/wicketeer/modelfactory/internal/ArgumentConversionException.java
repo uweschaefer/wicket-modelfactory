@@ -15,23 +15,19 @@
 // limitations under the License.
 //
 
-package org.codesmell.wicket.modelfactory.internal;
-
-import java.lang.reflect.Method;
-
-import net.sf.cglib.proxy.MethodInterceptor;
-import net.sf.cglib.proxy.MethodProxy;
+package org.wicketeer.modelfactory.internal;
 
 /**
- * An intercptor that seamlessly manages invocations on both a native Java proxy and a cglib one.
+ * This exception is thrown when is not possible to convert a placeholder object in an Argument
  * @author Mario Fusco
  */
-public abstract class InvocationInterceptor implements MethodInterceptor, java.lang.reflect.InvocationHandler {
+public class ArgumentConversionException extends RuntimeException {
 
-    /**
-     * {@inheritDoc}
-     */
-	public final Object intercept(Object proxy, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
-		return invoke(proxy, method, args);
-	}
+    ArgumentConversionException(String message) {
+    	super(message);
+    }
+
+    ArgumentConversionException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

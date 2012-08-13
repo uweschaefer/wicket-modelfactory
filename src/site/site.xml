@@ -25,9 +25,9 @@
     <alt>wicket-modelfactory</alt>
     <src>/images/logo.png</src>
     <href>/</href>
-   </topBarIcon> -->
+    </topBarIcon> -->
    <sideBarEnabled>false</sideBarEnabled>
-   <url>http://codesmell.org/wicket-modelfactory/</url>
+   <url>http://wicketeer.org/wicket-modelfactory/</url>
    <sourceLineNumbersEnabled>true</sourceLineNumbersEnabled>
    <googleSearch>
     <sitesearch/>
@@ -35,23 +35,24 @@
   </fluidoSkin>
  </custom>
  <body>
-  <!-- <links> <item name="Chronic4j Website" href="http://chronic4j.org/"
-   /> </links> -->
-  <menu name="Quick">
-   <!-- <item name="Motivation" href="motivation.html" />
+  <links>
+   <item name="Wicketeer.org Website" href="http://Wicketeer.org/"/>
+  </links>
+<!--   <menu name="Quick">
+   <item name="Motivation" href="motivation.html" />
     <item name="2 Minutes Howto" href="2min.html" />
-    <item name="5 Minutes Howto" href="5min.html" /> -->
+    <item name="5 Minutes Howto" href="5min.html" />
   </menu>
-  <menu name="Documentation">
-   <item name="FAQ" href="faq.html"/>
-   <item name="Team" href="team-list.html"></item>
-   <item name="License" href="license.html"></item>
-  </menu>
-  <menu name="Tools">
+ -->  <!-- <menu name="Tools">
    <item name="Javadoc" href="apidocs/"></item>
    <item name="Source" href="http://bitbucket.org/uweschaefer/wicket-modelfactory"/>
-   <!-- <item name="Issue Tracker" href="http://issues.chronic4j.org" /> -->
-  </menu>
-  <!-- <menu ref="reports" name="Maven reports" /> -->
+   <item name="Issue Tracker" href="https://bitbucket.org/uweschaefer/wicket-modelfactory/issues" />
+   </menu>
+   <menu name="Documentation">
+   <item name="Team" href="team-list.html"></item>
+   <item name="License" href="license.html"></item>
+   </menu>
+  -->
+  <menu ref="reports" name="Maven reports"/>
  </body>
 </project>

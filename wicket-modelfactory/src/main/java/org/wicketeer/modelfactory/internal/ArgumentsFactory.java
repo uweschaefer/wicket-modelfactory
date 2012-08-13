@@ -15,7 +15,7 @@
 // limitations under the License.
 //
 
-package org.codesmell.wicket.modelfactory.internal;
+package org.wicketeer.modelfactory.internal;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;

@@ -15,7 +15,7 @@
 // limitations under the License.
 //
 
-package org.codesmell.wicket.modelfactory;
+package org.wicketeer.modelfactory;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -23,8 +23,8 @@ import java.lang.reflect.Type;
 
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
-import org.codesmell.wicket.modelfactory.internal.Argument;
-import org.codesmell.wicket.modelfactory.internal.ArgumentsFactory;
+import org.wicketeer.modelfactory.internal.Argument;
+import org.wicketeer.modelfactory.internal.ArgumentsFactory;
 
 import com.googlecode.gentyref.GenericTypeReflector;
 
@@ -90,11 +90,6 @@ public class ModelFactory
     public static <T> IModel<T> model(final T path)
     {
         Object t = chain.get();
-        if (t == null)
-        {
-            throw new IllegalStateException("no from() call registered before!");
-        }
-
         Argument<T> a = ArgumentsFactory.actualArgument(path);
         String invokedPN = a.getInkvokedPropertyName();
         PropertyModel<T> m = new PropertyModel<T>(t, invokedPN);
@@ -107,11 +102,33 @@ public class ModelFactory
         @Override
         public void set(final Object value)
         {
-            if (get() != null)
+            Reference ref = (Reference) super.get();
+            if (ref != null)
             {
-                throw new IllegalStateException("mutliple from() calls. need to call model()");
+                throw new IllegalStateException(
+                        "mutliple from() calls. need to call model(); Original invokation path "
+                                + render(ref.getInvokationPath()));
             }
-            super.set(checkNotNull(value));
+            super.set(new Reference(checkNotNull(value)));
+        }
+
+        private String render(final Exception invokationPath)
+        {
+            // FIXME us implement me
+            invokationPath.printStackTrace();
+            return "";
+        }
+
+        @Override
+        public Object get()
+        {
+            Reference ref = (Reference) super.get();
+            if (ref == null)
+            {
+                throw new IllegalStateException("no from() call registered before!");
+            }
+
+            return ref.getObject();
         }
     }
 

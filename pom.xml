@@ -1,21 +1,20 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
  <modelVersion>4.0.0</modelVersion>
- <groupId>org.codesmell</groupId>
+ <groupId>org.wicketeer</groupId>
  <artifactId>wicket-modelfactory-parent</artifactId>
  <version>0.3-SNAPSHOT</version>
  <packaging>pom</packaging>
  <name>wicket-modelfactory-parent</name>
- <url>http://codesmell.org/wicket-modelfactory</url>
+ <url>http://wicketeer.org/wicket-modelfactory</url>
  <inceptionYear>2012</inceptionYear>
  <organization>
-  <name>codesmell.org</name>
-  <url>http://codesmell.org</url>
+  <name>wicketeer.org</name>
+  <url>http://wicketeer.org</url>
  </organization>
- <!-- <issueManagement>
-  <system>jira</system>
-  <url>http://</url>
+ <issueManagement>
+  <system>bitbucket</system>
+  <url>https://bitbucket.org/uweschaefer/wicket-modelfactory/issues</url>
   </issueManagement>
- -->
  <licenses>
   <license>
    <name>Apache 2</name>
@@ -61,16 +60,16 @@
  <distributionManagement>
   <site>
    <id>wicket-modelfactory</id>
-   <url>scp://root@codesmell.de/home/uwe/web/www.codesmell.org/maven-site/wicket-modelfactory</url>
+   <url>scp://root@codesmell.de/home/uwe/web/www.wicketeer.org/wicket-modelfactory</url>
    <name>webserver</name>
   </site>
   <repository>
-   <id>codesmell</id>
-   <url>scp://root@codesmell.de/home/uwe/web/www.codesmell.org/maven</url>
+   <id>wicketeer.org</id>
+   <url>scp://root@codesmell.de/home/uwe/web/www.wicketeer.org/maven</url>
   </repository>
   <snapshotRepository>
-   <id>codesmell</id>
-   <url>scp://root@codesmell.de/home/uwe/web/www.codesmell.org/maven</url>
+   <id>wicketeer.org</id>
+   <url>scp://root@codesmell.de/home/uwe/web/www.wicketeer.org/maven</url>
    <name>webserver</name>
   </snapshotRepository>
  </distributionManagement>
@@ -312,7 +311,7 @@
        <properties>
         <owner>Uwe Schaefer</owner>
         <year>${project.inceptionYear}</year>
-        <email>uwe@codesmell.org</email>
+        <email>uwe@wicketeer.org</email>
        </properties>
        <excludes>
         <exclude>LICENSE.txt</exclude>

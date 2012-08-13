@@ -1,4 +1,4 @@
-package org.codesmell.wicket.modelfactory;
+package org.wicketeer.modelfactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -10,6 +10,7 @@ import junit.framework.TestCase;
 
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.io.ByteArrayOutputStream;
+import org.wicketeer.modelfactory.ModelFactory;
 
 public class ModelFactoryTest extends TestCase
 {

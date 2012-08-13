@@ -15,18 +15,17 @@
 // limitations under the License.
 //
 
-package org.codesmell.wicket.modelfactory.internal;
+package org.wicketeer.modelfactory.internal;
 
 /**
- * A factpry for creating arguments placeholder for final classes
+ * This invocation is thrown while trying to proxy an object of an unproxeable (final) class.
  * @author Mario Fusco
  */
-public interface FinalClassArgumentCreator<T> {
+public class UnproxableClassException extends RuntimeException {
 
-    /**
-     * Create a placeholder for an argument of the final class T using the given seed.
-     * @param seed  The seed to generate the unique placeholder
-     * @return A placeholder for an argument of class T
-     */
-    T createArgumentPlaceHolder(int seed);
+	private static final long serialVersionUID = 1L;
+
+    UnproxableClassException(Class<?> clazz) {
+        super("Unable to proxy the final class " + clazz.getName());
+    }
 }

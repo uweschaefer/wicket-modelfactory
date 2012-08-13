@@ -42,7 +42,7 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.codesmell.wicket.modelfactory.internal;
+package org.wicketeer.modelfactory.internal;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
