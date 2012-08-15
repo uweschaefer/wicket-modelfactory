@@ -2,7 +2,7 @@
  <modelVersion>4.0.0</modelVersion>
  <groupId>org.wicketeer</groupId>
  <artifactId>wicket-modelfactory-parent</artifactId>
- <version>0.4-SNAPSHOT</version>
+ <version>0.3.1</version>
  <packaging>pom</packaging>
  <name>wicket-modelfactory-parent</name>
  <url>http://wicketeer.org/wicket-modelfactory</url>
