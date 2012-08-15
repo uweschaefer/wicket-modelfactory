@@ -105,6 +105,7 @@ public class ModelFactory
             Reference ref = (Reference) super.get();
             if (ref != null)
             {
+                super.remove();
                 throw new IllegalStateException("mutliple from() calls. need to call model(); Original invokation at "
                         + render(ref.getInvokationPath()));
             }
@@ -135,6 +136,7 @@ public class ModelFactory
             Reference ref = (Reference) super.get();
             if (ref == null)
             {
+                super.remove();
                 throw new IllegalStateException("no from() call registered before!");
             }
 
