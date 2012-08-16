@@ -35,14 +35,14 @@ public class ModelFactory
     private static ChainFrom chain = new ChainFrom();
 
     @SuppressWarnings("unchecked")
-    public static <T> T from(final T value)
+    public static synchronized <T> T from(final T value)
     {
         chain.set(checkNotNull(value));
         return (T) ArgumentsFactory.createArgument(value.getClass());
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> T from(final IModel<T> model)
+    public static synchronized <T> T from(final IModel<T> model)
     {
         chain.set(checkNotNull(model));
         return ArgumentsFactory.createArgument(reflectModelObjectType(model));
@@ -87,7 +87,7 @@ public class ModelFactory
         }
     }
 
-    public static <T> IModel<T> model(final T path)
+    public static synchronized <T> IModel<T> model(final T path)
     {
         Object t = chain.get();
         Argument<T> a = ArgumentsFactory.actualArgument(path);
