@@ -28,8 +28,6 @@ import org.wicketeer.modelfactory.internal.ArgumentsFactory;
 
 import com.googlecode.gentyref.GenericTypeReflector;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 public class ModelFactory
 {
     private static ChainFrom chain = new ChainFrom();
@@ -41,7 +39,6 @@ public class ModelFactory
         return (T) ArgumentsFactory.createArgument(value.getClass());
     }
 
-    @SuppressWarnings("unchecked")
     public static synchronized <T> T from(final IModel<T> model)
     {
         chain.set(checkNotNull(model));
@@ -118,7 +115,7 @@ public class ModelFactory
             for (StackTraceElement stackTraceElement : st)
             {
                 String cn = stackTraceElement.getClassName();
-                if (!cn.contains("ModelFactory") && !(cn.contains("org.wicketeer.modelfactory")))
+                if (!cn.contains(ModelFactory.class.getSimpleName()) && !(cn.contains(ModelFactory.class.getPackage().getName())))
                 {
                     String mn = stackTraceElement.getMethodName();
                     int ln = stackTraceElement.getLineNumber();
@@ -143,5 +140,32 @@ public class ModelFactory
             return ref.getObject();
         }
     }
+    static class Reference
+    {
+        private final Object object;
+        private final Exception invokationPath;
 
+        Reference(final Object o)
+        {
+            object = checkNotNull(o);
+            invokationPath = new Exception();
+        }
+
+        Object getObject()
+        {
+            return object;
+        }
+
+        Exception getInvokationPath()
+        {
+            return invokationPath;
+        }
+
+    }
+
+    static <T> T checkNotNull(T o){
+        if(o==null)
+            throw new NullPointerException();
+        return o;
+    }
 }

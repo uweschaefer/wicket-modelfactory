@@ -162,6 +162,7 @@ final class ClassImposterizer
         /**
          * {@inheritDoc}
          */
+        @SuppressWarnings("rawtypes")
         @Override
         protected void filterConstructors(final Class sc, final List constructors)
         {

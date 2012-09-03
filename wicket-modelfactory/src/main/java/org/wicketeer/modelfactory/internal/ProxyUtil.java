@@ -56,6 +56,7 @@ public final class ProxyUtil {
      * @param implementedInterface The interfaces that has to be implemented by the new proxy
      * @return The newly created proxy
      */
+    @SuppressWarnings("rawtypes")
     public static <T> T createProxy(InvocationInterceptor interceptor, Class<T> clazz, boolean failSafe, Class<?> ... implementedInterface) {
         if (clazz.isInterface()) return (T)createNativeJavaProxy(clazz.getClassLoader(), interceptor, concatClasses(new Class<?>[] { clazz }, implementedInterface));
         final ProxyIterator proxyIterator = (interceptor instanceof ProxyIterator) ? (ProxyIterator)interceptor : null;

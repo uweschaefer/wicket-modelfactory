@@ -7,7 +7,6 @@
   <relativePath>..</relativePath>
  </parent>
  <artifactId>wicket-modelfactory</artifactId>
- <version>0.3.3-SNAPSHOT</version>
  <packaging>jar</packaging>
  <name>wicket-modelfactory</name>
 </project>

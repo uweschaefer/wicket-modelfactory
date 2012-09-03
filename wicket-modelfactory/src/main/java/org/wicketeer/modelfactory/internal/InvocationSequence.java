@@ -17,10 +17,6 @@
 
 package org.wicketeer.modelfactory.internal;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Registers a sequence of method invocations
@@ -31,67 +27,25 @@ import java.util.concurrent.atomic.AtomicBoolean;
 final class InvocationSequence implements Invoker
 {
 
-    private static boolean jittingEnabled = false;
-    private static ExecutorService executor;
-
-    static void enableJitting(final boolean enable)
-    {
-        if (enable)
-        {
-            jittingEnabled = true;
-            if (executor == null)
-            {
-                executor = Executors.newCachedThreadPool(new ThreadFactory()
-                {
-                    @Override
-                    public Thread newThread(final Runnable r)
-                    {
-                        Thread t = new Thread(r);
-                        t.setDaemon(true);
-                        return t;
-                    }
-                });
-            }
-        }
-        else
-        {
-            jittingEnabled = false;
-            if (executor != null)
-            {
-                executor.shutdown();
-                executor = null;
-            }
-        }
-    }
-
     private final Class<?> rootInvokedClass;
     private String inkvokedPropertyName;
     Invocation lastInvocation;
     private int hashCode;
 
-    private boolean jitDone;
-    private AtomicBoolean needsJitting;
 
     private Invoker invoker = this;
 
     InvocationSequence(final Class<?> rootInvokedClass)
     {
         this.rootInvokedClass = rootInvokedClass;
-        jitDone = true;
-    }
+     }
 
     InvocationSequence(final InvocationSequence sequence, final Invocation invocation)
     {
         rootInvokedClass = sequence.getRootInvokedClass();
         invocation.previousInvocation = sequence.lastInvocation;
         lastInvocation = invocation;
-        boolean isJittable = jittingEnabled && isJittable(lastInvocation);
-        if (isJittable)
-        {
-            needsJitting = new AtomicBoolean(isJittable);
-        }
-        jitDone = !isJittable;
-    }
+       }
 
     Class<?> getRootInvokedClass()
     {
@@ -195,12 +149,6 @@ final class InvocationSequence implements Invoker
             value = invokeOn(invocation.previousInvocation, value);
         }
         return invocation.invokeOn(value);
-    }
-
-    private boolean isJittable(final Invocation invocation)
-    {
-        return !invocation.hasArguments()
-                && ((invocation.previousInvocation == null) || isJittable(invocation.previousInvocation));
     }
 
     @Override
