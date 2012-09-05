@@ -252,6 +252,11 @@
    <scope>provided</scope>
   </dependency>
   <dependency>
+   <groupId>com.google.guava</groupId>
+   <artifactId>guava</artifactId>
+   <version>12.0</version>
+  </dependency>
+  <dependency>
    <groupId>com.googlecode.gentyref</groupId>
    <artifactId>gentyref</artifactId>
    <version>1.1.0</version>
