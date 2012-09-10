@@ -1,15 +1,15 @@
 package org.wicketeer.modelfactory;
 
 import org.apache.wicket.MetaDataKey;
-import org.apache.wicket.RequestCycle;
+import org.apache.wicket.request.cycle.RequestCycle;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class RequestCycleLocalLocal<T>
+public class RequestCycleLocal<T>
 {
     private MetaDataKey<T> key;
 
-    public RequestCycleLocalLocal(final MetaDataKey<T> key)
+    public RequestCycleLocal(final MetaDataKey<T> key)
     {
         this.key = checkNotNull(key);
     }

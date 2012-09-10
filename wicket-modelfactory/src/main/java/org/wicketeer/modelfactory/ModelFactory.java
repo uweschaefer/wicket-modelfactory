@@ -96,7 +96,7 @@ public class ModelFactory
         return m;
     }
 
-    static class ChainFrom extends RequestCycleLocalLocal<Object>
+    static class ChainFrom extends RequestCycleLocal<Object>
     {
         static class Key extends MetaDataKey<Object>
         {
