@@ -55,6 +55,7 @@ public class ProxyIterator<T> extends InvocationInterceptor implements Iterable<
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("unchecked")
     @Override
     public Object invoke(final Object obj, final Method method, final Object[] args)
     {
@@ -80,6 +81,7 @@ public class ProxyIterator<T> extends InvocationInterceptor implements Iterable<
      * @return An Iterator over the results on all the invoctions of the given
      *         method
      */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     protected ResettableIterator<Object> iterateOnValues(final Method method, final Object[] args)
     {
         if (method.getName().equals("finalize"))
@@ -143,6 +145,7 @@ public class ProxyIterator<T> extends InvocationInterceptor implements Iterable<
      *            created proxy
      * @return The newly created proxy
      */
+    @SuppressWarnings("unchecked")
     public static <T> T createProxyIterator(final ResettableIterator<? extends T> proxiedIterator, final T firstItem)
     {
         T proxy = createProxyIterator(proxiedIterator, (Class<T>) firstItem.getClass());

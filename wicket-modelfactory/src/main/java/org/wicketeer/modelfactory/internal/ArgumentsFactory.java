@@ -46,17 +46,6 @@ public final class ArgumentsFactory
     {
     }
 
-    /**
-     * Enable or disable the JIT optimization of lambdaj's arguments. Disabled
-     * by default
-     * 
-     * @param enable
-     *            True to enable the JIT optimization, false to disable it
-     */
-    public static void enableJitting(final boolean enable)
-    {
-        InvocationSequence.enableJitting(enable);
-    }
 
     // ////////////////////////////////////////////////////////////////////////
     // /// Factory
@@ -99,6 +88,7 @@ public final class ArgumentsFactory
 
     private static <T> T registerNewArgument(final Class<T> clazz, final InvocationSequence invocationSequence)
     {
+        @SuppressWarnings("unchecked")
         T placeholder = (T) createPlaceholder(clazz, invocationSequence);
         PLACEHOLDER_BY_INVOCATION.put(invocationSequence, placeholder);
         if (isLimitedValues(placeholder))
@@ -140,7 +130,6 @@ public final class ArgumentsFactory
      *            The placeholder used to retrieve a registered argument
      * @return The argument bound to the given placeholder
      */
-    @SuppressWarnings("unchecked")
     public static <T> Argument<T> actualArgument(final T placeholder)
     {
         Argument<T> actualArgument = placeholderToArgument(placeholder);
@@ -152,6 +141,7 @@ public final class ArgumentsFactory
         return actualArgument;
     }
 
+    @SuppressWarnings("unchecked")
     private static <T> Argument<T> placeholderToArgument(final T placeholder)
     {
         if (placeholder instanceof Argument)
@@ -213,7 +203,7 @@ public final class ArgumentsFactory
                     : booleanArguments[booleanToInt(placeholder)];
         }
 
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings({ "unchecked", "rawtypes" })
         Object getNextPlaceholder(final Class<?> clazz)
         {
             return clazz.isEnum() ? getNextEnumPlaceholder((Class<? extends Enum>) clazz) : getNextBooleanPlaceholder();
@@ -243,6 +233,7 @@ public final class ArgumentsFactory
      *            The class of the placeholder
      * @return A placeholder of the given class
      */
+    @SuppressWarnings("unchecked")
     public static <T> T createClosureArgumentPlaceholder(final Class<T> clazz)
     {
         if (clazz == Class.class)
@@ -259,7 +250,7 @@ public final class ArgumentsFactory
 
     private static final Integer FINAL_PLACEHOLDER_SEED = Integer.MIN_VALUE / 2 - 1974;
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private static <T> T createFinalArgumentPlaceholder(final Class<T> clazz)
     {
         if ((clazz == Boolean.TYPE) || (clazz == Boolean.class))
@@ -348,7 +339,7 @@ public final class ArgumentsFactory
             return creator.createArgumentPlaceHolder(placeholderId);
         }
 
-        for (Constructor constructor : clazz.getConstructors())
+        for (@SuppressWarnings("rawtypes") Constructor constructor : clazz.getConstructors())
         {
             Class<?>[] params = constructor.getParameterTypes();
             if (params.length != 1)

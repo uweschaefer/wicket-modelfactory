@@ -23,6 +23,8 @@ package org.wicketeer.modelfactory.internal;
  */
 public class ArgumentConversionException extends RuntimeException {
 
+      private static final long serialVersionUID = 1L;
+
     ArgumentConversionException(String message) {
     	super(message);
     }

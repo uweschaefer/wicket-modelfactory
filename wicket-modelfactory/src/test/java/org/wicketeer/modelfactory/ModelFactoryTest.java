@@ -69,6 +69,7 @@ public class ModelFactoryTest extends TestCase
         testSer(pm);
     }
 
+    @SuppressWarnings("unchecked")
     private <X> IModel<X> testSer(final IModel<X> pm) throws IOException, ClassNotFoundException
     {
 
@@ -93,6 +94,11 @@ public class ModelFactoryTest extends TestCase
     public static class A implements Serializable
     {
 
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 1L;
+
         public B getB()
         {
             return b;
@@ -108,6 +114,10 @@ public class ModelFactoryTest extends TestCase
     }
     public static class B implements Serializable
     {
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 1L;
         V c = new V();
 
         public V getV()
@@ -119,6 +129,10 @@ public class ModelFactoryTest extends TestCase
 
     static class V implements Serializable
     {
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 1L;
         private String stringProperty = "bar";
         private int primitiveProperty = 5;
         private boolean booleanProperty = false;
