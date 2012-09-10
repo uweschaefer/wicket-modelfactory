@@ -21,6 +21,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
+import org.apache.wicket.MetaDataKey;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.wicketeer.modelfactory.internal.Argument;
@@ -32,6 +33,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class ModelFactory
 {
+
     private static ChainFrom chain = new ChainFrom();
 
     @SuppressWarnings("unchecked")
@@ -97,8 +99,19 @@ public class ModelFactory
         return m;
     }
 
-    static class ChainFrom extends ThreadLocal<Object>
+    static class ChainFrom extends RequestCycleLocalLocal<Object>
     {
+        static class Key extends MetaDataKey<Object>
+        {
+        };
+
+        private static MetaDataKey<Object> key = new Key();
+
+        public ChainFrom()
+        {
+            super(key);
+        }
+
         @Override
         public void set(final Object value)
         {

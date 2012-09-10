@@ -10,7 +10,7 @@ import junit.framework.TestCase;
 
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.io.ByteArrayOutputStream;
-import org.wicketeer.modelfactory.ModelFactory;
+import org.apache.wicket.util.tester.WicketTester;
 
 public class ModelFactoryTest extends TestCase
 {
@@ -21,7 +21,9 @@ public class ModelFactoryTest extends TestCase
     protected void setUp() throws Exception
     {
         super.setUp();
+        new WicketTester();
         a = new A();
+
     }
 
     public void testSimpleCallChain() throws Exception
