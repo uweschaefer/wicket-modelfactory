@@ -21,7 +21,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-import org.apache.wicket.MetaDataKey;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.wicketeer.modelfactory.internal.Argument;
@@ -37,13 +36,13 @@ public class ModelFactory
     @SuppressWarnings("unchecked")
     public static synchronized <T> T from(final T value)
     {
-        chain.set(checkNotNull(value));
+        chain.set(Preconditions.checkNotNull(value));
         return (T) ArgumentsFactory.createArgument(value.getClass());
     }
 
     public static synchronized <T> T from(final IModel<T> model)
     {
-        chain.set(checkNotNull(model));
+        chain.set(Preconditions.checkNotNull(model));
         return ArgumentsFactory.createArgument(reflectModelObjectType(model));
     }
 
@@ -96,89 +95,5 @@ public class ModelFactory
         return m;
     }
 
-    static class ChainFrom extends RequestCycleLocal<Object>
-    {
-        static class Key extends MetaDataKey<Object>
-        {
-        };
 
-        private static MetaDataKey<Object> key = new Key();
-
-        public ChainFrom()
-        {
-            super(key);
-        }
-
-        @Override
-        public void set(final Object value)
-        {
-            Reference ref = (Reference) super.get();
-            if (ref != null)
-            {
-                super.remove();
-                throw new IllegalStateException("mutliple from() calls. need to call model(); Original invokation at "
-                        + render(ref.getInvokationPath()));
-            }
-            super.set(new Reference(checkNotNull(value)));
-        }
-
-        private String render(final Exception invokationPath)
-        {
-            StackTraceElement[] st = invokationPath.getStackTrace();
-            for (StackTraceElement stackTraceElement : st)
-            {
-                String cn = stackTraceElement.getClassName();
-                if (!cn.contains(ModelFactory.class.getSimpleName()) && !(cn.contains(ModelFactory.class.getPackage().getName())))
-                {
-                    String mn = stackTraceElement.getMethodName();
-                    int ln = stackTraceElement.getLineNumber();
-                    String scn = cn.substring(cn.lastIndexOf('.') + 1);
-                    return scn + "." + mn + " (" + scn + ":" + ln + ")";
-                }
-            }
-            invokationPath.printStackTrace();
-            return "";
-        }
-
-        @Override
-        public Object get()
-        {
-            Reference ref = (Reference) super.get();
-            if (ref == null)
-            {
-                super.remove();
-                throw new IllegalStateException("no from() call registered before!");
-            }
-
-            return ref.getObject();
-        }
-    }
-    static class Reference
-    {
-        private final Object object;
-        private final Exception invokationPath;
-
-        Reference(final Object o)
-        {
-            object = checkNotNull(o);
-            invokationPath = new Exception();
-        }
-
-        Object getObject()
-        {
-            return object;
-        }
-
-        Exception getInvokationPath()
-        {
-            return invokationPath;
-        }
-
-    }
-
-    static <T> T checkNotNull(T o){
-        if(o==null)
-            throw new NullPointerException();
-        return o;
-    }
 }

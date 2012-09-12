@@ -20,7 +20,7 @@ package org.wicketeer.modelfactory;
 import org.apache.wicket.MetaDataKey;
 import org.apache.wicket.request.cycle.RequestCycle;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static org.wicketeer.modelfactory.Preconditions.checkNotNull;
 
 public class RequestCycleLocal<T>
 {

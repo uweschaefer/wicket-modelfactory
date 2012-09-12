@@ -17,7 +17,7 @@
 
 package org.wicketeer.modelfactory;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static org.wicketeer.modelfactory.Preconditions.checkNotNull;
 
 class Reference
 {
