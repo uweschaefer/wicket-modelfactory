@@ -4,7 +4,7 @@ syntax: glob
 target
 .settings
 *~
-
+dependency-reduced-pom.xml
 
 syntax: regexp
 ^wicket-modelfactory/target$
