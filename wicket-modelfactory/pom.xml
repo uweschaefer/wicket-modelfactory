@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>org.wicketeer</groupId>
 		<artifactId>wicket-modelfactory-parent</artifactId>
-		<version>0.4</version>
+		<version>0.5-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
 	<artifactId>wicket-modelfactory</artifactId>
