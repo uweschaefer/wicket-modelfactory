@@ -14,24 +14,61 @@ IModel<String> streetModel = model(from(myPersonObject).getAdressData().getHomeA
 
 where _myPersonObject_ can be a typed IModel or a Bean. 
 
+h2. Usage
+
+h3. Maven
+
+add the following section to your pom.xml:
+
+{noformat}
+  <dependency>
+   <groupId>org.wicketeer</groupId>
+   <artifactId>wicket-modelfactory</artifactId>
+   <version>0.5</version> <!-- or the current one -->
+  </dependency>
+{noformat}
+
+
+_model()_ and _from()_ are static methods on ModelFactory. You should probably prepare your IDE to import these. Here is how this is done with Eclipse:
+
+# go to Preferences Dialog
+# Open Java / Editor / Content Assist / Favorites
+# add Type org.wicketeer.modelfactory.ModelFactory
+
+
+h2. Tip
+
+If you use the excellent [lombok|http://project-lombok.org] projects, you end up with very little boilerplate and type-safe models:
+
+{noformat}
+@Data class Bar{
+ private Foo foo;
+}
+@Data class Foo{
+ private String myString;
+}
+...
+IModel<Integer> ageModel = model(from(barInstance).getFoo().getMyString());
+{noformat}
+
+
 h2. Kudos
 
-The idea is pretty old. There are several implementations around:
+The idea is pretty old. There are several implementations around this lib steals from:
 
 [SafeModel|http://github.com/duesenklipper/wicket-safemodel]
 
 [Wicket Wiki using LambdaJ|http://cwiki.apache.org/WICKET/working-with-wicket-models.html#WorkingwithWicketmodels-LambdaJ]
 
-and probably some more
-
-h2. Comparison
+and probably some more...
 
 The reason for this little project is that we liked the SafeModel-API (using a ThreadModel) better than the lambdaJ approach.
 
 h3. tl;dr;  
 
-*SafeModel = nice but slow*
-*LambdaJ = fast but a little clumsier and sometimes JIT breaks it.* 
+_SafeModel = nice but slow_
+
+_LambdaJ = fast but a little more clumsy and sometimes JIT breaks it._ 
 
 h3. Longer version of the story:
 
@@ -41,27 +78,11 @@ LambdaJ on the other hand has a feature of JITting that, being enabled, caused s
 
 h2. Implementation
 
-We faciliated LambdaJ (without the JITing, Objenesis, GentyRef & CGLib).
+We faciliated LambdaJ (without the JITing), Objenesis, GentyRef & CGLib.
  
-While this list of dependencies may sound frightening, the only dependency you need that does not necessarily come with Wicket is *cglib:cglib-nodep:2.2.2*.
+While this list of dependencies may sound frightening, the only dependency you need that does not necessarily come with Wicket is *cglib:cglib-nodep:2.2.2*. (Note: If you use wicket-ioc, you'll have this dependency anyway.)
 The rest of the dependencies are shaded into an internal package of Wicket-modelfactory, in order not to interfere with your dependecy management.
 
-Unfortunately, this is not easy to do with CGLib, as it contains Strings referencing its classes. 
+Unfortunately, this is not easy to do with CGLib, as it contains Strings referencing its classes.
 
-h2. Usage
-
-_model()_ and _from()_ are static methods on ModelFactory. You should probably prepare you IDE to import these.
-
-h2. Tip
-
-If you use the excellent [lombok|http://project-lombok.org] projects, you end up with very little boilerplate and type-safe models:
-
-{noformat}
-@Data
-public class Bean{
- private int myInt;
- private String myString;
-}
-...
-IModel<Integer> ageModel = model(from(beanInstance).getMyInt());
-{noformat}
+h5. All shaded libs are ASL 2.0 licensed, so is this thing. 

@@ -4,7 +4,7 @@
 	<artifactId>wicket-modelfactory-parent</artifactId>
 	<version>0.5-SNAPSHOT</version>
 	<packaging>pom</packaging>
-	<name>wicket-modelfactory-parent</name>
+	<name>wicket-modelfactory</name>
 	<url>http://wicketeer.org/wicket-modelfactory</url>
 	<inceptionYear>2012</inceptionYear>
 	<organization>

@@ -28,11 +28,23 @@ import org.wicketeer.modelfactory.internal.ArgumentsFactory;
 
 import com.googlecode.gentyref.GenericTypeReflector;
 
+/**
+ * 
+ * 
+ *
+ */
 public class ModelFactory
 {
 
     private static ChainFrom chain = new ChainFrom();
 
+    /**
+     * @param <T>
+     *            the type of the parameter
+     * @param value
+     *            the object to be proxied
+     * @return a proxy of the value-object
+     */
     @SuppressWarnings("unchecked")
     public static synchronized <T> T from(final T value)
     {
@@ -40,8 +52,18 @@ public class ModelFactory
         return (T) ArgumentsFactory.createArgument(value.getClass());
     }
 
+    /**
+     * @param <T>
+     *            type of the model parameter
+     * @param model
+     *            the model from which to create a proxy
+     * @return
+     * @throws NullPointerException
+     *             if the model parameter is null
+     */
     public static synchronized <T> T from(final IModel<T> model)
     {
+        Preconditions.checkNotNull(model);
         chain.set(Preconditions.checkNotNull(model));
         return ArgumentsFactory.createArgument(reflectModelObjectType(model));
     }
@@ -94,6 +116,5 @@ public class ModelFactory
         chain.remove();
         return m;
     }
-
 
 }

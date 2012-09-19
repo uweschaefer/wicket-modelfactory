@@ -38,9 +38,9 @@
   <links>
    <item name="Wicketeer.org Website" href="http://Wicketeer.org/"/>
   </links>
- <menu name="Documentation">
+<!--  <menu name="Documentation">
     <item name="2 Minutes Howto" href="2min.html" />
-  </menu>
+  </menu> -->
   <!-- <menu name="Tools">
    <item name="Javadoc" href="apidocs/"></item>
    <item name="Source" href="http://bitbucket.org/uweschaefer/wicket-modelfactory"/>
