@@ -27,7 +27,14 @@ add the following section to your pom.xml:
    <version>0.5</version> <!-- or the current one -->
   </dependency>
 {noformat}
-
+or, if you're still messing with wicket 1.4
+{noformat}
+  <dependency>
+   <groupId>org.wicketeer</groupId>
+   <artifactId>wicket-14-modelfactory</artifactId>
+   <version>0.5</version> <!-- or the current one -->
+  </dependency>
+{noformat}
 
 _model()_ and _from()_ are static methods on ModelFactory. You should probably prepare your IDE to import these. Here is how this is done with Eclipse:
 
