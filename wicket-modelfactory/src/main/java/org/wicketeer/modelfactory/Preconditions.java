@@ -21,10 +21,20 @@
 package org.wicketeer.modelfactory;
 
 /**
+ * Helper Class to use guava-style code like
+ * <code>String lower = checkNotNull(stringParameter).toLowerCase();</code>
+ * 
  * @author uweschaefer
  */
 class Preconditions
 {
+    /**
+     * @param t
+     *            object to test
+     * @return the unchanged reference passed to checkNotNull
+     * @throws NullPointerException
+     *             if the given object was null
+     */
     static <T> T checkNotNull(T t)
     {
         if (t == null) throw new NullPointerException();

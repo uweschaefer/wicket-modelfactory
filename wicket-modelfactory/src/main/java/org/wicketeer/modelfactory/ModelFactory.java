@@ -29,14 +29,14 @@ import org.wicketeer.modelfactory.internal.ArgumentsFactory;
 import com.googlecode.gentyref.GenericTypeReflector;
 
 /**
- * 
- * 
- *
+ * Entry point for creating refacotring safe PropertyModels. Usage:<code>
+ * IModel<String> stringModel = model(from(person).getProfile().getName());
+ * </code> where person can be a Bean of a Person class or an IModel<Person>.
  */
 public class ModelFactory
 {
 
-    private static ChainFrom chain = new ChainFrom();
+    private static RequestCycleLocalFrom localFrom = new RequestCycleLocalFrom();
 
     /**
      * @param <T>
@@ -48,7 +48,7 @@ public class ModelFactory
     @SuppressWarnings("unchecked")
     public static synchronized <T> T from(final T value)
     {
-        chain.set(Preconditions.checkNotNull(value));
+        localFrom.set(Preconditions.checkNotNull(value));
         return (T) ArgumentsFactory.createArgument(value.getClass());
     }
 
@@ -64,10 +64,13 @@ public class ModelFactory
     public static synchronized <T> T from(final IModel<T> model)
     {
         Preconditions.checkNotNull(model);
-        chain.set(Preconditions.checkNotNull(model));
+        localFrom.set(Preconditions.checkNotNull(model));
         return ArgumentsFactory.createArgument(reflectModelObjectType(model));
     }
 
+    /**
+     * kudos to duesklipper for this neat idea.
+     */
     @SuppressWarnings("unchecked")
     private static <U> Class<U> reflectModelObjectType(final IModel<U> target) throws Error
     {
@@ -107,13 +110,18 @@ public class ModelFactory
         }
     }
 
+    /**
+     * creates an actual ProeprtyModel from the path expressed by the given object.
+     * @param path the object initially created by a from-call
+     * @return the actual Model
+     */
     public static synchronized <T> IModel<T> model(final T path)
     {
-        Object t = chain.get();
+        Object t = localFrom.get();
         Argument<T> a = ArgumentsFactory.actualArgument(path);
         String invokedPN = a.getInkvokedPropertyName();
         PropertyModel<T> m = new PropertyModel<T>(t, invokedPN);
-        chain.remove();
+        localFrom.remove();
         return m;
     }
 

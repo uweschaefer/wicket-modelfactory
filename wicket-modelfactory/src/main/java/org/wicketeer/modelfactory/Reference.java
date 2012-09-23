@@ -19,22 +19,51 @@ package org.wicketeer.modelfactory;
 
 import static org.wicketeer.modelfactory.Preconditions.checkNotNull;
 
+import org.apache.wicket.Application;
+import org.apache.wicket.RuntimeConfigurationType;
+
+/**
+ * Bundles a Reference to an Object together with an Exception that can be used
+ * to inform about the Reference's creation. This can be used while in Wicket's
+ * DEVELOPEMT-Mode to find out, where this Reference was instanciated.
+ * 
+ * @author uweschaefer
+ */
 class Reference
 {
     private final Object object;
     private final Exception invokationPath;
+    private volatile static Boolean createExceptionForDebug = null;
 
-    Reference(final Object o)
+    /**
+     * @param objectToReference the object this Reference should point to.
+     * @throws NullPointerException if the object to reference if null
+     */
+    Reference(final Object objectToReference)
     {
-        object = checkNotNull(o);
-        invokationPath = new Exception();
+        object = checkNotNull(objectToReference);
+        if (createExceptionForDebug == null)
+            createExceptionForDebug = RuntimeConfigurationType.DEVELOPMENT.equals(Application.get()
+                    .getConfigurationType());
+
+        if (createExceptionForDebug)
+            invokationPath = new Exception();
+        else
+            invokationPath = null;
     }
 
+    /**
+     * @return the object passed in on creation
+     */
     Object getObject()
     {
         return object;
     }
 
+    /**
+     * @return Exception that was create on creation or null, if called within
+     *         RuntimeConfigurationType.DEPLOYMENT
+     */
     Exception getInvokationPath()
     {
         return invokationPath;

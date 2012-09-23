@@ -22,20 +22,40 @@ import org.apache.wicket.request.cycle.RequestCycle;
 
 import static org.wicketeer.modelfactory.Preconditions.checkNotNull;
 
+/**
+ * Stores an object with the given key into the RequestCycle. This works
+ * basically like a ThreadLocal but uses Wicket's RequestCycle instead of the
+ * local Thread as a Context, so that at the end of request-cycle processing,
+ * the object is dropped and cannot pop up in another Request (which ThreadLocal
+ * could suffer from).
+ * 
+ * @author uweschaefer
+ * @param <T>
+ *            Type of the object to store in the RequestCycle.
+ */
 public class RequestCycleLocal<T>
 {
-    private MetaDataKey<T> key;
+    private final MetaDataKey<T> key;
 
+    /**
+     * @param key
+     *            used to store the RequestCycleLocal-Object
+     * @throws NullPointerException
+     *             if the given key is null
+     */
     public RequestCycleLocal(final MetaDataKey<T> key)
     {
         this.key = checkNotNull(key);
     }
 
-    public void set(final T t)
-    {
-        getRequestCycle().setMetaData(key, checkNotNull(t));
-    }
-
+    /**
+     * subclasses migt have a different idea how to get the requestCycle.
+     * 
+     * @return the currently active RequestCycle
+     * @throws IllegalStateException
+     *             if there currently is no active RequestCycle. (Remember to
+     *             use WicketTester in unit-tests)
+     */
     protected RequestCycle getRequestCycle()
     {
         RequestCycle requestCycle = RequestCycle.get();
@@ -46,11 +66,32 @@ public class RequestCycleLocal<T>
         return requestCycle;
     }
 
+    /**
+     * Set the given object into the RequestCycle's Metadata with the key pass
+     * on construction.
+     * 
+     * @param t
+     *            the object to set
+     * @throws NullPointerException
+     *             if the given object is null. (use remove instead)
+     */
+    public void set(final T t)
+    {
+        getRequestCycle().setMetaData(key, checkNotNull(t));
+    }
+
+    /**
+     * @return the formerly set Object, or null if nothing was not set or the
+     *         object was removed.
+     */
     public T get()
     {
         return getRequestCycle().getMetaData(key);
     }
 
+    /**
+     * removes the object from the request cycle.
+     */
     public void remove()
     {
         getRequestCycle().setMetaData(key, null);
