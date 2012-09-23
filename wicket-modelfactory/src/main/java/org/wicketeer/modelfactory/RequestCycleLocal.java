@@ -81,6 +81,7 @@ public class RequestCycleLocal<T>
     }
 
     /**
+     * retrieves the object from the RequestCycle
      * @return the formerly set Object, or null if nothing was not set or the
      *         object was removed.
      */

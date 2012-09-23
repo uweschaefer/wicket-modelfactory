@@ -31,7 +31,7 @@ import com.googlecode.gentyref.GenericTypeReflector;
 /**
  * Entry point for creating refacotring safe PropertyModels. Usage:<code>
  * IModel<String> stringModel = model(from(person).getProfile().getName());
- * </code> where person can be a Bean of a Person class or an IModel<Person>.
+ * </code> where person can be an instance of Person class or an IModel<Person>.
  */
 public class ModelFactory
 {
@@ -39,11 +39,15 @@ public class ModelFactory
     private static RequestCycleLocalFrom localFrom = new RequestCycleLocalFrom();
 
     /**
+     * Proxies the given objetc in order to be able to call methods on it to
+     * create the property path later-on used by model().
+     * 
      * @param <T>
      *            the type of the parameter
      * @param value
      *            the object to be proxied
      * @return a proxy of the value-object
+     * @throws NullPointerException if the given object is null
      */
     @SuppressWarnings("unchecked")
     public static synchronized <T> T from(final T value)
@@ -53,17 +57,19 @@ public class ModelFactory
     }
 
     /**
+     * Proxies the Model-Object's type in order to be able to call methods on it
+     * to create the property path later-on used by model().
+     * 
      * @param <T>
      *            type of the model parameter
      * @param model
      *            the model from which to create a proxy
-     * @return
+     * @return a proxy of an object of Type <T>
      * @throws NullPointerException
-     *             if the model parameter is null
+     *             if the model is null
      */
     public static synchronized <T> T from(final IModel<T> model)
     {
-        Preconditions.checkNotNull(model);
         localFrom.set(Preconditions.checkNotNull(model));
         return ArgumentsFactory.createArgument(reflectModelObjectType(model));
     }
@@ -111,8 +117,11 @@ public class ModelFactory
     }
 
     /**
-     * creates an actual ProeprtyModel from the path expressed by the given object.
-     * @param path the object initially created by a from-call
+     * creates an actual ProeprtyModel from the path expressed by the given
+     * object.
+     * 
+     * @param path
+     *            the object initially created by a from-call
      * @return the actual Model
      */
     public static synchronized <T> IModel<T> model(final T path)
