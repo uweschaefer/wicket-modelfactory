@@ -27,7 +27,9 @@ add the following section to your pom.xml:
    <version>0.5</version> <!-- or the current one -->
   </dependency>
 {noformat}
-or, if you're still messing with wicket 1.4
+
+or
+
 {noformat}
   <dependency>
    <groupId>org.wicketeer</groupId>
