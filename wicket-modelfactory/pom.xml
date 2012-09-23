@@ -7,7 +7,7 @@
 		<version>0.5-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
-	<artifactId>wicket-15-modelfactory</artifactId>
+	<artifactId>wicket-modelfactory</artifactId>
 	<packaging>jar</packaging>
 	<name>wicket-modelfactory</name>
 	<dependencies>
