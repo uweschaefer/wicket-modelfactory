@@ -1,5 +1,13 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.sonatype.oss</groupId>
+		<artifactId>oss-parent</artifactId>
+		<version>7</version>
+	</parent>
+
 	<groupId>org.wicketeer</groupId>
 	<artifactId>wicket-modelfactory-parent</artifactId>
 	<version>0.6-SNAPSHOT</version>
@@ -24,8 +32,9 @@
 		</license>
 	</licenses>
 	<scm>
-		<developerConnection>scm:hg:ssh://hg@bitbucket.org/uweschaefer/wicket-modelfactory</developerConnection>
-		<url>ssh://hg@bitbucket.org/uweschaefer/wicket-modelfactory</url>
+	    <connection>scm:hg:https://bitbucket.org/uweschaefer/wicket-modelfactory</connection>
+		<developerConnection>scm:hg:https://bitbucket.org/uweschaefer/wicket-modelfactory</developerConnection>
+		<url>http://bitbucket.org/uweschaefer/wicket-modelfactory</url>
 	</scm>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -55,6 +64,7 @@
 			<url>scp://root@codesmell.de/home/uwe/web/www.wicketeer.org/wicket-modelfactory</url>
 			<name>webserver</name>
 		</site>
+<!--
 		<repository>
 			<id>wicketeer.org</id>
 			<url>scp://root@codesmell.de/home/uwe/web/www.wicketeer.org/maven/release</url>
@@ -64,6 +74,7 @@
 			<url>scp://root@codesmell.de/home/uwe/web/www.wicketeer.org/maven/snapshot</url>
 			<name>webserver</name>
 		</snapshotRepository>
+-->
 	</distributionManagement>
 	<build>
 		<plugins>
