@@ -35,7 +35,7 @@
 			<item name="Wicket-Wiki"
 				href="https://cwiki.apache.org/WICKET/working-with-wicket-models.html#WorkingwithWicketmodels-LambdaJ" />
 			<item name="Wicket-SafeModel" href="https://github.com/duesenklipper/wicket-safemodel" />
-			<item name="Wicketeer.org" href="/" />
+			<item name="Wicketeer.org" href="http://www.wicketeer.org" />
 		</links>
 		<!-- <menu name="Documentation"> <item name="2 Minutes Howto" href="2min.html" 
 			/> </menu> -->
