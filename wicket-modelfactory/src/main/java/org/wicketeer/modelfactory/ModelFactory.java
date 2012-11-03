@@ -47,7 +47,8 @@ public class ModelFactory
      * @param value
      *            the object to be proxied
      * @return a proxy of the value-object
-     * @throws NullPointerException if the given object is null
+     * @throws NullPointerException
+     *             if the given object is null
      */
     @SuppressWarnings("unchecked")
     public static synchronized <T> T from(final T value)
@@ -127,11 +128,25 @@ public class ModelFactory
     public static synchronized <T> IModel<T> model(final T path)
     {
         Object t = localFrom.get();
-        Argument<T> a = ArgumentsFactory.actualArgument(path);
-        String invokedPN = a.getInkvokedPropertyName();
-        PropertyModel<T> m = new PropertyModel<T>(t, invokedPN);
-        localFrom.remove();
-        return m;
+        return new PropertyModel<T>(t, path(path));
+    }
+
+    /**
+     * @param path
+     *            the object initially created by a from-call
+     * @return a string denoting the property path expressed by the path object
+     */
+    public static synchronized String path(final Object path)
+    {
+        try
+        {
+            Argument<?> a = ArgumentsFactory.actualArgument(path);
+            return a.getInkvokedPropertyName();
+        }
+        finally
+        {
+            localFrom.remove();
+        }
     }
 
 }

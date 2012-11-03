@@ -45,8 +45,8 @@ class RequestCycleLocalFrom extends RequestCycleLocal<Object>
             super.remove();
 
             Exception path = ref.getInvokationPath();
-            StringBuilder sb = new StringBuilder("mutliple from() calls. You need to call model() first.");
-            if (path != null) sb.append(" First (probably missing a model()-call) invokation of from() at " + render(path));
+            StringBuilder sb = new StringBuilder("mutliple from() calls. You need to call 'model()' or 'path()' first.");
+            if (path != null) sb.append(" First (probably missing a 'model()'- or 'path()'-call) invokation of from() at " + render(path));
 
             throw new IllegalStateException(sb.toString());
         }
