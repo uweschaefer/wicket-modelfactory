@@ -14,6 +14,12 @@ IModel<String> streetModel = model(from(myPersonObject).getAdressData().getHomeA
 
 where _myPersonObject_ can be a typed IModel or a Bean. 
 
+You can also create Property Path-Strings in order to use them where PropertyModels are not helpful (PropertyColumns for instance).
+
+{noformat}
+String streetPropertyPath = path(from(myPersonObject).getAdressData().getHomeAdress().getStreet());      
+{noformat}
+
 h2. Usage
 
 h3. Maven
@@ -38,7 +44,7 @@ or
   </dependency>
 {noformat}
 
-_model()_ and _from()_ are static methods on ModelFactory. You should probably prepare your IDE to import these. Here is how this is done with Eclipse:
+_model()_, _path()_ and _from()_ are static methods on ModelFactory. You should probably prepare your IDE to import these. Here is how this is done with Eclipse:
 
 # go to Preferences Dialog
 # Open Java / Editor / Content Assist / Favorites
@@ -63,7 +69,7 @@ IModel<Integer> ageModel = model(from(barInstance).getFoo().getMyString());
 
 h2. Kudos
 
-The idea is pretty old. There are several implementations around this lib steals from:
+The idea is pretty old. There are several implementations around, this lib steals from:
 
 [SafeModel|http://github.com/duesenklipper/wicket-safemodel]
 
@@ -81,8 +87,8 @@ _LambdaJ = fast but a little more clumsy and sometimes JIT breaks it._
 
 h3. Longer version of the story:
 
+Safemodel exposes a nicer API that makes use of ThreadLocals in order to chain calls.
 On the other hand SafeModel happens to be too slow for us (We had a page with >600 models that went up from 150ms to 2700ms just by using SafeModel rather than lambdaJ.
-
 LambdaJ on the other hand has a feature of JITting that, being enabled, caused spuriously intermixed models/failures.  
 
 h2. Implementation
