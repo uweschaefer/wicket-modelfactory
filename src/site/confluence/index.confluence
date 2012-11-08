@@ -30,7 +30,7 @@ add the following section to your pom.xml:
   <dependency>
    <groupId>org.wicketeer</groupId>
    <artifactId>wicket-modelfactory</artifactId>
-   <version>0.5</version> <!-- or the current one -->
+   <version>0.6</version> <!-- or the current one -->
   </dependency>
 {noformat}
 
@@ -40,7 +40,7 @@ or
   <dependency>
    <groupId>org.wicketeer</groupId>
    <artifactId>wicket-14-modelfactory</artifactId>
-   <version>0.5</version> <!-- or the current one -->
+   <version>0.6</version> <!-- or the current one -->
   </dependency>
 {noformat}
 
@@ -53,7 +53,7 @@ _model()_, _path()_ and _from()_ are static methods on ModelFactory. You should 
 
 h2. Tip
 
-If you use the excellent [lombok|http://project-lombok.org] projects, you end up with very little boilerplate and type-safe models:
+If you use the excellent [lombok|http://project-lombok.org] project, you end up with very little boilerplate and type-safe models:
 
 {noformat}
 @Data class Bar{
@@ -89,6 +89,7 @@ h3. Longer version of the story:
 
 Safemodel exposes a nicer API that makes use of ThreadLocals in order to chain calls.
 On the other hand SafeModel happens to be too slow for us (We had a page with >600 models that went up from 150ms to 2700ms just by using SafeModel rather than lambdaJ.
+
 LambdaJ on the other hand has a feature of JITting that, being enabled, caused spuriously intermixed models/failures.  
 
 h2. Implementation
@@ -96,6 +97,7 @@ h2. Implementation
 We faciliated LambdaJ (without the JITing), Objenesis, GentyRef & CGLib.
  
 While this list of dependencies may sound frightening, the only dependency you need that does not necessarily come with Wicket is *cglib:cglib-nodep:2.2.2*. (Note: If you use wicket-ioc, you'll have this dependency anyway.)
+
 The rest of the dependencies are shaded into an internal package of Wicket-modelfactory, in order not to interfere with your dependecy management.
 
 Unfortunately, this is not easy to do with CGLib, as it contains Strings referencing its classes.
