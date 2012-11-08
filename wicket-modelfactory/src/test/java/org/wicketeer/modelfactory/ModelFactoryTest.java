@@ -173,4 +173,29 @@ public class ModelFactoryTest extends TestCase
         }
     }
 
+    public static class R1
+    {
+        public R2 getR2()
+        {
+            return null;
+        }
+
+        public void setR2(final R2 r2)
+        {
+            this.r2 = r2;
+        }
+
+        R2 r2;
+    }
+    public static class R2
+    {
+        String foo;
+    }
+
+    public void testNullCompatible() throws Exception
+    {
+        R1 r1 = null;
+        IModel<R2> m = ModelFactory.model(ModelFactory.from(r1).getR2());
+        assertNull(m.getObject());
+    }
 }
