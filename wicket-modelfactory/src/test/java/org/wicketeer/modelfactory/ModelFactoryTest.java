@@ -194,8 +194,19 @@ public class ModelFactoryTest extends TestCase
 
     public void testNullCompatible() throws Exception
     {
-        R1 r1 = null;
-        IModel<R2> m = ModelFactory.model(ModelFactory.from(r1).getR2());
-        assertNull(m.getObject());
+        try
+        {
+            ModelFactory.model(ModelFactory.from(null));
+            fail("Nullpointer did not happen");
+        }
+        catch (NullPointerException e)
+        {
+            // fine
+        }
+        catch (Exception e)
+        {
+            fail("Different Exception to Nullpointer! " + e.getClass().getName());
+        }
+
     }
 }
