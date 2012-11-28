@@ -46,7 +46,6 @@ public final class ArgumentsFactory
     {
     }
 
-
     // ////////////////////////////////////////////////////////////////////////
     // /// Factory
     // ////////////////////////////////////////////////////////////////////////
@@ -65,24 +64,10 @@ public final class ArgumentsFactory
         return createArgument(clazz, new InvocationSequence(clazz));
     }
 
-    private static final Map<InvocationSequence, Object> PLACEHOLDER_BY_INVOCATION = new WeakHashMap<InvocationSequence, Object>();
-
-    private static final Map<InvocationSequence, InvocationSequence> LIMITED_VALUE_INVOCATIONS = new HashMap<InvocationSequence, InvocationSequence>();
-
     @SuppressWarnings("unchecked")
     static synchronized <T> T createArgument(final Class<T> clazz, final InvocationSequence invocationSequence)
     {
-        T placeholder = (T) PLACEHOLDER_BY_INVOCATION.get(invocationSequence);
-        if (placeholder == null)
-        {
-            placeholder = registerNewArgument(clazz, invocationSequence);
-        }
-        else
-            if (isLimitedValues(placeholder))
-            {
-                LIMITED_VALUE_ARGUMENTS.get().setArgument(placeholder,
-                        new Argument<T>(LIMITED_VALUE_INVOCATIONS.get(invocationSequence)));
-            }
+        T placeholder = registerNewArgument(clazz, invocationSequence);
         return placeholder;
     }
 
@@ -90,11 +75,6 @@ public final class ArgumentsFactory
     {
         @SuppressWarnings("unchecked")
         T placeholder = (T) createPlaceholder(clazz, invocationSequence);
-        PLACEHOLDER_BY_INVOCATION.put(invocationSequence, placeholder);
-        if (isLimitedValues(placeholder))
-        {
-            LIMITED_VALUE_INVOCATIONS.put(invocationSequence, invocationSequence);
-        }
         bindArgument(placeholder, new Argument<T>(invocationSequence));
         return placeholder;
     }
@@ -203,7 +183,8 @@ public final class ArgumentsFactory
                     : booleanArguments[booleanToInt(placeholder)];
         }
 
-        @SuppressWarnings({ "unchecked", "rawtypes" })
+        @SuppressWarnings(
+        { "unchecked", "rawtypes" })
         Object getNextPlaceholder(final Class<?> clazz)
         {
             return clazz.isEnum() ? getNextEnumPlaceholder((Class<? extends Enum>) clazz) : getNextBooleanPlaceholder();
@@ -250,7 +231,8 @@ public final class ArgumentsFactory
 
     private static final Integer FINAL_PLACEHOLDER_SEED = Integer.MIN_VALUE / 2 - 1974;
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings(
+    { "unchecked", "rawtypes" })
     private static <T> T createFinalArgumentPlaceholder(final Class<T> clazz)
     {
         if ((clazz == Boolean.TYPE) || (clazz == Boolean.class))
@@ -339,7 +321,8 @@ public final class ArgumentsFactory
             return creator.createArgumentPlaceHolder(placeholderId);
         }
 
-        for (@SuppressWarnings("rawtypes") Constructor constructor : clazz.getConstructors())
+        for (@SuppressWarnings("rawtypes")
+        Constructor constructor : clazz.getConstructors())
         {
             Class<?>[] params = constructor.getParameterTypes();
             if (params.length != 1)
