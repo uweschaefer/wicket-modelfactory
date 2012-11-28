@@ -65,7 +65,7 @@ public final class ArgumentsFactory
     }
 
     @SuppressWarnings("unchecked")
-    static synchronized <T> T createArgument(final Class<T> clazz, final InvocationSequence invocationSequence)
+    static <T> T createArgument(final Class<T> clazz, final InvocationSequence invocationSequence)
     {
         T placeholder = registerNewArgument(clazz, invocationSequence);
         return placeholder;
