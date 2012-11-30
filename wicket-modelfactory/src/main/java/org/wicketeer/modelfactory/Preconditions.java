@@ -35,9 +35,28 @@ class Preconditions
      * @throws NullPointerException
      *             if the given object was null
      */
-    static <T> T checkNotNull(T t)
+    static <T> T checkNotNull(final T t)
     {
-        if (t == null) throw new NullPointerException();
+        if (t == null)
+        {
+            throw new NullPointerException();
+        }
+        return t;
+    }
+
+    /**
+     * @param t
+     *            object to test
+     * @return the unchanged reference passed to checkNull
+     * @throws IllegalStateException
+     *             if the given object was NOT null
+     */
+    static <T> T checkNull(final T t)
+    {
+        if (t != null)
+        {
+            throw new IllegalStateException();
+        }
         return t;
     }
 }
