@@ -21,13 +21,11 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.objenesis.Objenesis;
@@ -65,7 +63,7 @@ public final class ArgumentsFactory
     }
 
     @SuppressWarnings("unchecked")
-    static synchronized <T> T createArgument(final Class<T> clazz, final InvocationSequence invocationSequence)
+    static <T> T createArgument(final Class<T> clazz, final InvocationSequence invocationSequence)
     {
         T placeholder = registerNewArgument(clazz, invocationSequence);
         return placeholder;
@@ -89,18 +87,14 @@ public final class ArgumentsFactory
     // /// Arguments
     // ////////////////////////////////////////////////////////////////////////
 
-    private static final Map<Object, Argument<?>> ARGUMENTS_BY_PLACEHOLDER = new WeakHashMap<Object, Argument<?>>();
+    private static final Map<Object, Argument<?>> ARGUMENTS_BY_PLACEHOLDER = Collections.synchronizedMap(new LRUMap(
+            5000));
 
     private static <T> void bindArgument(final T placeholder, final Argument<T> argument)
     {
-        if (isLimitedValues(placeholder))
-        {
-            LIMITED_VALUE_ARGUMENTS.get().setArgument(placeholder, argument);
-        }
-        else
-        {
-            ARGUMENTS_BY_PLACEHOLDER.put(placeholder, argument);
-        }
+
+        ARGUMENTS_BY_PLACEHOLDER.put(placeholder, argument);
+
     }
 
     /**
@@ -128,79 +122,7 @@ public final class ArgumentsFactory
         {
             return (Argument<T>) placeholder;
         }
-        return (Argument<T>) (isLimitedValues(placeholder) ? LIMITED_VALUE_ARGUMENTS.get().getArgument(placeholder)
-                : ARGUMENTS_BY_PLACEHOLDER.get(placeholder));
-    }
-
-    private static final ThreadLocal<LimitedValuesArgumentHolder> LIMITED_VALUE_ARGUMENTS = new ThreadLocal<LimitedValuesArgumentHolder>()
-    {
-        @Override
-        protected LimitedValuesArgumentHolder initialValue()
-        {
-            return new LimitedValuesArgumentHolder();
-        }
-    };
-
-    private static boolean isLimitedValues(final Object placeholder)
-    {
-        return (placeholder != null) && isLimitedValues(placeholder.getClass());
-    }
-
-    private static boolean isLimitedValues(final Class<?> clazz)
-    {
-        return (clazz == Boolean.TYPE) || (clazz == Boolean.class) || clazz.isEnum();
-    }
-
-    private static final class LimitedValuesArgumentHolder
-    {
-
-        private boolean booleanPlaceholder = true;
-        private final Argument<?>[] booleanArguments = new Argument[2];
-
-        private int enumPlaceholder = 0;
-        private final Map<Object, Argument<?>> enumArguments = new HashMap<Object, Argument<?>>();
-
-        private int booleanToInt(final Object placeholder)
-        {
-            return (Boolean) placeholder ? 1 : 0;
-        }
-
-        void setArgument(final Object placeholder, final Argument<?> argument)
-        {
-            if (placeholder.getClass().isEnum())
-            {
-                enumArguments.put(placeholder, argument);
-            }
-            else
-            {
-                booleanArguments[booleanToInt(placeholder)] = argument;
-            }
-        }
-
-        Argument<?> getArgument(final Object placeholder)
-        {
-            return placeholder.getClass().isEnum() ? enumArguments.get(placeholder)
-                    : booleanArguments[booleanToInt(placeholder)];
-        }
-
-        @SuppressWarnings(
-        { "unchecked", "rawtypes" })
-        Object getNextPlaceholder(final Class<?> clazz)
-        {
-            return clazz.isEnum() ? getNextEnumPlaceholder((Class<? extends Enum>) clazz) : getNextBooleanPlaceholder();
-        }
-
-        private boolean getNextBooleanPlaceholder()
-        {
-            booleanPlaceholder = !booleanPlaceholder;
-            return booleanPlaceholder;
-        }
-
-        private <E extends Enum<E>> Enum<E> getNextEnumPlaceholder(final Class<E> clazz)
-        {
-            List<E> enums = new ArrayList<E>(EnumSet.allOf(clazz));
-            return enums.get(enumPlaceholder++ % enums.size());
-        }
+        return (Argument<T>) ARGUMENTS_BY_PLACEHOLDER.get(placeholder);
     }
 
     // ////////////////////////////////////////////////////////////////////////
@@ -250,8 +172,7 @@ public final class ArgumentsFactory
 
     static Object createArgumentPlaceholder(final Class<?> clazz)
     {
-        return isLimitedValues(clazz) ? LIMITED_VALUE_ARGUMENTS.get().getNextPlaceholder(clazz)
-                : createArgumentPlaceholder(clazz, PLACEHOLDER_COUNTER.addAndGet(1));
+        return createArgumentPlaceholder(clazz, PLACEHOLDER_COUNTER.addAndGet(1));
     }
 
     private static Object createArgumentPlaceholder(final Class<?> clazz, final Integer placeholderId)
@@ -285,7 +206,8 @@ public final class ArgumentsFactory
         }
     }
 
-    private static final Map<Class<?>, FinalClassArgumentCreator<?>> FINAL_CLASS_ARGUMENT_CREATORS = new HashMap<Class<?>, FinalClassArgumentCreator<?>>();
+    private static final Map<Class<?>, FinalClassArgumentCreator<?>> FINAL_CLASS_ARGUMENT_CREATORS = Collections
+            .synchronizedMap(new HashMap<Class<?>, FinalClassArgumentCreator<?>>());
 
     /**
      * Register a custom argument creator factory for an unknown final class
