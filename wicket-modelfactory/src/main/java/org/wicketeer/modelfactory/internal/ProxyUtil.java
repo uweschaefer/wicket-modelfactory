@@ -20,6 +20,8 @@ package org.wicketeer.modelfactory.internal;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
+import java.util.HashMap;
+import java.util.Map;
 
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
@@ -39,40 +41,15 @@ public final class ProxyUtil
     {
     }
 
-    // ////////////////////////////////////////////////////////////////////////
-    // /// Generic Proxy
-    // ////////////////////////////////////////////////////////////////////////
-
-    /**
-     * Check if the given class is nor final neither a primitive one
-     * 
-     * @param clazz
-     *            The class to be checked
-     * @return True if the class is proxable, false otherwise
-     */
     public static boolean isProxable(final Class<?> clazz)
     {
         return !clazz.isPrimitive() && !Modifier.isFinal(clazz.getModifiers()) && !clazz.isAnonymousClass();
     }
 
-    /**
-     * Creates a dynamic proxy
-     * 
-     * @param interceptor
-     *            The interceptor that manages the invocations to the created
-     *            proxy
-     * @param clazz
-     *            The class to be proxied
-     * @param failSafe
-     *            If true return null if it is not possible to proxy the request
-     *            class, otherwise throws an UnproxableClassException
-     * @param implementedInterface
-     *            The interfaces that has to be implemented by the new proxy
-     * @return The newly created proxy
-     */
-    @SuppressWarnings("rawtypes")
-    public static <T> T createProxy(final InvocationInterceptor interceptor, final Class<T> clazz,
-            final boolean failSafe, final Class<?>... implementedInterface)
+    private static Map<Class<?>, Enhancer> enhancers = new HashMap<Class<?>, Enhancer>();
+
+    static <T> T createProxy(final InvocationInterceptor interceptor, final Class<T> clazz, final boolean failSafe,
+            final Class<?>... implementedInterface)
     {
         if (clazz.isInterface())
         {
@@ -81,8 +58,17 @@ public final class ProxyUtil
         }
         try
         {
-
-            return (T) createEnhancer(interceptor, clazz, implementedInterface).create();
+            Enhancer e = null;
+            synchronized (enhancers)
+            {
+                e = enhancers.get(clazz);
+                if (e == null)
+                {
+                    e = createEnhancer(interceptor, clazz, implementedInterface);
+                    enhancers.put(clazz, e);
+                }
+            }
+            return (T) e.create();
         }
         catch (IllegalArgumentException iae)
         {
