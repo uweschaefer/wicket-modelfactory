@@ -17,7 +17,6 @@
 
 package org.wicketeer.modelfactory.internal;
 
-import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 
 /**
@@ -28,12 +27,12 @@ class ProxyArgument extends InvocationInterceptor
 
     private final Class<?> proxiedClass;
 
-    private final WeakReference<InvocationSequence> invocationSequence;
+    private final InvocationSequence invocationSequence;
 
     ProxyArgument(final Class<?> proxiedClass, final InvocationSequence invocationSequence)
     {
         this.proxiedClass = proxiedClass;
-        this.invocationSequence = new WeakReference<InvocationSequence>(invocationSequence);
+        this.invocationSequence = invocationSequence;
     }
 
     /**
@@ -53,7 +52,7 @@ class ProxyArgument extends InvocationInterceptor
 
         // Adds this invocation to the current invocation sequence and creates a
         // new proxy propagating the invocation sequence
-        return ArgumentsFactory.createArgument(method.getReturnType(), new InvocationSequence(invocationSequence.get(),
+        return ArgumentsFactory.createArgument(method.getReturnType(), new InvocationSequence(invocationSequence,
                 new Invocation(proxiedClass, method, args)));
     }
 }
