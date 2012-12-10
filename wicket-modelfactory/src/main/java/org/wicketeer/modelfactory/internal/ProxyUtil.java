@@ -20,8 +20,8 @@ package org.wicketeer.modelfactory.internal;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Arrays;
+import java.util.Collection;
 
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
@@ -46,8 +46,6 @@ public final class ProxyUtil
         return !clazz.isPrimitive() && !Modifier.isFinal(clazz.getModifiers()) && !clazz.isAnonymousClass();
     }
 
-    private static Map<Class<?>, Enhancer> enhancers = new HashMap<Class<?>, Enhancer>();
-
     static <T> T createProxy(final InvocationInterceptor interceptor, final Class<T> clazz, final boolean failSafe,
             final Class<?>... implementedInterface)
     {
@@ -58,16 +56,7 @@ public final class ProxyUtil
         }
         try
         {
-            Enhancer e = null;
-            synchronized (enhancers)
-            {
-                e = enhancers.get(clazz);
-                if (e == null)
-                {
-                    e = createEnhancer(interceptor, clazz, implementedInterface);
-                    enhancers.put(clazz, e);
-                }
-            }
+            Enhancer e = createEnhancer(interceptor, clazz, implementedInterface);
             return (T) e.create();
         }
         catch (IllegalArgumentException iae)
@@ -84,6 +73,30 @@ public final class ProxyUtil
             return manageUnproxableClass(clazz, failSafe);
         }
 
+    }
+
+    public static String enumerate(final Collection<?> l, final String delimiter)
+    {
+        StringBuffer sb = new StringBuffer(128);
+        boolean first = true;
+        for (Object object : l)
+        {
+            if (!first)
+            {
+                sb.append(delimiter);
+            }
+            else
+            {
+                first = false;
+            }
+            sb.append(object);
+        }
+        return sb.toString();
+    }
+
+    private static String enumerate(final Class<?>[] implementedInterface)
+    {
+        return enumerate(Arrays.asList(implementedInterface), ",");
     }
 
     private static <T> T manageUnproxableClass(final Class<T> clazz, final boolean failSafe)

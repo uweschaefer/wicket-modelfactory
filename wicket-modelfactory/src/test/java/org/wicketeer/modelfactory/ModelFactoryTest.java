@@ -207,6 +207,44 @@ public class ModelFactoryTest extends TestCase
         {
             fail("Different Exception to Nullpointer! " + e.getClass().getName());
         }
+    }
 
+    public static class CallingSetterWhileCreating
+    {
+        public CallingSetterWhileCreating()
+        {
+            setX(2);
+            getX();
+            getB().getV();
+        }
+
+        public int getX()
+        {
+            return x;
+        }
+
+        public void setX(final int x)
+        {
+            this.x = x;
+        }
+        private int x = 1;
+
+        B b = new B();
+
+        public B getB()
+        {
+            return b;
+        }
+
+        public void setB(final B b)
+        {
+            this.b = b;
+        }
+
+    }
+
+    public void testStateCheck() throws Exception
+    {
+        assertEquals("b.v", ModelFactory.path(ModelFactory.from(new CallingSetterWhileCreating()).getB().getV()));
     }
 }

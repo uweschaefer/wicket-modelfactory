@@ -44,14 +44,25 @@ public final class ArgumentsFactory
     static <T> T createArgument(final Class<T> clazz, final InvocationSequence invocationSequence)
     {
         T placeholder = (T) createPlaceholder(clazz, invocationSequence);
-        ARG.get().set(placeholder, new Argument<T>(invocationSequence));
+        if (ARG.get().getState() == State.ACTIVE)
+        {
+            ARG.get().set(placeholder, new Argument<T>(invocationSequence));
+        }
         return placeholder;
     }
 
     private static Object createPlaceholder(final Class<?> clazz, final InvocationSequence invocationSequence)
     {
+
+        State stateBeforeCreationCall = ARG.get().getState();
+
         if (clazz == Void.class || "void".equals(clazz.getName()))
         {
+            if (stateBeforeCreationCall == State.IGNORE)
+            {
+                return null;
+            }
+
             throw new IllegalArgumentException("void return type encountered on: " + invocationSequence);
         }
 
@@ -60,13 +71,21 @@ public final class ArgumentsFactory
             return createPrimitivePlaceHolder(clazz, invocationSequence);
         }
 
-        if (Modifier.isFinal(clazz.getModifiers()))
+        ARG.get().set(State.IGNORE);
+        try
         {
-            return objenesis.newInstance(clazz);
+            if (Modifier.isFinal(clazz.getModifiers()))
+            {
+                return objenesis.newInstance(clazz);
+            }
+            else
+            {
+                return ProxyUtil.createProxy(new ProxyArgument(clazz, invocationSequence), clazz, false);
+            }
         }
-        else
+        finally
         {
-            return ProxyUtil.createProxy(new ProxyArgument(clazz, invocationSequence), clazz, false);
+            ARG.get().set(stateBeforeCreationCall);
         }
     }
 
@@ -114,15 +133,30 @@ public final class ArgumentsFactory
         throw new IllegalArgumentException("forgotten primitive?");
 
     }
+
     private static class ArgumentMapping
     {
         private Argument lastArgument;
         private Object lastPlaceHolder;
+        private State state = State.ACTIVE;
+
+        public State getState()
+        {
+            return state;
+        }
 
         public void set(final Object placeHolder, final Argument arg)
         {
-            lastArgument = arg;
-            lastPlaceHolder = placeHolder;
+            if (state == State.ACTIVE)
+            {
+                lastArgument = arg;
+                lastPlaceHolder = placeHolder;
+            }
+        }
+
+        public void set(final State stateToSet)
+        {
+            state = stateToSet;
         }
 
         public Argument getAndClear(final Object placeHolder)
@@ -154,6 +188,9 @@ public final class ArgumentsFactory
             }
         }
     }
+    private enum State {
+        ACTIVE, IGNORE;
+    }
 
     private static LastArgHolder ARG = new LastArgHolder();
     private static class LastArgHolder extends ThreadLocal<ArgumentMapping>
@@ -163,6 +200,7 @@ public final class ArgumentsFactory
         {
             return new ArgumentMapping();
         }
+
     }
 
     public static <T> Argument<T> actualArgument(final T placeholder)
