@@ -3,10 +3,11 @@
 	<parent>
 		<groupId>org.wicketeer</groupId>
 		<artifactId>wicket-modelfactory-parent</artifactId>
-		<version>0.8-RC1</version>
+		<version>0.8</version>
 		<relativePath>..</relativePath>
 	</parent>
 	<artifactId>wicket-modelfactory</artifactId>
+  <version>0.8-RC1</version>
 	<packaging>jar</packaging>
 	<name>wicket-modelfactory</name>
 	<dependencies>
