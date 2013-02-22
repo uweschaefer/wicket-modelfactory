@@ -41,11 +41,29 @@ class ProxyArgument extends InvocationInterceptor
     @Override
     public Object invoke(final Object proxy, final Method method, final Object[] args)
     {
-        if (method.getName().equals("hashCode"))
+
+        String name = method.getName();
+        if (name.equals("hashCode"))
         {
             return invocationSequence.hashCode();
         }
-        if (method.getName().equals("equals"))
+        if (name.equals("finalize"))
+        {
+            return null;
+        }
+        if (name.equals("wait"))
+        {
+            return null;
+        }
+        if (name.equals("notify"))
+        {
+            return null;
+        }
+        if (name.equals("notifyAll"))
+        {
+            return null;
+        }
+        if (name.equals("equals"))
         {
             return invocationSequence.equals(args[0]);
         }

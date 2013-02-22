@@ -51,7 +51,7 @@ public class ModelFactory
      *             if the given object is null
      */
     @SuppressWarnings("unchecked")
-    public static synchronized <T> T from(final T value)
+    public static <T> T from(final T value)
     {
         localFrom.set(Preconditions.checkNotNull(value));
         return (T) ArgumentsFactory.createArgument(value.getClass());
@@ -69,7 +69,7 @@ public class ModelFactory
      * @throws NullPointerException
      *             if the model is null
      */
-    public static synchronized <T> T from(final IModel<T> model)
+    public static <T> T from(final IModel<T> model)
     {
         localFrom.set(Preconditions.checkNotNull(model));
         return ArgumentsFactory.createArgument(reflectModelObjectType(model));
@@ -79,7 +79,7 @@ public class ModelFactory
      * kudos to duesklipper for this neat idea.
      */
     @SuppressWarnings("unchecked")
-    private static <U> Class<U> reflectModelObjectType(final IModel<U> target) throws Error
+    static <U> Class<U> reflectModelObjectType(final IModel<U> target) throws Error
     {
         final U targetObject = target.getObject();
         if (targetObject == null)
@@ -125,7 +125,7 @@ public class ModelFactory
      *            the object initially created by a from-call
      * @return the actual Model
      */
-    public static synchronized <T> IModel<T> model(final T path)
+    public static <T> IModel<T> model(final T path)
     {
         Object t = localFrom.get();
         return new PropertyModel<T>(t, path(path));
@@ -136,7 +136,7 @@ public class ModelFactory
      *            the object initially created by a from-call
      * @return a string denoting the property path expressed by the path object
      */
-    public static synchronized String path(final Object path)
+    public static String path(final Object path)
     {
         try
         {
