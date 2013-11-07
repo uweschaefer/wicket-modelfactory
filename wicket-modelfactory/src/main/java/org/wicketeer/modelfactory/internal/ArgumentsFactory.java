@@ -19,8 +19,10 @@ package org.wicketeer.modelfactory.internal;
 
 import java.lang.reflect.Modifier;
 
+import org.apache.wicket.MetaDataKey;
 import org.objenesis.Objenesis;
 import org.objenesis.ObjenesisStd;
+import org.wicketeer.modelfactory.RequestCycleLocal;
 
 /**
  * An utility class of static factory methods that creates arguments and binds
@@ -192,17 +194,28 @@ public final class ArgumentsFactory
         ACTIVE, IGNORE;
     }
 
-    private static LastArgHolder ARG = new LastArgHolder();
-    private static class LastArgHolder extends ThreadLocal<ArgumentMapping>
+    
+    private static class LastArgHolder extends RequestCycleLocal<ArgumentMapping>
     {
-        @Override
-        protected ArgumentMapping initialValue()
-        {
-            return new ArgumentMapping();
+        private static final MetaDataKey<ArgumentMapping> LAST_ARG_HOLDER_KEY = new MetaDataKey<ArgumentsFactory.ArgumentMapping>() {
+        };
+
+        public LastArgHolder() {
+            super(LAST_ARG_HOLDER_KEY);
         }
-
+        
+        @Override
+        public ArgumentMapping get() {
+            ArgumentMapping target = super.get();
+            if(target==null){
+                target=new ArgumentMapping();
+                set(target);
+            }
+            return target;
+        }
     }
-
+    private static LastArgHolder ARG = new LastArgHolder();
+    
     public static <T> Argument<T> actualArgument(final T placeholder)
     {
         return ARG.get().getAndClear(placeholder);
