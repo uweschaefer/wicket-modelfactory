@@ -36,10 +36,13 @@ import com.googlecode.gentyref.GenericTypeReflector;
 public class ModelFactory
 {
 
-    private static RequestCycleLocalFrom localFrom = new RequestCycleLocalFrom();
+	// marker object that should make model() impossible, but let path() happen.
+    private static final Object FROM_CLASS = new Object();
+    
+	private static RequestCycleLocalFrom localFrom = new RequestCycleLocalFrom();
 
     /**
-     * Proxies the given objetc in order to be able to call methods on it to
+     * Proxies the given object in order to be able to call methods on it to
      * create the property path later-on used by model().
      * 
      * @param <T>
@@ -128,6 +131,10 @@ public class ModelFactory
     public static <T> IModel<T> model(final T path)
     {
         Object t = localFrom.get();
+        
+        if(t == FROM_CLASS)
+        	throw new IllegalStateException("");
+        
         return new PropertyModel<T>(t, path(path));
     }
 
@@ -148,5 +155,10 @@ public class ModelFactory
             localFrom.remove();
         }
     }
-
+    
+    public static <T> T fromClass(Class<T> clazz){
+        localFrom.set(FROM_CLASS);
+        return ArgumentsFactory.createArgument(Preconditions.checkNotNull(clazz));
+    }
+ 
 }
