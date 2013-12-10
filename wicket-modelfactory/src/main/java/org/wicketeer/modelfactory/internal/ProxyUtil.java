@@ -20,7 +20,6 @@ package org.wicketeer.modelfactory.internal;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
-import java.util.Arrays;
 import java.util.Collection;
 
 import net.sf.cglib.proxy.Enhancer;
@@ -34,59 +33,46 @@ import net.sf.cglib.proxy.MethodInterceptor;
  * @author Sebastian Jancke
  */
 @SuppressWarnings("unchecked")
-public final class ProxyUtil
-{
+public final class ProxyUtil {
 
-    private ProxyUtil()
-    {
+    private ProxyUtil() {
     }
 
-    public static boolean isProxable(final Class<?> clazz)
-    {
-        return !clazz.isPrimitive() && !Modifier.isFinal(clazz.getModifiers()) && !clazz.isAnonymousClass();
+    public static boolean isProxable(final Class<?> clazz) {
+        return !clazz.isPrimitive() && !Modifier.isFinal(clazz.getModifiers())
+                && !clazz.isAnonymousClass();
     }
 
-    static <T> T createProxy(final InvocationInterceptor interceptor, final Class<T> clazz, final boolean failSafe,
-            final Class<?>... implementedInterface)
-    {
-        if (clazz.isInterface())
-        {
-            return (T) createNativeJavaProxy(clazz.getClassLoader(), interceptor, concatClasses(new Class<?>[]
-            { clazz }, implementedInterface));
+    static <T> T createProxy(final InvocationInterceptor interceptor, final Class<T> clazz,
+            final boolean failSafe, final Class<?>... implementedInterface) {
+        if (clazz.isInterface()) {
+            return (T) createNativeJavaProxy(clazz.getClassLoader(), interceptor, concatClasses(
+                    new Class<?>[] { clazz }, implementedInterface));
         }
-        try
-        {
+        try {
             Enhancer e = createEnhancer(interceptor, clazz, implementedInterface);
             return (T) e.create();
-        }
-        catch (IllegalArgumentException iae)
-        {
-            if (Proxy.isProxyClass(clazz))
-            {
+        } catch (IllegalArgumentException iae) {
+            if (Proxy.isProxyClass(clazz)) {
                 return (T) createNativeJavaProxy(clazz.getClassLoader(), interceptor,
                         concatClasses(implementedInterface, clazz.getInterfaces()));
             }
-            if (isProxable(clazz))
-            {
-                return ClassImposterizer.INSTANCE.imposterise(interceptor, clazz, implementedInterface);
+            if (isProxable(clazz)) {
+                return ClassImposterizer.INSTANCE.imposterise(interceptor, clazz,
+                        implementedInterface);
             }
             return manageUnproxableClass(clazz, failSafe);
         }
 
     }
 
-    public static String enumerate(final Collection<?> l, final String delimiter)
-    {
+    public static String enumerate(final Collection<?> l, final String delimiter) {
         StringBuffer sb = new StringBuffer(128);
         boolean first = true;
-        for (Object object : l)
-        {
-            if (!first)
-            {
+        for (Object object : l) {
+            if (!first) {
                 sb.append(delimiter);
-            }
-            else
-            {
+            } else {
                 first = false;
             }
             sb.append(object);
@@ -94,79 +80,38 @@ public final class ProxyUtil
         return sb.toString();
     }
 
-    private static String enumerate(final Class<?>[] implementedInterface)
-    {
-        return enumerate(Arrays.asList(implementedInterface), ",");
-    }
-
-    private static <T> T manageUnproxableClass(final Class<T> clazz, final boolean failSafe)
-    {
-        if (failSafe)
-        {
+    private static <T> T manageUnproxableClass(final Class<T> clazz, final boolean failSafe) {
+        if (failSafe) {
             return null;
         }
         throw new UnproxableClassException(clazz);
     }
 
     // ////////////////////////////////////////////////////////////////////////
-    // /// Iterable Proxy
-    // ////////////////////////////////////////////////////////////////////////
-
-    // /**
-    // * Creates a proxy of the given class that also decorates it with Iterable
-    // interface
-    // * @param interceptor The object that will intercept all the invocations
-    // to the returned proxy
-    // * @param clazz The class to be proxied
-    // * @return The newly created proxy
-    // */
-    // public static <T> T createIterableProxy(InvocationInterceptor
-    // interceptor, Class<T> clazz) {
-    // if (clazz.isPrimitive()) return null;
-    // return createProxy(interceptor, normalizeProxiedClass(clazz), false,
-    // Iterable.class);
-    // }
-
-    private static <T> Class<T> normalizeProxiedClass(final Class<T> clazz)
-    {
-        if (clazz == String.class)
-        {
-            return (Class<T>) CharSequence.class;
-        }
-        return clazz;
-    }
-
-    // ////////////////////////////////////////////////////////////////////////
     // /// Private
     // ////////////////////////////////////////////////////////////////////////
 
-    private static Enhancer createEnhancer(final MethodInterceptor interceptor, final Class<?> clazz,
-            final Class<?>... interfaces)
-    {
+    private static Enhancer createEnhancer(final MethodInterceptor interceptor,
+            final Class<?> clazz, final Class<?>... interfaces) {
         Enhancer enhancer = new Enhancer();
         enhancer.setCallback(interceptor);
         enhancer.setSuperclass(clazz);
-        if (interfaces != null && interfaces.length > 0)
-        {
+        if (interfaces != null && interfaces.length > 0) {
             enhancer.setInterfaces(interfaces);
         }
         return enhancer;
     }
 
-    private static Object createNativeJavaProxy(final ClassLoader classLoader, final InvocationHandler interceptor,
-            final Class<?>... interfaces)
-    {
+    private static Object createNativeJavaProxy(final ClassLoader classLoader,
+            final InvocationHandler interceptor, final Class<?>... interfaces) {
         return Proxy.newProxyInstance(classLoader, interfaces, interceptor);
     }
 
-    private static Class<?>[] concatClasses(final Class<?>[] first, final Class<?>[] second)
-    {
-        if (first == null || first.length == 0)
-        {
+    private static Class<?>[] concatClasses(final Class<?>[] first, final Class<?>[] second) {
+        if (first == null || first.length == 0) {
             return second;
         }
-        if (second == null || second.length == 0)
-        {
+        if (second == null || second.length == 0) {
             return first;
         }
         Class<?>[] concatClasses = new Class[first.length + second.length];

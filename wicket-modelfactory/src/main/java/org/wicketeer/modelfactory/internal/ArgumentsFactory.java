@@ -123,7 +123,7 @@ public final class ArgumentsFactory {
     }
 
     private static class ArgumentMapping {
-        private Argument lastArgument;
+        private Argument<?> lastArgument;
 
         private Object lastPlaceHolder;
 
@@ -133,7 +133,7 @@ public final class ArgumentsFactory {
             return state;
         }
 
-        public void set(final Object placeHolder, final Argument arg) {
+        public void set(final Object placeHolder, final Argument<?> arg) {
             if (state == State.ACTIVE) {
                 lastArgument = arg;
                 lastPlaceHolder = placeHolder;
@@ -144,14 +144,14 @@ public final class ArgumentsFactory {
             state = stateToSet;
         }
 
-        public Argument getAndClear(final Object placeHolder) {
+        public Argument<?> getAndClear(final Object placeHolder) {
             try {
                 if (placeHolder == null) {
                     throw new IllegalStateException("Unknown placeholder " + placeHolder);
                 }
 
                 if (placeHolder instanceof Argument) {
-                    return (Argument) placeHolder;
+                    return (Argument<?>) placeHolder;
                 }
 
                 if (lastPlaceHolder != placeHolder) {
@@ -171,6 +171,8 @@ public final class ArgumentsFactory {
 
     private static class LastArgHolder extends RequestCycleLocal<ArgumentMapping> {
         private static final MetaDataKey<ArgumentMapping> LAST_ARG_HOLDER_KEY = new MetaDataKey<ArgumentsFactory.ArgumentMapping>() {
+
+            private static final long serialVersionUID = 1L;
         };
 
         public LastArgHolder() {
@@ -190,8 +192,9 @@ public final class ArgumentsFactory {
 
     private static LastArgHolder ARG = new LastArgHolder();
 
+    @SuppressWarnings("unchecked")
     public static <T> Argument<T> actualArgument(final T placeholder) {
-        return ARG.get().getAndClear(placeholder);
+        return (Argument<T>) ARG.get().getAndClear(placeholder);
     }
 
     private static final Objenesis objenesis = new ObjenesisStd(true);
