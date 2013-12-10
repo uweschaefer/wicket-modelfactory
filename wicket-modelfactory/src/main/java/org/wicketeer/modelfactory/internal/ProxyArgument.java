@@ -22,15 +22,13 @@ import java.lang.reflect.Method;
 /**
  * @author Mario Fusco
  */
-class ProxyArgument extends InvocationInterceptor
-{
+class ProxyArgument extends InvocationInterceptor {
 
     private final Class<?> proxiedClass;
 
     private final InvocationSequence invocationSequence;
 
-    ProxyArgument(final Class<?> proxiedClass, final InvocationSequence invocationSequence)
-    {
+    ProxyArgument(final Class<?> proxiedClass, final InvocationSequence invocationSequence) {
         this.proxiedClass = proxiedClass;
         this.invocationSequence = invocationSequence;
     }
@@ -39,38 +37,32 @@ class ProxyArgument extends InvocationInterceptor
      * {@inheritDoc}
      */
     @Override
-    public Object invoke(final Object proxy, final Method method, final Object[] args)
-    {
+    public Object invoke(final Object proxy, final Method method, final Object[] args) {
 
         String name = method.getName();
-        if (name.equals("hashCode"))
-        {
+        if (name.equals("hashCode")) {
             return invocationSequence.hashCode();
         }
-        if (name.equals("finalize"))
-        {
+        if (name.equals("finalize")) {
             return null;
         }
-        if (name.equals("wait"))
-        {
+        if (name.equals("wait")) {
             return null;
         }
-        if (name.equals("notify"))
-        {
+        if (name.equals("notify")) {
             return null;
         }
-        if (name.equals("notifyAll"))
-        {
+        if (name.equals("notifyAll")) {
             return null;
         }
-        if (name.equals("equals"))
-        {
+        if (name.equals("equals")) {
             return invocationSequence.equals(args[0]);
         }
+        Class<?> returnType = method.getReturnType();
 
         // Adds this invocation to the current invocation sequence and creates a
         // new proxy propagating the invocation sequence
-        return ArgumentsFactory.createArgument(method.getReturnType(), new InvocationSequence(invocationSequence,
-                new Invocation(proxiedClass, method, args)));
+        return ArgumentsFactory.createArgument(returnType, new InvocationSequence(
+                invocationSequence, new Invocation(proxiedClass, method, args)));
     }
 }
