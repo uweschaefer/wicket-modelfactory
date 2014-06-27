@@ -1,3 +1,3 @@
-# WIcket-ModelFactory #
+# Wicket-ModelFactory #
 
 [see](http://wicketeer.org)
