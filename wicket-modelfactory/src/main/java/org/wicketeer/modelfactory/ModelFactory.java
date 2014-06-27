@@ -136,12 +136,14 @@ public class ModelFactory {
 		TypeVariable<?>[] params = c.getSuperclass().getTypeParameters();
 		if (params != null && params.length == 1) {
 			// we might try
-			Type typeParameter = GenericTypeReflector.getTypeParameter(c, (TypeVariable<? extends Class<?>>) params[0]);
+			Type typeParameter = GenericTypeReflector.getTypeParameter(c,
+					(TypeVariable<? extends Class<?>>) params[0]);
 			if (typeParameter instanceof Class) {
-				return (Class<?>) typeParameter;}
-			
+				return (Class<?>) typeParameter;
+			}
+
 		}
-		
+
 		return null;
 	}
 
@@ -185,6 +187,21 @@ public class ModelFactory {
 				.checkNotNull(clazz));
 	}
 
+	/**
+	 * In cases where you need to hint the Type of the model passed, ecause it
+	 * cannot be reflected, you can use this method and provide the model
+	 * objects expected type as parameter.
+	 * 
+	 * @param model
+	 *            the model from which to create a proxy
+	 * @param clazz
+	 *            the type of the object backed by the model
+	 * @param <T>
+	 *            type of the model parameter
+	 * @return proxy for property path generation
+	 * @throws NullPointerException
+	 *             if the model is null
+	 */
 	public static <T extends Serializable> T from(IModel<? extends T> model,
 			Class<T> type) {
 		localFrom.set(Preconditions.checkNotNull(model));
