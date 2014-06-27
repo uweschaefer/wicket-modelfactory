@@ -3,7 +3,9 @@ syntax: glob
 .tmp*
 target
 .settings
+.idea
 *~
+*.iml
 dependency-reduced-pom.xml
 
 syntax: regexp
