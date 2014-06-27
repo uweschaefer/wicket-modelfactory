@@ -23,10 +23,10 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 
 import org.apache.wicket.WicketRuntimeException;
+import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.IObjectClassAwareModel;
 import org.apache.wicket.model.LoadableDetachableModel;
-import org.apache.wicket.model.Model;
 import org.wicketeer.modelfactory.internal.Argument;
 import org.wicketeer.modelfactory.internal.ArgumentsFactory;
 
@@ -54,11 +54,20 @@ public class ModelFactory {
 	 *             if the given object is null
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T extends Serializable> T from(final T value) {
+	public static <T> T from(final T value) {
 		Preconditions.checkNotNull(value);
 		Class<T> type = (Class<T>) value.getClass();
 
-		IModel<T> model = new Model<T>(value);
+		IModel<T> model = new AbstractReadOnlyModel<T>() {
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public T getObject() {
+				return value;
+			}
+		};
+
 		return from(model, type);
 	}
 
@@ -75,7 +84,7 @@ public class ModelFactory {
 	 *             if the model is null
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static <T extends Serializable> T from(final IModel<T> model) {
+	public static <T> T from(final IModel<T> model) {
 
 		Class<? extends IModel> c = model.getClass();
 
@@ -155,7 +164,7 @@ public class ModelFactory {
 	 *            the object initially created by a from-call
 	 * @return the actual Model
 	 */
-	public static <T extends Serializable> IModel<T> model(final T path) {
+	public static <T> IModel<T> model(final T path) {
 		Object t = localFrom.get();
 		if (t == RequestCycleLocalFrom.FROM_CLASS)
 			throw new IllegalStateException(
@@ -181,7 +190,7 @@ public class ModelFactory {
 		}
 	}
 
-	public static <T extends Serializable> T fromClass(Class<T> clazz) {
+	public static <T> T fromClass(Class<T> clazz) {
 		localFrom.set(RequestCycleLocalFrom.FROM_CLASS);
 		return ArgumentsFactory.createArgument(Preconditions
 				.checkNotNull(clazz));
@@ -202,8 +211,7 @@ public class ModelFactory {
 	 * @throws NullPointerException
 	 *             if the model is null
 	 */
-	public static <T extends Serializable> T from(IModel<? extends T> model,
-			Class<T> type) {
+	public static <T> T from(IModel<? extends T> model, Class<T> type) {
 		localFrom.set(Preconditions.checkNotNull(model));
 		return ArgumentsFactory
 				.createArgument(Preconditions.checkNotNull(type));
