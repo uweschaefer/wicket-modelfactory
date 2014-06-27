@@ -22,68 +22,64 @@ package org.wicketeer.modelfactory;
 
 import org.apache.wicket.MetaDataKey;
 
-class RequestCycleLocalFrom extends RequestCycleLocal<Object>
-{
-    static class Key extends MetaDataKey<Object>
-    {
-        private static final long serialVersionUID = 1L;
-    }
+class RequestCycleLocalFrom extends RequestCycleLocal<Object> {
+	// marker object that should make model() impossible, but let path() happen.
+	static final Object FROM_CLASS = new Object();
 
-    private static MetaDataKey<Object> key = new Key();
+	static class Key extends MetaDataKey<Object> {
+		private static final long serialVersionUID = 1L;
+	}
 
-    public RequestCycleLocalFrom()
-    {
-        super(key);
-    }
+	private static MetaDataKey<Object> key = new Key();
 
-    @Override
-    public void set(final Object value)
-    {
-        Reference ref = (Reference) super.get();
-        if (ref != null)
-        {
-            super.remove();
+	public RequestCycleLocalFrom() {
+		super(key);
+	}
 
-            Exception path = ref.getInvokationPath();
-            StringBuilder sb = new StringBuilder("mutliple from() calls. You need to call 'model()' or 'path()' first.");
-            if (path != null) sb.append(" First (probably missing a 'model()'- or 'path()'-call) invokation of from() at " + render(path));
+	@Override
+	public void set(final Object value) {
+		Reference ref = (Reference) super.get();
+		if (ref != null) {
+			super.remove();
 
-            throw new IllegalStateException(sb.toString());
-        }
-        super.set(new Reference(Preconditions.checkNotNull(value)));
-    }
+			Exception path = ref.getInvokationPath();
+			StringBuilder sb = new StringBuilder(
+					"mutliple from() calls. You need to call 'model()' or 'path()' first.");
+			if (path != null)
+				sb.append(" First (probably missing a 'model()'- or 'path()'-call) invokation of from() at "
+						+ render(path));
 
-    private String render(final Exception invokationPath)
-    {
-        if (invokationPath != null)
-        {
-            StackTraceElement[] st = invokationPath.getStackTrace();
-            for (StackTraceElement stackTraceElement : st)
-            {
-                String cn = stackTraceElement.getClassName();
-                if (!cn.contains(ModelFactory.class.getSimpleName())
-                        && !(cn.contains(ModelFactory.class.getPackage().getName())))
-                {
-                    String mn = stackTraceElement.getMethodName();
-                    int ln = stackTraceElement.getLineNumber();
-                    String scn = cn.substring(cn.lastIndexOf('.') + 1);
-                    return scn + "." + mn + " (" + scn + ":" + ln + ")";
-                }
-            }
-        }
-        return "";
-    }
+			throw new IllegalStateException(sb.toString());
+		}
+		super.set(new Reference(Preconditions.checkNotNull(value)));
+	}
 
-    @Override
-    public Object get()
-    {
-        Reference ref = (Reference) super.get();
-        if (ref == null)
-        {
-            throw new IllegalStateException(
-                    "no from() call registered before. Usage: model(from(myObject).myMethod()) would be equivalent to new PropertyModel(myObject,\"myMethod\");");
-        }
+	private String render(final Exception invokationPath) {
+		if (invokationPath != null) {
+			StackTraceElement[] st = invokationPath.getStackTrace();
+			for (StackTraceElement stackTraceElement : st) {
+				String cn = stackTraceElement.getClassName();
+				if (!cn.contains(ModelFactory.class.getSimpleName())
+						&& !(cn.contains(ModelFactory.class.getPackage()
+								.getName()))) {
+					String mn = stackTraceElement.getMethodName();
+					int ln = stackTraceElement.getLineNumber();
+					String scn = cn.substring(cn.lastIndexOf('.') + 1);
+					return scn + "." + mn + " (" + scn + ":" + ln + ")";
+				}
+			}
+		}
+		return "";
+	}
 
-        return ref.getObject();
-    }
+	@Override
+	public Object get() {
+		Reference ref = (Reference) super.get();
+		if (ref == null) {
+			throw new IllegalStateException(
+					"no from() call registered before. Usage: model(from(myObject).myMethod()) would be equivalent to new PropertyModel(myObject,\"myMethod\");");
+		}
+
+		return ref.getObject();
+	}
 }

@@ -85,7 +85,7 @@ public final class ArgumentsFactory {
         }
     }
 
-    private static Object createPrimitivePlaceHolder(final Class<?> clazz,
+	private static Object createPrimitivePlaceHolder(final Class<?> clazz,
             final InvocationSequence invocationSequence) {
 
         if (clazz == boolean.class) {
@@ -146,23 +146,27 @@ public final class ArgumentsFactory {
 
         public Argument<?> getAndClear(final Object placeHolder) {
             try {
-                if (placeHolder == null) {
-                    throw new IllegalStateException("Unknown placeholder " + placeHolder);
-                }
-
-                if (placeHolder instanceof Argument) {
-                    return (Argument<?>) placeHolder;
-                }
-
-                if (lastPlaceHolder != placeHolder) {
-                    throw new IllegalStateException("Unknown placeholder " + placeHolder);
-                } else {
-                    return lastArgument;
-                }
+                return get(placeHolder);
             } finally {
                 set(null, null);
             }
         }
+
+		public Argument<?> get(final Object placeHolder) {
+			if (placeHolder == null) {
+			    throw new IllegalStateException("Unknown placeholder " + placeHolder);
+			}
+
+			if (placeHolder instanceof Argument) {
+			    return (Argument<?>) placeHolder;
+			}
+
+			if (lastPlaceHolder != placeHolder) {
+			    throw new IllegalStateException("Unknown placeholder " + placeHolder);
+			} else {
+			    return lastArgument;
+			}
+		}
     }
 
     private enum State {
@@ -193,8 +197,13 @@ public final class ArgumentsFactory {
     private static LastArgHolder ARG = new LastArgHolder();
 
     @SuppressWarnings("unchecked")
-    public static <T> Argument<T> actualArgument(final T placeholder) {
+    public static <T> Argument<T> getAndRemoveArgumentFor(final T placeholder) {
         return (Argument<T>) ARG.get().getAndClear(placeholder);
+    }
+    
+    @SuppressWarnings("unchecked")
+	public static <T> Argument<T> getArgumentFor(final T placeholder) {
+        return (Argument<T>) ARG.get().get(placeholder);
     }
 
     private static final Objenesis objenesis = new ObjenesisStd(true);

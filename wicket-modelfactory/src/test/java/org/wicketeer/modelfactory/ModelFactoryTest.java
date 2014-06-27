@@ -8,252 +8,363 @@ import java.io.Serializable;
 
 import junit.framework.TestCase;
 
+import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.LoadableDetachableModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.util.io.ByteArrayOutputStream;
 import org.apache.wicket.util.tester.WicketTester;
 
-public class ModelFactoryTest extends TestCase {
+public class ModelFactoryTest extends TestCase implements Serializable {
 
-    private A a;
+	private static final long serialVersionUID = 1L;
+	private A a;
+	public IModel<A> nullModel;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        new WicketTester();
-        a = new A();
+	@Override
+	protected void setUp() throws Exception {
+		super.setUp();
+		new WicketTester();
+		a = new A();
 
-    }
+	}
 
-    public void testSimpleCallChain() throws Exception {
-        IModel<String> pm = ModelFactory.model(ModelFactory.from(a).getB().getV()
-                .getStringProperty());
-        pm = testSer(pm);
-        assertEquals("bar", pm.getObject());
-    }
+	public void testSimpleCallChain() throws Exception {
+		IModel<String> pm = ModelFactory.model(ModelFactory.from(a).getB()
+				.getV().getStringProperty());
+		pm = testSer(pm);
+		assertEquals("bar", pm.getObject());
+	}
 
-    public void testDoubleWrap() throws Exception {
-        IModel<String> pm = ModelFactory.model(ModelFactory.from(
-                ModelFactory.model(ModelFactory.from(a).getB())).getV().getStringProperty());
-        pm = testSer(pm);
-        assertEquals("bar", pm.getObject());
-        testSer(pm);
-    }
+	public void testDoubleWrap() throws Exception {
+		IModel<B> model1 = ModelFactory.model(ModelFactory.from(a).getB());
+		B from = ModelFactory.from(model1);
+		String path = from.getV().getStringProperty();
+		IModel<String> pm = ModelFactory.model(path);
+		pm = testSer(pm);
+		assertEquals("bar", pm.getObject());
+		testSer(pm);
+	}
 
-    public void testPrimitive() throws Exception {
-        IModel<Integer> pm = ModelFactory.model(ModelFactory.from(
-                ModelFactory.model(ModelFactory.from(a).getB())).getV().getPrimitiveProperty());
-        pm = testSer(pm);
-        assertEquals(Integer.valueOf(5), pm.getObject());
-        testSer(pm);
-    }
+	public void testPrimitive() throws Exception {
+		IModel<B> model1 = ModelFactory.model(ModelFactory.from(a).getB());
+		int model2 = ModelFactory.from(model1).getV().getPrimitiveProperty();
+		IModel<Integer> pm = ModelFactory.model(model2);
+		pm = testSer(pm);
+		assertEquals(Integer.valueOf(5), pm.getObject());
 
-    public void testBoolean() throws Exception {
-        IModel<Boolean> pm = ModelFactory.model(ModelFactory.from(
-                ModelFactory.model(ModelFactory.from(a).getB())).getV().isBooleanProperty());
-        pm = testSer(pm);
-        assertEquals(Boolean.FALSE, pm.getObject());
-        testSer(pm);
-    }
+	}
 
-    public void testNonPropertyCall() throws Exception {
-        IModel<String> pm = ModelFactory.model(ModelFactory.from(
-                ModelFactory.model(ModelFactory.from(a).getB())).getV().nonPropertyCall());
-        pm = testSer(pm);
-        assertEquals("ok", pm.getObject());
-        testSer(pm);
-    }
+	public void testBoolean() throws Exception {
+		IModel<Boolean> pm = ModelFactory.model(ModelFactory
+				.from(ModelFactory.model(ModelFactory.from(a).getB())).getV()
+				.isBooleanProperty());
+		pm = testSer(pm);
+		assertEquals(Boolean.FALSE, pm.getObject());
 
-    @SuppressWarnings("unchecked")
-    private <X> IModel<X> testSer(final IModel<X> pm) throws IOException, ClassNotFoundException {
+	}
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ObjectOutputStream oos = new ObjectOutputStream(baos);
-        oos.writeObject(pm);
-        oos.close();
+	public void testNonPropertyCall() throws Exception {
+		B bProxy = ModelFactory.from(a).getB();
+		IModel<B> bModel = ModelFactory.model(bProxy);
+		V vProxy = ModelFactory.from(bModel).getV();
+		IModel<String> pm = ModelFactory.model(vProxy.nonPropertyCall());
+		pm = testSer(pm);
+		assertEquals("ok", pm.getObject());
 
-        ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-        ObjectInputStream ois = new ObjectInputStream(bais);
-        try {
-            return (IModel<X>) ois.readObject();
-        } finally {
-            ois.close();
-        }
+	}
 
-    }
+	@SuppressWarnings("unchecked")
+	private <X> IModel<X> testSer(final IModel<X> pm) throws IOException,
+			ClassNotFoundException {
 
-    public static class A implements Serializable {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		ObjectOutputStream oos = new ObjectOutputStream(baos);
+		oos.writeObject(pm);
+		oos.close();
 
-        /**
+		ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+		ObjectInputStream ois = new ObjectInputStream(bais);
+		try {
+			return (IModel<X>) ois.readObject();
+		} finally {
+			ois.close();
+		}
+
+	}
+
+	public static class A implements Serializable {
+
+		public A() {
+			this(new B());
+		}
+
+		public A(B b) {
+			this.b = b;
+		}
+
+		private static final long serialVersionUID = 1L;
+
+		public B getB() {
+			return b;
+		}
+
+		private B b;
+
+	}
+
+	public static class B implements Serializable {
+		private V v;
+
+		public B(V v) {
+			this.v = v;
+		}
+
+		public B() {
+			this(new V());
+		}
+
+		private static final long serialVersionUID = 1L;
+
+		public V getV() {
+			return v;
+		}
+
+	}
+
+	static class V implements Serializable {
+		/**
          * 
          */
-        private static final long serialVersionUID = 1L;
+		private static final long serialVersionUID = 1L;
 
-        public B getB() {
-            return b;
-        }
+		private String stringProperty = "bar";
 
-        public void setB(final B b) {
-            this.b = b;
-        }
+		private int primitiveProperty = 5;
 
-        B b = new B();
+		private boolean booleanProperty = false;
 
-    }
+		public String getStringProperty() {
+			return stringProperty;
+		}
 
-    public static class B implements Serializable {
-        /**
-         * 
-         */
-        private static final long serialVersionUID = 1L;
+		public void setStringProperty(final String stringProperty) {
+			this.stringProperty = stringProperty;
+		}
 
-        V c = new V();
+		public int getPrimitiveProperty() {
+			return primitiveProperty;
+		}
 
-        public V getV() {
-            return c;
-        }
+		public void setPrimitiveProperty(final int primitiveProperty) {
+			this.primitiveProperty = primitiveProperty;
+		}
 
-    }
+		public boolean isBooleanProperty() {
+			return booleanProperty;
+		}
 
-    static class V implements Serializable {
-        /**
-         * 
-         */
-        private static final long serialVersionUID = 1L;
+		public void setBooleanProperty(final boolean booleanProperty) {
+			this.booleanProperty = booleanProperty;
+		}
 
-        private String stringProperty = "bar";
+		public String nonPropertyCall() {
+			return "ok";
+		}
+	}
 
-        private int primitiveProperty = 5;
+	public static class R1 {
+		public R2 getR2() {
+			return null;
+		}
 
-        private boolean booleanProperty = false;
+		public void setR2(final R2 r2) {
+			this.r2 = r2;
+		}
 
-        public String getStringProperty() {
-            return stringProperty;
-        }
+		R2 r2;
+	}
 
-        public void setStringProperty(final String stringProperty) {
-            this.stringProperty = stringProperty;
-        }
+	public static class R2 {
+		String foo;
+	}
 
-        public int getPrimitiveProperty() {
-            return primitiveProperty;
-        }
+	public void testNullCompatible() throws Exception {
+		try {
+			ModelFactory.model(ModelFactory.from(null));
+			fail("Nullpointer did not happen");
+		} catch (NullPointerException e) {
+			// fine
+		} catch (Exception e) {
+			fail("Different Exception to Nullpointer! "
+					+ e.getClass().getName());
+		}
+	}
 
-        public void setPrimitiveProperty(final int primitiveProperty) {
-            this.primitiveProperty = primitiveProperty;
-        }
+	public static class CallingSetterWhileCreating implements Serializable {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 
-        public boolean isBooleanProperty() {
-            return booleanProperty;
-        }
+		public CallingSetterWhileCreating() {
+			setX(2);
+			getX();
+			getB().getV();
+		}
 
-        public void setBooleanProperty(final boolean booleanProperty) {
-            this.booleanProperty = booleanProperty;
-        }
+		public int getX() {
+			return x;
+		}
 
-        public String nonPropertyCall() {
-            return "ok";
-        }
-    }
+		public void setX(final int x) {
+			this.x = x;
+		}
 
-    public static class R1 {
-        public R2 getR2() {
-            return null;
-        }
+		private int x = 1;
 
-        public void setR2(final R2 r2) {
-            this.r2 = r2;
-        }
+		B b = new B();
 
-        R2 r2;
-    }
+		public B getB() {
+			return b;
+		}
 
-    public static class R2 {
-        String foo;
-    }
+		public void setB(final B b) {
+			this.b = b;
+		}
 
-    public void testNullCompatible() throws Exception {
-        try {
-            ModelFactory.model(ModelFactory.from(null));
-            fail("Nullpointer did not happen");
-        } catch (NullPointerException e) {
-            // fine
-        } catch (Exception e) {
-            fail("Different Exception to Nullpointer! " + e.getClass().getName());
-        }
-    }
+	}
 
-    public static class CallingSetterWhileCreating {
-        public CallingSetterWhileCreating() {
-            setX(2);
-            getX();
-            getB().getV();
-        }
+	public void testStateCheck() throws Exception {
+		assertEquals(
+				"b.v",
+				ModelFactory.path(ModelFactory
+						.from(new CallingSetterWhileCreating()).getB().getV()));
+	}
 
-        public int getX() {
-            return x;
-        }
+	public void testFromClass() throws Exception {
+		A a = ModelFactory.fromClass(A.class);
+		try {
+			ModelFactory.model(a);
+			fail();
+		} catch (IllegalStateException ignore) {
+		} catch (Throwable fallthrough) {
+			fail("unexpected " + fallthrough.toString());
+		}
 
-        public void setX(final int x) {
-            this.x = x;
-        }
+		assertNotNull(a);
+		assertTrue(A.class.isAssignableFrom(a.getClass()));
+		assertNotSame(A.class, a.getClass());
+	}
 
-        private int x = 1;
+	public void testFromClassRoundTrip() throws Exception {
+		A a = ModelFactory.fromClass(A.class);
+		try {
+			ModelFactory.model(a);
+			fail();
+		} catch (IllegalStateException ignore) {
+		} catch (Throwable fallthrough) {
+			fail("unexpected " + fallthrough.toString());
+		}
 
-        B b = new B();
+		V v = a.getB().getV();
+		String p = ModelFactory.path(v);
+		assertEquals(p, "b.v");
+	}
 
-        public B getB() {
-            return b;
-        }
+	public void testFromClassNPE() throws Exception {
+		try {
+			@SuppressWarnings("unused")
+			A a = ModelFactory.fromClass(null);
+		} catch (NullPointerException ignore) {
+		} catch (Throwable fallthrough) {
+			fail("unexpected " + fallthrough.toString());
+		}
+	}
 
-        public void setB(final B b) {
-            this.b = b;
-        }
+	public void testFromTyped() throws Exception {
+		V v = new V();
+		String stringProperty = "testFromTyped";
+		v.setStringProperty(stringProperty);
+		Model<A> a = Model.of(new A(new B(v)));
+		IModel<String> pm = ModelFactory.model(ModelFactory.from(a, A.class)
+				.getB().getV().getStringProperty());
+		assertSame(stringProperty, pm.getObject());
+		testSer(pm);
+	}
 
-    }
+	public void testFromLDM() throws Exception {
 
-    public void testStateCheck() throws Exception {
-        assertEquals("b.v", ModelFactory.path(ModelFactory.from(new CallingSetterWhileCreating())
-                .getB().getV()));
-    }
+		LDM1 ldm1 = new LDM1();
+		IModel<String> pm = ModelFactory.model(ModelFactory.from(ldm1).getB()
+				.getV().getStringProperty());
+		testSer(pm);
+	}
 
-    public void testFromClass() throws Exception {
-        A a = ModelFactory.fromClass(A.class);
-        try {
-            ModelFactory.model(a);
-            fail();
-        } catch (IllegalStateException ignore) {
-        } catch (Throwable fallthrough) {
-            fail("unexpected " + fallthrough.toString());
-        }
+	public void testFromAROM() throws Exception {
+		IModel<String> pm = ModelFactory.model(ModelFactory.from(new AROM1())
+				.getB().getV().getStringProperty());
+		testSer(pm);
+	}
 
-        assertNotNull(a);
-        assertTrue(A.class.isAssignableFrom(a.getClass()));
-        assertNotSame(A.class, a.getClass());
-    }
+	public void testFromAnonModelWithNull() throws Exception {
+		Model<A> a = new Model<A>(null) {
 
-    public void testFromClassRoundTrip() throws Exception {
-        A a = ModelFactory.fromClass(A.class);
-        try {
-            ModelFactory.model(a);
-            fail();
-        } catch (IllegalStateException ignore) {
-        } catch (Throwable fallthrough) {
-            fail("unexpected " + fallthrough.toString());
-        }
+			private static final long serialVersionUID = 1L;
+		};
+		IModel<B> pm = ModelFactory.model(ModelFactory.from(a).getB());
+		testSer(pm);
+	}
 
-        V v = a.getB().getV();
-        String p = ModelFactory.path(v);
-        assertEquals(p, "b.v");
-    }
+	public void testFailForNullNonAnon() throws Exception {
+		Model<A> a = Model.of((A) null);
+		try {
+			ModelFactory.from(a);
+			fail("Missing IllegalArgumentException");
+		} catch (IllegalArgumentException expected) {
+		}
+	}
 
-    public void testFromClassNPE() throws Exception {
-        try {
-            @SuppressWarnings("unused")
-            A a = ModelFactory.fromClass(null);
-        } catch (NullPointerException ignore) {
-        } catch (Throwable fallthrough) {
-            fail("unexpected " + fallthrough.toString());
-        }
-    }
+	public void testTypeWithNull() throws Exception {
+		Model<A> a = Model.of((A) null);
+		IModel<B> m = ModelFactory.model(ModelFactory.from(a, A.class).getB());
+		testSer(m);
+
+		assertNull(m.getObject());
+		a.setObject(new A());
+		assertNotNull(m.getObject());
+	}
+
+	public void testFromAnonLDM() throws Exception {
+		IModel<A> a = new LoadableDetachableModel<A>() {
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			protected A load() {
+				throw new RuntimeException("load was called, but shouldn't be");
+			}
+		};
+		IModel<B> pm = ModelFactory.model(ModelFactory.from(a).getB());
+		testSer(pm);
+	}
+
+	static class LDM1 extends LoadableDetachableModel<A> {
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		protected A load() {
+			throw new RuntimeException("load was called, but shouldn't be");
+		}
+	}
+
+	static class AROM1 extends AbstractReadOnlyModel<A> {
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public A getObject() {
+			throw new RuntimeException("getObject was called, but shouldn't be");
+		}
+	}
 
 }

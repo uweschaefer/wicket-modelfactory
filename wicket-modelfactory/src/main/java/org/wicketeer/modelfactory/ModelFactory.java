@@ -17,148 +17,182 @@
 
 package org.wicketeer.modelfactory;
 
+import java.io.Serializable;
 import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 
+import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.model.IObjectClassAwareModel;
+import org.apache.wicket.model.LoadableDetachableModel;
+import org.apache.wicket.model.Model;
 import org.wicketeer.modelfactory.internal.Argument;
 import org.wicketeer.modelfactory.internal.ArgumentsFactory;
 
 import com.googlecode.gentyref.GenericTypeReflector;
 
 /**
- * Entry point for creating refacotring safe PropertyModels. Usage:<code>
+ * Entry point for creating refactoring safe PropertyModels. Usage:<code>
  * IModel<String> stringModel = model(from(person).getProfile().getName());
  * </code> where person can be an instance of Person class or an IModel<Person>.
  */
-public class ModelFactory
-{
+public class ModelFactory {
 
-	// marker object that should make model() impossible, but let path() happen.
-    private static final Object FROM_CLASS = new Object();
-    
 	private static RequestCycleLocalFrom localFrom = new RequestCycleLocalFrom();
 
-    /**
-     * Proxies the given object in order to be able to call methods on it to
-     * create the property path later-on used by model().
-     * 
-     * @param <T>
-     *            the type of the parameter
-     * @param value
-     *            the object to be proxied
-     * @return a proxy of the value-object
-     * @throws NullPointerException
-     *             if the given object is null
-     */
-    @SuppressWarnings("unchecked")
-    public static <T> T from(final T value)
-    {
-        localFrom.set(Preconditions.checkNotNull(value));
-        return (T) ArgumentsFactory.createArgument(value.getClass());
-    }
+	/**
+	 * Proxies the given object in order to be able to call methods on it to
+	 * create the property path later-on used by model().
+	 * 
+	 * @param <T>
+	 *            the type of the parameter
+	 * @param value
+	 *            the object to be proxied
+	 * @return a proxy of the value-object
+	 * @throws NullPointerException
+	 *             if the given object is null
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T extends Serializable> T from(final T value) {
+		Preconditions.checkNotNull(value);
+		Class<T> type = (Class<T>) value.getClass();
 
-    /**
-     * Proxies the Model-Object's type in order to be able to call methods on it
-     * to create the property path later-on used by model().
-     * 
-     * @param <T>
-     *            type of the model parameter
-     * @param model
-     *            the model from which to create a proxy
-     * @return a proxy of an object of Type <T>
-     * @throws NullPointerException
-     *             if the model is null
-     */
-    public static <T> T from(final IModel<T> model)
-    {
-        localFrom.set(Preconditions.checkNotNull(model));
-        return ArgumentsFactory.createArgument(reflectModelObjectType(model));
-    }
+		IModel<T> model = new Model<T>(value);
+		return from(model, type);
+	}
 
-    /**
-     * kudos to duesklipper for this neat idea.
-     */
-    @SuppressWarnings("unchecked")
-    static <U> Class<U> reflectModelObjectType(final IModel<U> target) throws Error
-    {
-        final U targetObject = target.getObject();
-        if (targetObject == null)
-        {
-            final Method getObject;
-            try
-            {
-                getObject = target.getClass().getMethod("getObject");
-            }
-            catch (final NoSuchMethodException e)
-            {
-                throw new Error();
-            }
-            final Type type = GenericTypeReflector.getExactReturnType(getObject, target.getClass());
-            final Class<U> reflectedType;
-            if (type instanceof Class)
-            {
-                reflectedType = (Class<U>) type;
-            }
-            else
-                if (type instanceof ParameterizedType)
-                {
-                    // FIXME isnt that wrong? ->raw
-                    reflectedType = (Class<U>) ((ParameterizedType) type).getRawType();
-                }
-                else
-                {
-                    throw new UnsupportedOperationException("don't know how to find the type");
-                }
-            return reflectedType; // can't do anything else here
-        }
-        else
-        {
-            return (Class<U>) targetObject.getClass();
-        }
-    }
+	/**
+	 * Proxies the Model-Object's type in order to be able to call methods on it
+	 * to create the property path later-on used by model().
+	 * 
+	 * @param <T>
+	 *            type of the model parameter
+	 * @param model
+	 *            the model from which to create a proxy
+	 * @return a proxy of an object of Type <T>
+	 * @throws NullPointerException
+	 *             if the model is null
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public static <T extends Serializable> T from(final IModel<T> model) {
 
-    /**
-     * creates an actual ProeprtyModel from the path expressed by the given
-     * object.
-     * 
-     * @param path
-     *            the object initially created by a from-call
-     * @return the actual Model
-     */
-    public static <T> IModel<T> model(final T path)
-    {
-        Object t = localFrom.get();
-        
-        if(t == FROM_CLASS)
-        	throw new IllegalStateException("");
-        
-        return new PropertyModel<T>(t, path(path));
-    }
+		Class<? extends IModel> c = model.getClass();
 
-    /**
-     * @param path
-     *            the object initially created by a from-call
-     * @return a string denoting the property path expressed by the path object
-     */
-    public static String path(final Object path)
-    {
-        try
-        {
-            Argument<?> a = ArgumentsFactory.actualArgument(path);
-            return a.getInkvokedPropertyName();
-        }
-        finally
-        {
-            localFrom.remove();
-        }
-    }
-    
-    public static <T> T fromClass(Class<T> clazz){
-        localFrom.set(FROM_CLASS);
-        return ArgumentsFactory.createArgument(Preconditions.checkNotNull(clazz));
-    }
- 
+		Class<T> type = null;
+
+		if (LoadableDetachableModel.class.isAssignableFrom(c)) {
+			try {
+				Method method;
+				method = c.getDeclaredMethod("load");
+				type = (Class<T>) method.getReturnType();
+				if (type == Object.class || type == Serializable.class)
+					type = null;
+			} catch (Throwable e) {
+				throw new WicketRuntimeException(e);
+			}
+		}
+
+		if (type == null && IModel.class.isAssignableFrom(c)) {
+
+			Method method;
+			try {
+				method = c.getMethod("getObject");
+				type = (Class<T>) method.getReturnType();
+
+				if (type == Object.class || type == Serializable.class)
+					type = null;
+			} catch (NoSuchMethodException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SecurityException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		if (type == null && model instanceof IObjectClassAwareModel) {
+			type = ((IObjectClassAwareModel) model).getObjectClass();
+		}
+
+		if (type == null && c.isAnonymousClass()) {
+			type = (Class<T>) tryReflect(c);
+		}
+
+		if (type == null) {
+			// last possibility
+			T modelObject = model.getObject();
+			if (modelObject != null)
+				type = (Class<T>) modelObject.getClass();
+			else
+				throw new IllegalArgumentException(
+						"Cannot find proper type definition for model given. Please use from(model,Class).");
+
+		}
+		return (T) from(model, type);
+	}
+
+	private static Class<?> tryReflect(Class<? extends IModel> c) {
+		TypeVariable<?>[] params = c.getSuperclass().getTypeParameters();
+		if (params != null && params.length == 1) {
+			// we might try
+			Type typeParameter = GenericTypeReflector.getTypeParameter(c, (TypeVariable<? extends Class<?>>) params[0]);
+			if (typeParameter instanceof Class) {
+				return (Class<?>) typeParameter;}
+			
+		}
+		
+		return null;
+	}
+
+	/**
+	 * creates an actual PropertyModel from the path expressed by the given
+	 * object.
+	 * 
+	 * @param path
+	 *            the object initially created by a from-call
+	 * @return the actual Model
+	 */
+	public static <T extends Serializable> IModel<T> model(final T path) {
+		Object t = localFrom.get();
+		if (t == RequestCycleLocalFrom.FROM_CLASS)
+			throw new IllegalStateException(
+					"proxy has no staring point, please use path() to get a path expression or use from(IModel)");
+
+		Argument<T> arg = ArgumentsFactory.getArgumentFor(path);
+		Class<T> type = arg.getReturnType();
+
+		return new TypedPropertyModel<T>(t, path(path), type);
+	}
+
+	/**
+	 * @param path
+	 *            the object initially created by a from-call
+	 * @return a string denoting the property path expressed by the path object
+	 */
+	public static String path(final Object path) {
+		try {
+			Argument<?> a = ArgumentsFactory.getAndRemoveArgumentFor(path);
+			return a.getInkvokedPropertyName();
+		} finally {
+			localFrom.remove();
+		}
+	}
+
+	public static <T extends Serializable> T fromClass(Class<T> clazz) {
+		localFrom.set(RequestCycleLocalFrom.FROM_CLASS);
+		return ArgumentsFactory.createArgument(Preconditions
+				.checkNotNull(clazz));
+	}
+
+	public static <T extends Serializable> T from(IModel<? extends T> model,
+			Class<T> type) {
+		localFrom.set(Preconditions.checkNotNull(model));
+		return ArgumentsFactory
+				.createArgument(Preconditions.checkNotNull(type));
+	}
+
+	public static boolean hasRootReference() {
+		return localFrom.get() != RequestCycleLocalFrom.FROM_CLASS;
+	}
 }

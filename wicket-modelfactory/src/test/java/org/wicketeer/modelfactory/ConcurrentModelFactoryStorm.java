@@ -1,5 +1,6 @@
 package org.wicketeer.modelfactory;
 
+import java.io.Serializable;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -9,7 +10,7 @@ import org.apache.wicket.util.tester.WicketTester;
 
 public class ConcurrentModelFactoryStorm {
 
-    static class A {
+    static class A implements Serializable{
         B b;
 
         public B getB() {
