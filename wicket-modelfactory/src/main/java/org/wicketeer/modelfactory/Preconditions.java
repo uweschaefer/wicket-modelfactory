@@ -16,17 +16,23 @@
 //
 
 /**
- * 
+ *
  */
 package org.wicketeer.modelfactory;
 
 /**
  * Helper Class to use guava-style code like
  * <code>String lower = checkNotNull(stringParameter).toLowerCase();</code>
- * 
+ *
  * @author uweschaefer
  */
-class Preconditions {
+final class Preconditions {
+    /**
+     * hide.
+     */
+    private Preconditions() {
+    }
+
     /**
      * @param t
      *            object to test

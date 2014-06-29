@@ -23,9 +23,10 @@ import org.apache.wicket.model.PropertyModel;
 class TypedPropertyModel<S> extends PropertyModel<S> implements
         IObjectClassAwareModel<S> {
     private static final long serialVersionUID = 1L;
-    private Class<S> type;
+    private final Class<S> type;
 
-    TypedPropertyModel(Object t, String path, Class<S> type) {
+    TypedPropertyModel(final Object t, final String path, final Class<S> type)
+            throws NullPointerException {
         super(t, path);
         this.type = Preconditions.checkNotNull(type);
     }

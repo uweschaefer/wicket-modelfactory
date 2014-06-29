@@ -37,7 +37,12 @@ import com.googlecode.gentyref.GenericTypeReflector;
  * IModel<String> stringModel = model(from(person).getProfile().getName());
  * </code> where person can be an instance of Person class or an IModel<Person>.
  */
-public class ModelFactory {
+public final class ModelFactory {
+    /**
+     * hide constructor.
+     */
+    private ModelFactory() {
+    }
 
     private static RequestCycleLocalFrom localFrom = new RequestCycleLocalFrom();
 
@@ -54,7 +59,7 @@ public class ModelFactory {
      *             if the given object is null
      */
     @SuppressWarnings("unchecked")
-    public static <T> T from(final T value) {
+    public static <T> T from(final T value) throws NullPointerException {
         Preconditions.checkNotNull(value);
         Class<T> type = (Class<T>) value.getClass();
 
@@ -84,7 +89,9 @@ public class ModelFactory {
      *             if the model is null
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static <T> T from(final IModel<T> model) {
+    public static <T> T from(final IModel<T> model) throws NullPointerException {
+
+        Preconditions.checkNotNull(model);
 
         Class<? extends IModel> c = model.getClass();
 
@@ -148,6 +155,15 @@ public class ModelFactory {
         return from(model, type);
     }
 
+    /**
+     * Gentryfer-magic to find the type of an non model impl. wondering if it is
+     * worth the dependency.
+     *
+     * @param c
+     *            the anon class
+     * @return the type found or null
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private static Class<?> tryReflectFromAnonClass(
             final Class<? extends IModel> c) {
         TypeVariable<?>[] params = c.getSuperclass().getTypeParameters();
@@ -206,7 +222,8 @@ public class ModelFactory {
      * <code>new PropertyModel(myModel, ModelFactory.path(x));</code>
      *
      * @param clazz
-     * @return
+     *            the type of the proxy to create
+     * @return proxy of type clazz
      */
     public static <T> T fromClass(final Class<T> clazz) {
         ModelFactory.localFrom.set(RequestCycleLocalFrom.FROM_CLASS);
@@ -221,16 +238,20 @@ public class ModelFactory {
      *
      * @param model
      *            the model from which to create a proxy
-     * @param clazz
+     * @param type
      *            the type of the object backed by the model
      * @param <T>
      *            type of the model parameter
      * @return proxy for property path generation
      * @throws NullPointerException
-     *             if the model is null
+     *             if the model or the type is null
      */
     public static <T> T from(final IModel<? extends T> model,
-            final Class<T> type) {
+            final Class<T> type) throws NullPointerException {
+
+        Preconditions.checkNotNull(model);
+        Preconditions.checkNotNull(type);
+
         ModelFactory.localFrom.set(Preconditions.checkNotNull(model));
         return ArgumentsFactory
                 .createArgument(Preconditions.checkNotNull(type));
@@ -244,7 +265,7 @@ public class ModelFactory {
      *             if not currently in recording thread (either from() has not
      *             been called, of model() has already been called
      */
-    public static boolean hasRootReference() {
+    public static boolean hasRootReference() throws IllegalStateException {
         return ModelFactory.localFrom.get() != RequestCycleLocalFrom.FROM_CLASS;
     }
 }

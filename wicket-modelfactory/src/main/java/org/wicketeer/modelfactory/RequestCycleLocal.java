@@ -28,7 +28,7 @@ import org.apache.wicket.request.cycle.RequestCycle;
  * local Thread as a Context, so that at the end of request-cycle processing,
  * the object is dropped and cannot pop up in another Request (which ThreadLocal
  * could suffer from).
- * 
+ *
  * @author uweschaefer
  * @param <T>
  *            Type of the object to store in the RequestCycle.
@@ -42,19 +42,20 @@ public class RequestCycleLocal<T> {
      * @throws NullPointerException
      *             if the given key is null
      */
-    public RequestCycleLocal(final MetaDataKey<T> key) {
+    public RequestCycleLocal(final MetaDataKey<T> key)
+            throws NullPointerException {
         this.key = checkNotNull(key);
     }
 
     /**
      * subclasses migt have a different idea how to get the requestCycle.
-     * 
+     *
      * @return the currently active RequestCycle
      * @throws IllegalStateException
      *             if there currently is no active RequestCycle. (Remember to
      *             use WicketTester in unit-tests)
      */
-    protected RequestCycle getRequestCycle() {
+    protected final RequestCycle getRequestCycle() throws IllegalStateException {
         RequestCycle requestCycle = RequestCycle.get();
         if (requestCycle == null) {
             throw new IllegalStateException("Outside of request-cycle");
@@ -65,19 +66,19 @@ public class RequestCycleLocal<T> {
     /**
      * Set the given object into the RequestCycle's Metadata with the key pass
      * on construction.
-     * 
+     *
      * @param t
      *            the object to set
      * @throws NullPointerException
      *             if the given object is null. (use remove instead)
      */
-    public void set(final T t) {
+    public void set(final T t) throws NullPointerException {
         getRequestCycle().setMetaData(key, checkNotNull(t));
     }
 
     /**
      * retrieves the object from the RequestCycle
-     * 
+     *
      * @return the formerly set Object, or null if nothing was not set or the
      *         object was removed.
      */

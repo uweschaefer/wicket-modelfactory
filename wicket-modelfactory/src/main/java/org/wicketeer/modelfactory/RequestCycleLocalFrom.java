@@ -16,14 +16,16 @@
 //
 
 /**
- * 
+ *
  */
 package org.wicketeer.modelfactory;
 
 import org.apache.wicket.MetaDataKey;
 
 class RequestCycleLocalFrom extends RequestCycleLocal<Object> {
-    // marker object that should make model() impossible, but let path() happen.
+    /**
+     * marker object that should make model() impossible, but let path() happen.
+     */
     static final Object FROM_CLASS = new Object();
 
     static class Key extends MetaDataKey<Object> {
@@ -33,7 +35,7 @@ class RequestCycleLocalFrom extends RequestCycleLocal<Object> {
     private static MetaDataKey<Object> key = new Key();
 
     public RequestCycleLocalFrom() {
-        super(key);
+        super(RequestCycleLocalFrom.key);
     }
 
     @Override
@@ -45,9 +47,10 @@ class RequestCycleLocalFrom extends RequestCycleLocal<Object> {
             Exception path = ref.getInvokationPath();
             StringBuilder sb = new StringBuilder(
                     "mutliple from() calls. You need to call 'model()' or 'path()' first.");
-            if (path != null)
+            if (path != null) {
                 sb.append(" First (probably missing a 'model()'- or 'path()'-call) invokation of from() at "
                         + render(path));
+            }
 
             throw new IllegalStateException(sb.toString());
         }
@@ -73,7 +76,7 @@ class RequestCycleLocalFrom extends RequestCycleLocal<Object> {
     }
 
     @Override
-    public Object get() {
+    public Object get() throws IllegalStateException {
         Reference ref = (Reference) super.get();
         if (ref == null) {
             throw new IllegalStateException(

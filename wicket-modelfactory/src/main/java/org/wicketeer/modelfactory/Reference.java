@@ -25,14 +25,14 @@ import org.apache.wicket.RuntimeConfigurationType;
 /**
  * Bundles a Reference to an Object together with an Exception that can be used
  * to inform about the Reference's creation. This can be used while in Wicket's
- * DEVELOPEMT-Mode to find out, where this Reference was instanciated.
- * 
+ * DEVELOPEMT-Mode to find out, where this Reference was instantiated.
+ *
  * @author uweschaefer
  */
 class Reference {
     private final Object object;
     private final Exception invokationPath;
-    private volatile static Boolean createExceptionForDebug = null;
+    private static volatile Boolean createExceptionForDebug = null;
 
     /**
      * @param objectToReference
@@ -40,16 +40,20 @@ class Reference {
      * @throws NullPointerException
      *             if the object to reference if null
      */
-    Reference(final Object objectToReference) {
+    Reference(final Object objectToReference) throws NullPointerException {
         object = checkNotNull(objectToReference);
-        if (createExceptionForDebug == null)
-            createExceptionForDebug = RuntimeConfigurationType.DEVELOPMENT
-                    .equals(Application.get().getConfigurationType());
 
-        if (createExceptionForDebug)
+        if (Reference.createExceptionForDebug == null) {
+            Reference.createExceptionForDebug = RuntimeConfigurationType.DEVELOPMENT
+                    .equals(Application.get().getConfigurationType());
+        }
+
+        if (Reference.createExceptionForDebug) {
             invokationPath = new Exception();
-        else
+        }
+        else {
             invokationPath = null;
+        }
     }
 
     /**
