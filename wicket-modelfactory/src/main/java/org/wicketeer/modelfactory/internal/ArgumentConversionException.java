@@ -23,18 +23,15 @@ package org.wicketeer.modelfactory.internal;
  * 
  * @author Mario Fusco
  */
-public class ArgumentConversionException extends RuntimeException
-{
+public class ArgumentConversionException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 
-    ArgumentConversionException(final String message)
-    {
+    ArgumentConversionException(final String message) {
         super(message);
     }
 
-    ArgumentConversionException(final String message, final Throwable cause)
-    {
+    ArgumentConversionException(final String message, final Throwable cause) {
         super(message, cause);
     }
 }

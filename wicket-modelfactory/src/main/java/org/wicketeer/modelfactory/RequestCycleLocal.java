@@ -17,10 +17,10 @@
 
 package org.wicketeer.modelfactory;
 
+import static org.wicketeer.modelfactory.Preconditions.checkNotNull;
+
 import org.apache.wicket.MetaDataKey;
 import org.apache.wicket.request.cycle.RequestCycle;
-
-import static org.wicketeer.modelfactory.Preconditions.checkNotNull;
 
 /**
  * Stores an object with the given key into the RequestCycle. This works
@@ -33,8 +33,7 @@ import static org.wicketeer.modelfactory.Preconditions.checkNotNull;
  * @param <T>
  *            Type of the object to store in the RequestCycle.
  */
-public class RequestCycleLocal<T>
-{
+public class RequestCycleLocal<T> {
     private final MetaDataKey<T> key;
 
     /**
@@ -43,8 +42,7 @@ public class RequestCycleLocal<T>
      * @throws NullPointerException
      *             if the given key is null
      */
-    public RequestCycleLocal(final MetaDataKey<T> key)
-    {
+    public RequestCycleLocal(final MetaDataKey<T> key) {
         this.key = checkNotNull(key);
     }
 
@@ -56,11 +54,9 @@ public class RequestCycleLocal<T>
      *             if there currently is no active RequestCycle. (Remember to
      *             use WicketTester in unit-tests)
      */
-    protected RequestCycle getRequestCycle()
-    {
+    protected RequestCycle getRequestCycle() {
         RequestCycle requestCycle = RequestCycle.get();
-        if (requestCycle == null)
-        {
+        if (requestCycle == null) {
             throw new IllegalStateException("Outside of request-cycle");
         }
         return requestCycle;
@@ -75,26 +71,24 @@ public class RequestCycleLocal<T>
      * @throws NullPointerException
      *             if the given object is null. (use remove instead)
      */
-    public void set(final T t)
-    {
+    public void set(final T t) {
         getRequestCycle().setMetaData(key, checkNotNull(t));
     }
 
     /**
      * retrieves the object from the RequestCycle
+     * 
      * @return the formerly set Object, or null if nothing was not set or the
      *         object was removed.
      */
-    public T get()
-    {
+    public T get() {
         return getRequestCycle().getMetaData(key);
     }
 
     /**
      * removes the object from the request cycle.
      */
-    public void remove()
-    {
+    public void remove() {
         getRequestCycle().setMetaData(key, null);
     }
 }

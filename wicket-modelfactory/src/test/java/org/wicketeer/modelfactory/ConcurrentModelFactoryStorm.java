@@ -10,7 +10,7 @@ import org.apache.wicket.util.tester.WicketTester;
 
 public class ConcurrentModelFactoryStorm {
 
-    static class A implements Serializable{
+    static class A implements Serializable {
         B b;
 
         public B getB() {
@@ -82,63 +82,86 @@ public class ConcurrentModelFactoryStorm {
                 try {
                     Thread.currentThread();
                     Thread.sleep((long) Math.random() * 50);
-                } catch (InterruptedException e) {
+                }
+                catch (InterruptedException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
                 if (Math.random() > .5) {
-                    String b = ModelFactory.path(ModelFactory.from(new A()).getB());
+                    String b = ModelFactory.path(ModelFactory.from(new A())
+                            .getB());
                     if (!b.equals("b")) {
                         System.out.println("NARF " + b);
                     }
                 }
 
                 {
-                    String path = ModelFactory.path(ModelFactory.from(new A()).getB().getS());
+                    String path = ModelFactory.path(ModelFactory.from(new A())
+                            .getB().getS());
                     if (!path.equals("b.s")) {
                         System.out.println("POIT " + path);
                     }
                 }
 
                 {
-                    String path = ModelFactory.path(ModelFactory.from(new A()).getB().getU());
+                    String path = ModelFactory.path(ModelFactory.from(new A())
+                            .getB().getU());
                     if (!path.equals("b.u")) {
                         System.out.println("UUID " + path);
                     }
                 }
 
                 {
-                    String path = ModelFactory.path(ModelFactory.from(new A()).getB().getE());
+                    String path = ModelFactory.path(ModelFactory.from(new A())
+                            .getB().getE());
                     if (!path.equals("b.e")) {
                         System.out.println("Enum " + path);
                     }
                 }
 
                 {
-                    String path = ModelFactory.path(ModelFactory.from(new A()).getB().isB());
+                    String path = ModelFactory.path(ModelFactory.from(new A())
+                            .getB().isB());
                     if (!path.equals("b.b")) {
                         System.out.println("bool " + path);
                     }
                 }
 
                 t.destroy();
-            } catch (Throwable e) {
-                System.out.println("**************************************************");
-                System.out.println("**************************************************");
-                System.out.println("**************************************************");
-                System.out.println("**************************************************");
-                System.out.println("**************************************************");
-                System.out.println("**************************************************");
-                System.out.println("**************************************************");
-                System.out.println("**************************************************");
-                System.out.println("**************************************************");
-                System.out.println("**************************************************");
-                System.out.println("**************************************************");
-                System.out.println("**************************************************");
-                System.out.println("**************************************************");
-                System.out.println("**************************************************");
-                System.out.println("**************************************************");
-                System.out.println("**************************************************");
+            }
+            catch (Throwable e) {
+                System.out
+                        .println("**************************************************");
+                System.out
+                        .println("**************************************************");
+                System.out
+                        .println("**************************************************");
+                System.out
+                        .println("**************************************************");
+                System.out
+                        .println("**************************************************");
+                System.out
+                        .println("**************************************************");
+                System.out
+                        .println("**************************************************");
+                System.out
+                        .println("**************************************************");
+                System.out
+                        .println("**************************************************");
+                System.out
+                        .println("**************************************************");
+                System.out
+                        .println("**************************************************");
+                System.out
+                        .println("**************************************************");
+                System.out
+                        .println("**************************************************");
+                System.out
+                        .println("**************************************************");
+                System.out
+                        .println("**************************************************");
+                System.out
+                        .println("**************************************************");
                 e.printStackTrace();
             }
         }
@@ -157,7 +180,8 @@ public class ConcurrentModelFactoryStorm {
             e.shutdown();
             try {
                 e.awaitTermination(2, TimeUnit.MINUTES);
-            } catch (InterruptedException e1) {
+            }
+            catch (InterruptedException e1) {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
             }
@@ -173,7 +197,8 @@ public class ConcurrentModelFactoryStorm {
             e.shutdown();
             try {
                 e.awaitTermination(2, TimeUnit.MINUTES);
-            } catch (InterruptedException e1) {
+            }
+            catch (InterruptedException e1) {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
             }

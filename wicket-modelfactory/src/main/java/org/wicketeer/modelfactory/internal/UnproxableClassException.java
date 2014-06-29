@@ -18,12 +18,14 @@
 package org.wicketeer.modelfactory.internal;
 
 /**
- * This invocation is thrown while trying to proxy an object of an unproxeable (final) class.
+ * This invocation is thrown while trying to proxy an object of an unproxeable
+ * (final) class.
+ * 
  * @author Mario Fusco
  */
 public class UnproxableClassException extends RuntimeException {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
     UnproxableClassException(Class<?> clazz) {
         super("Unable to proxy the final class " + clazz.getName());

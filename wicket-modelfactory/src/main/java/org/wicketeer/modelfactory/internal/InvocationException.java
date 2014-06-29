@@ -20,14 +20,17 @@ package org.wicketeer.modelfactory.internal;
 import java.lang.reflect.Method;
 
 /**
- * This Exception is thrown when a problem occurs while doing a via reflection method call through the {@link Invocation} class.
+ * This Exception is thrown when a problem occurs while doing a via reflection
+ * method call through the {@link Invocation} class.
+ * 
  * @author Mario Fusco
  */
 public class InvocationException extends RuntimeException {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	InvocationException(Throwable t, Method invokedMethod, Object object) {
-		super("Failed invocation of " + invokedMethod + " on object " + object + " caused by: " + t.getLocalizedMessage(), t);
-	}
+    InvocationException(Throwable t, Method invokedMethod, Object object) {
+        super("Failed invocation of " + invokedMethod + " on object " + object
+                + " caused by: " + t.getLocalizedMessage(), t);
+    }
 }

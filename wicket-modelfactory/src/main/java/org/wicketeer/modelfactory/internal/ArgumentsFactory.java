@@ -41,7 +41,8 @@ public final class ArgumentsFactory {
     }
 
     @SuppressWarnings("unchecked")
-    static <T> T createArgument(final Class<T> clazz, final InvocationSequence invocationSequence) {
+    static <T> T createArgument(final Class<T> clazz,
+            final InvocationSequence invocationSequence) {
         T placeholder = (T) createPlaceholder(clazz, invocationSequence);
         if (ARG.get().getState() == State.ACTIVE) {
             ARG.get().set(placeholder, new Argument<T>(invocationSequence));
@@ -59,8 +60,8 @@ public final class ArgumentsFactory {
                 return null;
             }
 
-            throw new IllegalArgumentException("void return type encountered on: "
-                    + invocationSequence);
+            throw new IllegalArgumentException(
+                    "void return type encountered on: " + invocationSequence);
         }
 
         if (clazz.isPrimitive()) {
@@ -76,16 +77,18 @@ public final class ArgumentsFactory {
         try {
             if (Modifier.isFinal(clazz.getModifiers())) {
                 return objenesis.newInstance(clazz);
-            } else {
-                return ProxyUtil.createProxy(new ProxyArgument(clazz, invocationSequence), clazz,
-                        false);
             }
-        } finally {
+            else {
+                return ProxyUtil.createProxy(new ProxyArgument(clazz,
+                        invocationSequence), clazz, false);
+            }
+        }
+        finally {
             ARG.get().set(stateBeforeCreationCall);
         }
     }
 
-	private static Object createPrimitivePlaceHolder(final Class<?> clazz,
+    private static Object createPrimitivePlaceHolder(final Class<?> clazz,
             final InvocationSequence invocationSequence) {
 
         if (clazz == boolean.class) {
@@ -147,33 +150,38 @@ public final class ArgumentsFactory {
         public Argument<?> getAndClear(final Object placeHolder) {
             try {
                 return get(placeHolder);
-            } finally {
+            }
+            finally {
                 set(null, null);
             }
         }
 
-		public Argument<?> get(final Object placeHolder) {
-			if (placeHolder == null) {
-			    throw new IllegalStateException("Unknown placeholder " + placeHolder);
-			}
+        public Argument<?> get(final Object placeHolder) {
+            if (placeHolder == null) {
+                throw new IllegalStateException("Unknown placeholder "
+                        + placeHolder);
+            }
 
-			if (placeHolder instanceof Argument) {
-			    return (Argument<?>) placeHolder;
-			}
+            if (placeHolder instanceof Argument) {
+                return (Argument<?>) placeHolder;
+            }
 
-			if (lastPlaceHolder != placeHolder) {
-			    throw new IllegalStateException("Unknown placeholder " + placeHolder);
-			} else {
-			    return lastArgument;
-			}
-		}
+            if (lastPlaceHolder != placeHolder) {
+                throw new IllegalStateException("Unknown placeholder "
+                        + placeHolder);
+            }
+            else {
+                return lastArgument;
+            }
+        }
     }
 
     private enum State {
         ACTIVE, IGNORE;
     }
 
-    private static class LastArgHolder extends RequestCycleLocal<ArgumentMapping> {
+    private static class LastArgHolder extends
+            RequestCycleLocal<ArgumentMapping> {
         private static final MetaDataKey<ArgumentMapping> LAST_ARG_HOLDER_KEY = new MetaDataKey<ArgumentsFactory.ArgumentMapping>() {
 
             private static final long serialVersionUID = 1L;
@@ -200,9 +208,9 @@ public final class ArgumentsFactory {
     public static <T> Argument<T> getAndRemoveArgumentFor(final T placeholder) {
         return (Argument<T>) ARG.get().getAndClear(placeholder);
     }
-    
+
     @SuppressWarnings("unchecked")
-	public static <T> Argument<T> getArgumentFor(final T placeholder) {
+    public static <T> Argument<T> getArgumentFor(final T placeholder) {
         return (Argument<T>) ARG.get().get(placeholder);
     }
 

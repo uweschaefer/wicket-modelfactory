@@ -26,8 +26,7 @@ package org.wicketeer.modelfactory;
  * 
  * @author uweschaefer
  */
-class Preconditions
-{
+class Preconditions {
     /**
      * @param t
      *            object to test
@@ -35,10 +34,8 @@ class Preconditions
      * @throws NullPointerException
      *             if the given object was null
      */
-    static <T> T checkNotNull(final T t)
-    {
-        if (t == null)
-        {
+    static <T> T checkNotNull(final T t) {
+        if (t == null) {
             throw new NullPointerException();
         }
         return t;
@@ -51,10 +48,8 @@ class Preconditions
      * @throws IllegalStateException
      *             if the given object was NOT null
      */
-    static <T> T checkNull(final T t)
-    {
-        if (t != null)
-        {
+    static <T> T checkNull(final T t) {
+        if (t != null) {
             throw new IllegalStateException();
         }
         return t;

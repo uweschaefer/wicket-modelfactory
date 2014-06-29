@@ -69,37 +69,32 @@ import org.objenesis.ObjenesisStd;
  * @author Mario Fusco
  * @author Sebastian Jancke
  */
-final class ClassImposterizer
-{
+final class ClassImposterizer {
 
     static final ClassImposterizer INSTANCE = new ClassImposterizer();
 
-    private ClassImposterizer()
-    {
+    private ClassImposterizer() {
     }
 
     private final Objenesis objenesis = new ObjenesisStd();
 
-    private static final NamingPolicy DEFAULT_POLICY = new DefaultNamingPolicy()
-    {
+    private static final NamingPolicy DEFAULT_POLICY = new DefaultNamingPolicy() {
         /**
          * {@inheritDoc}
          */
         @Override
-        protected String getTag()
-        {
+        protected String getTag() {
             return "ByLambdajWithCGLIB";
         }
     };
 
-    private static final NamingPolicy SIGNED_CLASSES_POLICY = new DefaultNamingPolicy()
-    {
+    private static final NamingPolicy SIGNED_CLASSES_POLICY = new DefaultNamingPolicy() {
         /**
          * {@inheritDoc}
          */
         @Override
-        public String getClassName(final String prefix, final String source, final Object key, final Predicate names)
-        {
+        public String getClassName(final String prefix, final String source,
+                final Object key, final Predicate names) {
             return "codegen." + super.getClassName(prefix, source, key, names);
         }
 
@@ -107,40 +102,35 @@ final class ClassImposterizer
          * {@inheritDoc}
          */
         @Override
-        protected String getTag()
-        {
+        protected String getTag() {
             return "ByLambdajWithCGLIB";
         }
     };
 
-    private static final CallbackFilter IGNORE_BRIDGE_METHODS = new CallbackFilter()
-    {
+    private static final CallbackFilter IGNORE_BRIDGE_METHODS = new CallbackFilter() {
         @Override
-        public int accept(final Method method)
-        {
+        public int accept(final Method method) {
             return method.isBridge() ? 1 : 0;
         }
     };
 
-    <T> T imposterise(final Callback callback, final Class<T> mockedType, final Class<?>... ancillaryTypes)
-    {
+    <T> T imposterise(final Callback callback, final Class<T> mockedType,
+            final Class<?>... ancillaryTypes) {
         setConstructorsAccessible(mockedType, true);
         Class<?> proxyClass = createProxyClass(mockedType, ancillaryTypes);
         return mockedType.cast(createProxy(proxyClass, callback));
     }
 
-    private void setConstructorsAccessible(final Class<?> mockedType, final boolean accessible)
-    {
-        for (Constructor<?> constructor : mockedType.getDeclaredConstructors())
-        {
+    private void setConstructorsAccessible(final Class<?> mockedType,
+            final boolean accessible) {
+        for (Constructor<?> constructor : mockedType.getDeclaredConstructors()) {
             constructor.setAccessible(accessible);
         }
     }
 
-    private Class<?> createProxyClass(Class<?> mockedType, final Class<?>... interfaces)
-    {
-        if (mockedType == Object.class)
-        {
+    private Class<?> createProxyClass(Class<?> mockedType,
+            final Class<?>... interfaces) {
+        if (mockedType == Object.class) {
             mockedType = ClassWithSuperclassToWorkAroundCglibBug.class;
         }
 
@@ -149,38 +139,36 @@ final class ClassImposterizer
         enhancer.setSuperclass(mockedType);
         enhancer.setInterfaces(interfaces);
 
-        enhancer.setCallbackTypes(new Class[]
-        { MethodInterceptor.class, NoOp.class });
+        enhancer.setCallbackTypes(new Class[] { MethodInterceptor.class,
+                NoOp.class });
         enhancer.setCallbackFilter(IGNORE_BRIDGE_METHODS);
-        enhancer.setNamingPolicy(mockedType.getSigners() != null ? SIGNED_CLASSES_POLICY : DEFAULT_POLICY);
+        enhancer.setNamingPolicy(mockedType.getSigners() != null ? SIGNED_CLASSES_POLICY
+                : DEFAULT_POLICY);
 
         return enhancer.createClass();
     }
 
-    private static class ClassEnhancer extends Enhancer
-    {
+    private static class ClassEnhancer extends Enhancer {
         /**
          * {@inheritDoc}
          */
         @SuppressWarnings("rawtypes")
         @Override
-        protected void filterConstructors(final Class sc, final List constructors)
-        {
+        protected void filterConstructors(final Class sc,
+                final List constructors) {
         }
     }
 
-    private Object createProxy(final Class<?> proxyClass, final Callback callback)
-    {
+    private Object createProxy(final Class<?> proxyClass,
+            final Callback callback) {
         Factory proxy = (Factory) objenesis.newInstance(proxyClass);
-        proxy.setCallbacks(new Callback[]
-        { callback, NoOp.INSTANCE });
+        proxy.setCallbacks(new Callback[] { callback, NoOp.INSTANCE });
         return proxy;
     }
 
     /**
      * Class With Superclass To WorkAround Cglib Bug
      */
-    public static class ClassWithSuperclassToWorkAroundCglibBug
-    {
+    public static class ClassWithSuperclassToWorkAroundCglibBug {
     }
 }

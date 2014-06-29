@@ -28,7 +28,8 @@ class ProxyArgument extends InvocationInterceptor {
 
     private final InvocationSequence invocationSequence;
 
-    ProxyArgument(final Class<?> proxiedClass, final InvocationSequence invocationSequence) {
+    ProxyArgument(final Class<?> proxiedClass,
+            final InvocationSequence invocationSequence) {
         this.proxiedClass = proxiedClass;
         this.invocationSequence = invocationSequence;
     }
@@ -37,7 +38,8 @@ class ProxyArgument extends InvocationInterceptor {
      * {@inheritDoc}
      */
     @Override
-    public Object invoke(final Object proxy, final Method method, final Object[] args) {
+    public Object invoke(final Object proxy, final Method method,
+            final Object[] args) {
 
         String name = method.getName();
         if (name.equals("hashCode")) {
@@ -62,7 +64,8 @@ class ProxyArgument extends InvocationInterceptor {
 
         // Adds this invocation to the current invocation sequence and creates a
         // new proxy propagating the invocation sequence
-        return ArgumentsFactory.createArgument(returnType, new InvocationSequence(
-                invocationSequence, new Invocation(proxiedClass, method, args)));
+        return ArgumentsFactory.createArgument(returnType,
+                new InvocationSequence(invocationSequence, new Invocation(
+                        proxiedClass, method, args)));
     }
 }

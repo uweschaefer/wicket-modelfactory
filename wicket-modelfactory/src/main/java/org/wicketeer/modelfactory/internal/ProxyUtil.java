@@ -43,23 +43,32 @@ public final class ProxyUtil {
                 && !clazz.isAnonymousClass();
     }
 
-    static <T> T createProxy(final InvocationInterceptor interceptor, final Class<T> clazz,
-            final boolean failSafe, final Class<?>... implementedInterface) {
+    static <T> T createProxy(final InvocationInterceptor interceptor,
+            final Class<T> clazz, final boolean failSafe,
+            final Class<?>... implementedInterface) {
         if (clazz.isInterface()) {
-            return (T) createNativeJavaProxy(clazz.getClassLoader(), interceptor, concatClasses(
-                    new Class<?>[] { clazz }, implementedInterface));
+            return (T) createNativeJavaProxy(
+                    clazz.getClassLoader(),
+                    interceptor,
+                    concatClasses(new Class<?>[] { clazz },
+                            implementedInterface));
         }
         try {
-            Enhancer e = createEnhancer(interceptor, clazz, implementedInterface);
+            Enhancer e = createEnhancer(interceptor, clazz,
+                    implementedInterface);
             return (T) e.create();
-        } catch (IllegalArgumentException iae) {
+        }
+        catch (IllegalArgumentException iae) {
             if (Proxy.isProxyClass(clazz)) {
-                return (T) createNativeJavaProxy(clazz.getClassLoader(), interceptor,
-                        concatClasses(implementedInterface, clazz.getInterfaces()));
+                return (T) createNativeJavaProxy(
+                        clazz.getClassLoader(),
+                        interceptor,
+                        concatClasses(implementedInterface,
+                                clazz.getInterfaces()));
             }
             if (isProxable(clazz)) {
-                return ClassImposterizer.INSTANCE.imposterise(interceptor, clazz,
-                        implementedInterface);
+                return ClassImposterizer.INSTANCE.imposterise(interceptor,
+                        clazz, implementedInterface);
             }
             return manageUnproxableClass(clazz, failSafe);
         }
@@ -72,7 +81,8 @@ public final class ProxyUtil {
         for (Object object : l) {
             if (!first) {
                 sb.append(delimiter);
-            } else {
+            }
+            else {
                 first = false;
             }
             sb.append(object);
@@ -80,7 +90,8 @@ public final class ProxyUtil {
         return sb.toString();
     }
 
-    private static <T> T manageUnproxableClass(final Class<T> clazz, final boolean failSafe) {
+    private static <T> T manageUnproxableClass(final Class<T> clazz,
+            final boolean failSafe) {
         if (failSafe) {
             return null;
         }
@@ -107,7 +118,8 @@ public final class ProxyUtil {
         return Proxy.newProxyInstance(classLoader, interfaces, interceptor);
     }
 
-    private static Class<?>[] concatClasses(final Class<?>[] first, final Class<?>[] second) {
+    private static Class<?>[] concatClasses(final Class<?>[] first,
+            final Class<?>[] second) {
         if (first == null || first.length == 0) {
             return second;
         }

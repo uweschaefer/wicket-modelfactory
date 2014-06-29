@@ -23,15 +23,19 @@ import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 
 /**
- * An intercptor that seamlessly manages invocations on both a native Java proxy and a cglib one.
+ * An intercptor that seamlessly manages invocations on both a native Java proxy
+ * and a cglib one.
+ * 
  * @author Mario Fusco
  */
-public abstract class InvocationInterceptor implements MethodInterceptor, java.lang.reflect.InvocationHandler {
+public abstract class InvocationInterceptor implements MethodInterceptor,
+        java.lang.reflect.InvocationHandler {
 
     /**
      * {@inheritDoc}
      */
-	public final Object intercept(Object proxy, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
-		return invoke(proxy, method, args);
-	}
+    public final Object intercept(Object proxy, Method method, Object[] args,
+            MethodProxy methodProxy) throws Throwable {
+        return invoke(proxy, method, args);
+    }
 }

@@ -29,22 +29,22 @@ import org.apache.wicket.RuntimeConfigurationType;
  * 
  * @author uweschaefer
  */
-class Reference
-{
+class Reference {
     private final Object object;
     private final Exception invokationPath;
     private volatile static Boolean createExceptionForDebug = null;
 
     /**
-     * @param objectToReference the object this Reference should point to.
-     * @throws NullPointerException if the object to reference if null
+     * @param objectToReference
+     *            the object this Reference should point to.
+     * @throws NullPointerException
+     *             if the object to reference if null
      */
-    Reference(final Object objectToReference)
-    {
+    Reference(final Object objectToReference) {
         object = checkNotNull(objectToReference);
         if (createExceptionForDebug == null)
-            createExceptionForDebug = RuntimeConfigurationType.DEVELOPMENT.equals(Application.get()
-                    .getConfigurationType());
+            createExceptionForDebug = RuntimeConfigurationType.DEVELOPMENT
+                    .equals(Application.get().getConfigurationType());
 
         if (createExceptionForDebug)
             invokationPath = new Exception();
@@ -55,8 +55,7 @@ class Reference
     /**
      * @return the object passed in on creation
      */
-    Object getObject()
-    {
+    Object getObject() {
         return object;
     }
 
@@ -64,8 +63,7 @@ class Reference
      * @return Exception that was create on creation or null, if called within
      *         RuntimeConfigurationType.DEPLOYMENT
      */
-    Exception getInvokationPath()
-    {
+    Exception getInvokationPath() {
         return invokationPath;
     }
 

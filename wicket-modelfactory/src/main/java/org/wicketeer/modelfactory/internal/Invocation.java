@@ -28,8 +28,7 @@ import java.util.Locale;
  * @author Mario Fusco
  * @author Frode Carlsen
  */
-final class Invocation
-{
+final class Invocation {
 
     private final Class<?> invokedClass;
     private final Method invokedMethod;
@@ -38,75 +37,62 @@ final class Invocation
     private transient int hashCode;
     Invocation previousInvocation;
 
-    Invocation(final Class<?> invokedClass, final Method invokedMethod, final Object[] args)
-    {
+    Invocation(final Class<?> invokedClass, final Method invokedMethod,
+            final Object[] args) {
         this.invokedClass = invokedClass;
         this.invokedMethod = invokedMethod;
         invokedMethod.setAccessible(true);
-        if ((args != null) && (args.length > 0))
-        {
+        if ((args != null) && (args.length > 0)) {
             weakArgs = new ParameterReference[args.length];
-            for (int i = 0; i < args.length; i++)
-            {
-                weakArgs[i] = invokedMethod.getParameterTypes()[i].isPrimitive() ? new StrongParameterReference(args[i])
+            for (int i = 0; i < args.length; i++) {
+                weakArgs[i] = invokedMethod.getParameterTypes()[i]
+                        .isPrimitive() ? new StrongParameterReference(args[i])
                         : new WeakParameterReference(args[i]);
             }
         }
     }
 
-    boolean hasArguments()
-    {
+    boolean hasArguments() {
         return weakArgs != null;
     }
 
-    private Object[] getConcreteArgs()
-    {
-        if (weakArgs == null)
-        {
+    private Object[] getConcreteArgs() {
+        if (weakArgs == null) {
             return new Object[0];
         }
         Object[] args = new Object[weakArgs.length];
-        for (int i = 0; i < weakArgs.length; i++)
-        {
+        for (int i = 0; i < weakArgs.length; i++) {
             args[i] = weakArgs[i].get();
         }
         return args;
     }
 
-    Class<?> getInvokedClass()
-    {
+    Class<?> getInvokedClass() {
         return invokedClass;
     }
 
-    Method getInvokedMethod()
-    {
+    Method getInvokedMethod() {
         return invokedMethod;
     }
 
-    Class<?> getReturnType()
-    {
+    Class<?> getReturnType() {
         return invokedMethod.getReturnType();
     }
 
-    String getInvokedPropertyName()
-    {
-        if (invokedPropertyName == null)
-        {
+    String getInvokedPropertyName() {
+        if (invokedPropertyName == null) {
             invokedPropertyName = getPropertyName(invokedMethod);
         }
         return invokedPropertyName;
     }
 
-    Object invokeOn(final Object object)
-    {
-        try
-        {
-            return object == null ? null : invokedMethod.invoke(object, getConcreteArgs());
+    Object invokeOn(final Object object) {
+        try {
+            return object == null ? null : invokedMethod.invoke(object,
+                    getConcreteArgs());
         }
-        catch (Exception e)
-        {
-            if (e instanceof RuntimeException)
-            {
+        catch (Exception e) {
+            if (e instanceof RuntimeException) {
                 throw (RuntimeException) e;
             }
             throw new RuntimeException(e);
@@ -117,17 +103,14 @@ final class Invocation
      * {@inheritDoc}
      */
     @Override
-    public String toString()
-    {
-        if (weakArgs == null)
-        {
+    public String toString() {
+        if (weakArgs == null) {
             return invokedMethod.toString();
         }
         StringBuilder sb = new StringBuilder(invokedMethod.toString());
         sb.append(" with args ");
         boolean first = true;
-        for (ParameterReference arg : weakArgs)
-        {
+        for (ParameterReference arg : weakArgs) {
             sb.append(first ? "" : ", ").append(arg.get());
             first = false;
         }
@@ -138,19 +121,15 @@ final class Invocation
      * {@inheritDoc}
      */
     @Override
-    public int hashCode()
-    {
-        if (hashCode != 0)
-        {
+    public int hashCode() {
+        if (hashCode != 0) {
             return hashCode;
         }
         hashCode = 13 * invokedClass.hashCode() + 17 * invokedMethod.hashCode();
-        if (weakArgs != null)
-        {
+        if (weakArgs != null) {
             hashCode += 19 * weakArgs.length;
         }
-        if (previousInvocation != null)
-        {
+        if (previousInvocation != null) {
             hashCode += 23 * previousInvocation.hashCode();
         }
         return hashCode;
@@ -160,75 +139,72 @@ final class Invocation
      * {@inheritDoc}
      */
     @Override
-    public boolean equals(final Object object)
-    {
+    public boolean equals(final Object object) {
         Invocation otherInvocation = (Invocation) object;
-        return areNullSafeEquals(invokedClass, otherInvocation.getInvokedClass())
-                && areNullSafeEquals(invokedMethod, otherInvocation.getInvokedMethod())
-                && areNullSafeEquals(previousInvocation, otherInvocation.previousInvocation)
+        return areNullSafeEquals(invokedClass,
+                otherInvocation.getInvokedClass())
+                && areNullSafeEquals(invokedMethod,
+                        otherInvocation.getInvokedMethod())
+                && areNullSafeEquals(previousInvocation,
+                        otherInvocation.previousInvocation)
                 && Arrays.equals(weakArgs, otherInvocation.weakArgs);
     }
 
-    static boolean areNullSafeEquals(final Object first, final Object second)
-    {
-        return (first == second) || ((first != null) && (second != null) && first.equals(second));
+    static boolean areNullSafeEquals(final Object first, final Object second) {
+        return (first == second)
+                || ((first != null) && (second != null) && first.equals(second));
     }
 
-    private static abstract class ParameterReference
-    {
+    private static abstract class ParameterReference {
         protected abstract Object get();
 
         @Override
-        public final boolean equals(final Object obj)
-        {
-            return (obj instanceof ParameterReference) && areNullSafeEquals(get(), ((ParameterReference) obj).get());
+        public final boolean equals(final Object obj) {
+            return (obj instanceof ParameterReference)
+                    && areNullSafeEquals(get(),
+                            ((ParameterReference) obj).get());
         }
     }
 
-    private static final class StrongParameterReference extends ParameterReference
-    {
+    private static final class StrongParameterReference extends
+            ParameterReference {
         private final Object strongRef;
 
-        private StrongParameterReference(final Object referent)
-        {
+        private StrongParameterReference(final Object referent) {
             strongRef = referent;
         }
 
         @Override
-        protected Object get()
-        {
+        protected Object get() {
             return strongRef;
         }
     }
 
-    private static final class WeakParameterReference extends ParameterReference
-    {
+    private static final class WeakParameterReference extends
+            ParameterReference {
         private final WeakReference<Object> weakRef;
 
-        private WeakParameterReference(final Object referent)
-        {
+        private WeakParameterReference(final Object referent) {
             weakRef = new WeakReference<Object>(referent);
         }
 
         @Override
-        protected Object get()
-        {
+        protected Object get() {
             return weakRef.get();
         }
     }
 
-    public static String getPropertyName(final Method invokedMethod)
-    {
+    public static String getPropertyName(final Method invokedMethod) {
         String methodName = invokedMethod.getName();
-        if ((methodName.startsWith("get") || methodName.startsWith("set")) && (methodName.length() > 3))
-        {
+        if ((methodName.startsWith("get") || methodName.startsWith("set"))
+                && (methodName.length() > 3)) {
             methodName = methodName.substring(3);
         }
         else
-            if (methodName.startsWith("is") && (methodName.length() > 2))
-            {
+            if (methodName.startsWith("is") && (methodName.length() > 2)) {
                 methodName = methodName.substring(2);
             }
-        return methodName.substring(0, 1).toLowerCase(Locale.getDefault()) + methodName.substring(1);
+        return methodName.substring(0, 1).toLowerCase(Locale.getDefault())
+                + methodName.substring(1);
     }
 }

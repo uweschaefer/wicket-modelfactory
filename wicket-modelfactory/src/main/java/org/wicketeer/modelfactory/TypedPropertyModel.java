@@ -20,16 +20,18 @@ package org.wicketeer.modelfactory;
 import org.apache.wicket.model.IObjectClassAwareModel;
 import org.apache.wicket.model.PropertyModel;
 
-class TypedPropertyModel<S> extends PropertyModel<S> implements IObjectClassAwareModel<S>{
-	private static final long serialVersionUID = 1L;
-	private Class<S> type;
+class TypedPropertyModel<S> extends PropertyModel<S> implements
+        IObjectClassAwareModel<S> {
+    private static final long serialVersionUID = 1L;
+    private Class<S> type;
 
-	TypedPropertyModel(Object t, String path, Class<S> type) {
-		super(t, path);
-		this.type = Preconditions.checkNotNull(type);
-	}
-	@Override
-	public Class<S> getObjectClass() {
-		return type;
-	}
+    TypedPropertyModel(Object t, String path, Class<S> type) {
+        super(t, path);
+        this.type = Preconditions.checkNotNull(type);
+    }
+
+    @Override
+    public Class<S> getObjectClass() {
+        return type;
+    }
 }

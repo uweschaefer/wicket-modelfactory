@@ -22,41 +22,35 @@ package org.wicketeer.modelfactory;
 
 import org.apache.wicket.MetaDataKey;
 
-class ChainFrom extends RequestCycleLocal<Object>
-{
-    static class Key extends MetaDataKey<Object>
-    {
+class ChainFrom extends RequestCycleLocal<Object> {
+    static class Key extends MetaDataKey<Object> {
         private static final long serialVersionUID = 1L;
     };
 
     private static MetaDataKey<Object> key = new Key();
 
-    public ChainFrom()
-    {
+    public ChainFrom() {
         super(key);
     }
 
     @Override
-    public void set(final Object value)
-    {
+    public void set(final Object value) {
         Reference ref = (Reference) super.get();
-        if (ref != null)
-        {
+        if (ref != null) {
             super.remove();
-            throw new IllegalStateException("mutliple from() calls. need to call model(); Original invokation at "
-                    + render(ref.getInvokationPath()));
+            throw new IllegalStateException(
+                    "mutliple from() calls. need to call model(); Original invokation at "
+                            + render(ref.getInvokationPath()));
         }
         super.set(new Reference(Preconditions.checkNotNull(value)));
     }
 
-    private String render(final Exception invokationPath)
-    {
+    private String render(final Exception invokationPath) {
         StackTraceElement[] st = invokationPath.getStackTrace();
-        for (StackTraceElement stackTraceElement : st)
-        {
+        for (StackTraceElement stackTraceElement : st) {
             String cn = stackTraceElement.getClassName();
-            if (!cn.contains(ModelFactory.class.getSimpleName()) && !(cn.contains(ModelFactory.class.getPackage().getName())))
-            {
+            if (!cn.contains(ModelFactory.class.getSimpleName())
+                    && !(cn.contains(ModelFactory.class.getPackage().getName()))) {
                 String mn = stackTraceElement.getMethodName();
                 int ln = stackTraceElement.getLineNumber();
                 String scn = cn.substring(cn.lastIndexOf('.') + 1);
@@ -68,11 +62,9 @@ class ChainFrom extends RequestCycleLocal<Object>
     }
 
     @Override
-    public Object get()
-    {
+    public Object get() {
         Reference ref = (Reference) super.get();
-        if (ref == null)
-        {
+        if (ref == null) {
             super.remove();
             throw new IllegalStateException("no from() call registered before!");
         }

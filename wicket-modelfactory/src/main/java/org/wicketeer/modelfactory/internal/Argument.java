@@ -23,13 +23,11 @@ package org.wicketeer.modelfactory.internal;
  * 
  * @author Mario Fusco
  */
-public class Argument<T>
-{
+public class Argument<T> {
 
     private final InvocationSequence invocationSequence;
 
-    Argument(final InvocationSequence invocationSequence)
-    {
+    Argument(final InvocationSequence invocationSequence) {
         this.invocationSequence = invocationSequence;
     }
 
@@ -42,8 +40,7 @@ public class Argument<T>
      * @return The names of the properties defined by the invocations sequence
      *         of this Argument
      */
-    public String getInkvokedPropertyName()
-    {
+    public String getInkvokedPropertyName() {
         return invocationSequence.getInkvokedPropertyName();
     }
 
@@ -56,8 +53,7 @@ public class Argument<T>
      * @return The value of this Argument for the given Object
      */
     @SuppressWarnings("unchecked")
-    public T evaluate(final Object object)
-    {
+    public T evaluate(final Object object) {
         return (T) invocationSequence.evaluate(object);
     }
 
@@ -65,8 +61,7 @@ public class Argument<T>
      * Returns the root class from which the sequence of method invocation
      * defined by this argument starts
      */
-    public Class<?> getRootArgumentClass()
-    {
+    public Class<?> getRootArgumentClass() {
         return invocationSequence.getRootInvokedClass();
     }
 
@@ -75,8 +70,7 @@ public class Argument<T>
      * represented by this Argument.
      */
     @SuppressWarnings("unchecked")
-    public Class<T> getReturnType()
-    {
+    public Class<T> getReturnType() {
         return (Class<T>) invocationSequence.getReturnType();
     }
 
@@ -84,8 +78,7 @@ public class Argument<T>
      * {@inheritDoc}
      */
     @Override
-    public String toString()
-    {
+    public String toString() {
         return invocationSequence.toString();
     }
 
@@ -93,17 +86,17 @@ public class Argument<T>
      * {@inheritDoc}
      */
     @Override
-    public boolean equals(final Object object)
-    {
-        return (object instanceof Argument<?>) && invocationSequence.equals(((Argument<?>) object).invocationSequence);
+    public boolean equals(final Object object) {
+        return (object instanceof Argument<?>)
+                && invocationSequence
+                        .equals(((Argument<?>) object).invocationSequence);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return invocationSequence.hashCode();
     }
 }
