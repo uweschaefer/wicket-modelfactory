@@ -44,7 +44,7 @@ public class ModelFactory {
     /**
      * Proxies the given object in order to be able to call methods on it to
      * create the property path later-on used by model().
-     * 
+     *
      * @param <T>
      *            the type of the parameter
      * @param value
@@ -74,7 +74,7 @@ public class ModelFactory {
     /**
      * Proxies the Model-Object's type in order to be able to call methods on it
      * to create the property path later-on used by model().
-     * 
+     *
      * @param <T>
      *            type of the model parameter
      * @param model
@@ -95,23 +95,25 @@ public class ModelFactory {
                 Method method;
                 method = c.getDeclaredMethod("load");
                 type = (Class<T>) method.getReturnType();
-                if (type == Object.class || type == Serializable.class)
+                if ((type == Object.class) || (type == Serializable.class)) {
                     type = null;
+                }
             }
             catch (Throwable e) {
                 throw new WicketRuntimeException(e);
             }
         }
 
-        if (type == null && IModel.class.isAssignableFrom(c)) {
+        if ((type == null) && IModel.class.isAssignableFrom(c)) {
 
             Method method;
             try {
                 method = c.getMethod("getObject");
                 type = (Class<T>) method.getReturnType();
 
-                if (type == Object.class || type == Serializable.class)
+                if ((type == Object.class) || (type == Serializable.class)) {
                     type = null;
+                }
             }
             catch (NoSuchMethodException e) {
                 // TODO Auto-generated catch block
@@ -123,55 +125,57 @@ public class ModelFactory {
             }
         }
 
-        if (type == null && model instanceof IObjectClassAwareModel) {
+        if ((type == null) && (model instanceof IObjectClassAwareModel)) {
             type = ((IObjectClassAwareModel) model).getObjectClass();
         }
 
-        if (type == null && c.isAnonymousClass()) {
-            type = (Class<T>) tryReflect(c);
+        if ((type == null) && c.isAnonymousClass()) {
+            type = (Class<T>) tryReflectFromAnonClass(c);
         }
 
         if (type == null) {
             // last possibility
             T modelObject = model.getObject();
-            if (modelObject != null)
+            if (modelObject != null) {
                 type = (Class<T>) modelObject.getClass();
-            else
+            }
+            else {
                 throw new IllegalArgumentException(
                         "Cannot find proper type definition for model given. Please use from(model,Class).");
+            }
 
         }
-        return (T) from(model, type);
+        return from(model, type);
     }
 
-    private static Class<?> tryReflect(Class<? extends IModel> c) {
+    private static Class<?> tryReflectFromAnonClass(
+            final Class<? extends IModel> c) {
         TypeVariable<?>[] params = c.getSuperclass().getTypeParameters();
-        if (params != null && params.length == 1) {
+        if ((params != null) && (params.length == 1)) {
             // we might try
             Type typeParameter = GenericTypeReflector.getTypeParameter(c,
                     (TypeVariable<? extends Class<?>>) params[0]);
             if (typeParameter instanceof Class) {
                 return (Class<?>) typeParameter;
             }
-
         }
-
         return null;
     }
 
     /**
      * creates an actual PropertyModel from the path expressed by the given
      * object.
-     * 
+     *
      * @param path
      *            the object initially created by a from-call
      * @return the actual Model
      */
     public static <T> IModel<T> model(final T path) {
-        Object t = localFrom.get();
-        if (t == RequestCycleLocalFrom.FROM_CLASS)
+        Object t = ModelFactory.localFrom.get();
+        if (t == RequestCycleLocalFrom.FROM_CLASS) {
             throw new IllegalStateException(
                     "proxy has no staring point, please use path() to get a path expression or use from(IModel)");
+        }
 
         Argument<T> arg = ArgumentsFactory.getArgumentFor(path);
         Class<T> type = arg.getReturnType();
@@ -190,12 +194,22 @@ public class ModelFactory {
             return a.getInkvokedPropertyName();
         }
         finally {
-            localFrom.remove();
+            ModelFactory.localFrom.remove();
         }
     }
 
-    public static <T> T fromClass(Class<T> clazz) {
-        localFrom.set(RequestCycleLocalFrom.FROM_CLASS);
+    /**
+     * starts recording from a class.
+     * this will return a proxy of Type clazz, that should be evaluated by
+     * path(x), rather than model(x). A common usecase is to evaluate to a path
+     * expression, that is used in subsequent PropertyModel constructions.
+     * <code>new PropertyModel(myModel, ModelFactory.path(x));</code>
+     *
+     * @param clazz
+     * @return
+     */
+    public static <T> T fromClass(final Class<T> clazz) {
+        ModelFactory.localFrom.set(RequestCycleLocalFrom.FROM_CLASS);
         return ArgumentsFactory.createArgument(Preconditions
                 .checkNotNull(clazz));
     }
@@ -204,7 +218,7 @@ public class ModelFactory {
      * In cases where you need to hint the Type of the model passed, ecause it
      * cannot be reflected, you can use this method and provide the model
      * objects expected type as parameter.
-     * 
+     *
      * @param model
      *            the model from which to create a proxy
      * @param clazz
@@ -215,13 +229,22 @@ public class ModelFactory {
      * @throws NullPointerException
      *             if the model is null
      */
-    public static <T> T from(IModel<? extends T> model, Class<T> type) {
-        localFrom.set(Preconditions.checkNotNull(model));
+    public static <T> T from(final IModel<? extends T> model,
+            final Class<T> type) {
+        ModelFactory.localFrom.set(Preconditions.checkNotNull(model));
         return ArgumentsFactory
                 .createArgument(Preconditions.checkNotNull(type));
     }
 
+    /**
+     * @return true if current invocation sequence recording was
+     *         started from a root reference (in contrast to being start with
+     *         <code>fromClass(Class)</code>.
+     * @throws IllegalStateException
+     *             if not currently in recording thread (either from() has not
+     *             been called, of model() has already been called
+     */
     public static boolean hasRootReference() {
-        return localFrom.get() != RequestCycleLocalFrom.FROM_CLASS;
+        return ModelFactory.localFrom.get() != RequestCycleLocalFrom.FROM_CLASS;
     }
 }

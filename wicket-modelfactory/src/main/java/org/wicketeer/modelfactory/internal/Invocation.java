@@ -24,7 +24,7 @@ import java.util.Locale;
 
 /**
  * Registers a method invocation
- * 
+ *
  * @author Mario Fusco
  * @author Frode Carlsen
  */
@@ -47,7 +47,7 @@ final class Invocation {
             for (int i = 0; i < args.length; i++) {
                 weakArgs[i] = invokedMethod.getParameterTypes()[i]
                         .isPrimitive() ? new StrongParameterReference(args[i])
-                        : new WeakParameterReference(args[i]);
+                : new WeakParameterReference(args[i]);
             }
         }
     }
@@ -125,7 +125,8 @@ final class Invocation {
         if (hashCode != 0) {
             return hashCode;
         }
-        hashCode = 13 * invokedClass.hashCode() + 17 * invokedMethod.hashCode();
+        hashCode = (13 * invokedClass.hashCode())
+                + (17 * invokedMethod.hashCode());
         if (weakArgs != null) {
             hashCode += 19 * weakArgs.length;
         }
@@ -140,14 +141,17 @@ final class Invocation {
      */
     @Override
     public boolean equals(final Object object) {
+        if (object == null) {
+            return false;
+        }
         Invocation otherInvocation = (Invocation) object;
         return areNullSafeEquals(invokedClass,
                 otherInvocation.getInvokedClass())
                 && areNullSafeEquals(invokedMethod,
                         otherInvocation.getInvokedMethod())
-                && areNullSafeEquals(previousInvocation,
-                        otherInvocation.previousInvocation)
-                && Arrays.equals(weakArgs, otherInvocation.weakArgs);
+                        && areNullSafeEquals(previousInvocation,
+                                otherInvocation.previousInvocation)
+                                && Arrays.equals(weakArgs, otherInvocation.weakArgs);
     }
 
     static boolean areNullSafeEquals(final Object first, final Object second) {
@@ -167,7 +171,7 @@ final class Invocation {
     }
 
     private static final class StrongParameterReference extends
-            ParameterReference {
+    ParameterReference {
         private final Object strongRef;
 
         private StrongParameterReference(final Object referent) {
@@ -181,7 +185,7 @@ final class Invocation {
     }
 
     private static final class WeakParameterReference extends
-            ParameterReference {
+    ParameterReference {
         private final WeakReference<Object> weakRef;
 
         private WeakParameterReference(final Object referent) {

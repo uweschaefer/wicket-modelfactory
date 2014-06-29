@@ -11,6 +11,7 @@ import org.apache.wicket.util.tester.WicketTester;
 public class ConcurrentModelFactoryStorm {
 
     static class A implements Serializable {
+        private static final long serialVersionUID = 1L;
         B b;
 
         public B getB() {
@@ -26,7 +27,10 @@ public class ConcurrentModelFactoryStorm {
         A, B, C
     }
 
-    static class B {
+    static class B implements Serializable {
+
+        private static final long serialVersionUID = 1L;
+
         String s;
 
         UUID u = UUID.randomUUID();
@@ -131,37 +135,37 @@ public class ConcurrentModelFactoryStorm {
             }
             catch (Throwable e) {
                 System.out
-                        .println("**************************************************");
+                .println("**************************************************");
                 System.out
-                        .println("**************************************************");
+                .println("**************************************************");
                 System.out
-                        .println("**************************************************");
+                .println("**************************************************");
                 System.out
-                        .println("**************************************************");
+                .println("**************************************************");
                 System.out
-                        .println("**************************************************");
+                .println("**************************************************");
                 System.out
-                        .println("**************************************************");
+                .println("**************************************************");
                 System.out
-                        .println("**************************************************");
+                .println("**************************************************");
                 System.out
-                        .println("**************************************************");
+                .println("**************************************************");
                 System.out
-                        .println("**************************************************");
+                .println("**************************************************");
                 System.out
-                        .println("**************************************************");
+                .println("**************************************************");
                 System.out
-                        .println("**************************************************");
+                .println("**************************************************");
                 System.out
-                        .println("**************************************************");
+                .println("**************************************************");
                 System.out
-                        .println("**************************************************");
+                .println("**************************************************");
                 System.out
-                        .println("**************************************************");
+                .println("**************************************************");
                 System.out
-                        .println("**************************************************");
+                .println("**************************************************");
                 System.out
-                        .println("**************************************************");
+                .println("**************************************************");
                 e.printStackTrace();
             }
         }
@@ -188,7 +192,7 @@ public class ConcurrentModelFactoryStorm {
         }
 
         long start = System.currentTimeMillis();
-        for (int j = 0; j < MAX; j++) {
+        for (int j = 0; j < ConcurrentModelFactoryStorm.MAX; j++) {
             ExecutorService e = Executors.newFixedThreadPool(2000);
             for (int i = 0; i < 2; i++) {
                 e.submit(new R1());
