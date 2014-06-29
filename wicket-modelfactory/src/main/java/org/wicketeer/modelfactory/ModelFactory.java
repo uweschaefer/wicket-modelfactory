@@ -23,7 +23,6 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 
 import org.apache.wicket.WicketRuntimeException;
-import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.IObjectClassAwareModel;
 import org.apache.wicket.model.LoadableDetachableModel;
@@ -62,18 +61,10 @@ public final class ModelFactory {
     public static <T> T from(final T value) throws NullPointerException {
         Preconditions.checkNotNull(value);
         Class<T> type = (Class<T>) value.getClass();
-
-        IModel<T> model = new AbstractReadOnlyModel<T>() {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public T getObject() {
-                return value;
-            }
-        };
-
-        return from(model, type);
+        T proxy = fromClass(type);
+        ModelFactory.localFrom.remove();
+        ModelFactory.localFrom.set(value);
+        return proxy;
     }
 
     /**
