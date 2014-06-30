@@ -47,7 +47,7 @@ final class Invocation {
             for (int i = 0; i < args.length; i++) {
                 weakArgs[i] = invokedMethod.getParameterTypes()[i]
                         .isPrimitive() ? new StrongParameterReference(args[i])
-                : new WeakParameterReference(args[i]);
+                        : new WeakParameterReference(args[i]);
             }
         }
     }
@@ -149,9 +149,9 @@ final class Invocation {
                 otherInvocation.getInvokedClass())
                 && areNullSafeEquals(invokedMethod,
                         otherInvocation.getInvokedMethod())
-                        && areNullSafeEquals(previousInvocation,
-                                otherInvocation.previousInvocation)
-                                && Arrays.equals(weakArgs, otherInvocation.weakArgs);
+                && areNullSafeEquals(previousInvocation,
+                        otherInvocation.previousInvocation)
+                && Arrays.equals(weakArgs, otherInvocation.weakArgs);
     }
 
     static boolean areNullSafeEquals(final Object first, final Object second) {
@@ -171,7 +171,7 @@ final class Invocation {
     }
 
     private static final class StrongParameterReference extends
-    ParameterReference {
+            ParameterReference {
         private final Object strongRef;
 
         private StrongParameterReference(final Object referent) {
@@ -185,7 +185,7 @@ final class Invocation {
     }
 
     private static final class WeakParameterReference extends
-    ParameterReference {
+            ParameterReference {
         private final WeakReference<Object> weakRef;
 
         private WeakParameterReference(final Object referent) {

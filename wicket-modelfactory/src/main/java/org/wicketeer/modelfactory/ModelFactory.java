@@ -36,8 +36,9 @@ import com.googlecode.gentyref.GenericTypeReflector;
 
 /**
  * Entry point for creating refactoring safe PropertyModels. Usage:<code>
- * IModel<String> stringModel = model(from(person).getProfile().getName());
- * </code> where person can be an instance of Person class or an IModel<Person>.
+ * IModel&lt;String&gt; stringModel = model(from(person).getProfile().getName());
+ * </code> where person can be an instance of Person class or an
+ * IModel&lt;Person&gt;.
  */
 public final class ModelFactory {
     /**
@@ -78,7 +79,7 @@ public final class ModelFactory {
      *            type of the model parameter
      * @param model
      *            the model from which to create a proxy
-     * @return a proxy of an object of Type <T>
+     * @return a proxy of an object of Type T
      * @throws NullPointerException
      *             if the model is null
      */
@@ -97,15 +98,18 @@ public final class ModelFactory {
                 for (Method meth : m) {
                     if ("load".equals(meth.getName())) {
                         type = (Class<T>) meth.getReturnType();
-                        if ((type == Object.class) || (type == Serializable.class)) {
+                        if ((type == Object.class)
+                                || (type == Serializable.class)) {
                             type = null;
-                        } else {
+                        }
+                        else {
                             break;
                         }
                     }
 
                 }
-            } catch (Throwable e) {
+            }
+            catch (Throwable e) {
                 throw new WicketRuntimeException(e);
             }
         }
@@ -116,15 +120,18 @@ public final class ModelFactory {
                 for (Method meth : methods) {
                     if ("getObject".equals(meth.getName())) {
                         type = (Class<T>) meth.getReturnType();
-                        if ((type == Object.class) || (type == Serializable.class)) {
+                        if ((type == Object.class)
+                                || (type == Serializable.class)) {
                             type = null;
-                        } else {
+                        }
+                        else {
                             break;
                         }
                     }
 
                 }
-            } catch (SecurityException e) {
+            }
+            catch (SecurityException e) {
                 throw new WicketRuntimeException(e);
             }
         }
@@ -142,7 +149,8 @@ public final class ModelFactory {
             T modelObject = model.getObject();
             if (modelObject != null) {
                 type = (Class<T>) modelObject.getClass();
-            } else {
+            }
+            else {
                 throw new IllegalArgumentException(
                         "Cannot find proper type definition for model given. Please use from(model,Class).");
             }
@@ -174,7 +182,8 @@ public final class ModelFactory {
 
     private static Set<Method> getMethods(Class<?> t) {
         Set<Method> result = new HashSet<Method>();
-        result.addAll(Arrays.asList(t.isInterface() ? t.getMethods() : t.getDeclaredMethods()));
+        result.addAll(Arrays.asList(t.isInterface() ? t.getMethods() : t
+                .getDeclaredMethods()));
         return result;
     }
 
@@ -187,7 +196,8 @@ public final class ModelFactory {
      * @return the type found or null
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    private static Class<?> tryReflectFromAnonClass(final Class<? extends IModel> c) {
+    private static Class<?> tryReflectFromAnonClass(
+            final Class<? extends IModel> c) {
         TypeVariable<?>[] params = c.getSuperclass().getTypeParameters();
         if ((params != null) && (params.length == 1)) {
             // we might try
@@ -206,6 +216,8 @@ public final class ModelFactory {
      * 
      * @param path
      *            the object initially created by a from-call
+     * @param <T>
+     *            client-defined type
      * @return the actual Model
      */
     public static <T> IModel<T> model(final T path) {
@@ -230,7 +242,8 @@ public final class ModelFactory {
         try {
             Argument<?> a = ArgumentsFactory.getAndRemoveArgumentFor(path);
             return a.getInkvokedPropertyName();
-        } finally {
+        }
+        finally {
             ModelFactory.localFrom.remove();
         }
     }
@@ -244,11 +257,14 @@ public final class ModelFactory {
      * 
      * @param clazz
      *            the type of the proxy to create
+     * @param <T>
+     *            client-defined type
      * @return proxy of type clazz
      */
     public static <T> T fromClass(final Class<T> clazz) {
         ModelFactory.localFrom.set(RequestCycleLocalFrom.FROM_CLASS);
-        return ArgumentsFactory.createArgument(Preconditions.checkNotNull(clazz));
+        return ArgumentsFactory.createArgument(Preconditions
+                .checkNotNull(clazz));
     }
 
     /**
@@ -266,14 +282,15 @@ public final class ModelFactory {
      * @throws NullPointerException
      *             if the model or the type is null
      */
-    public static <T> T from(final IModel<? extends T> model, final Class<T> type)
-            throws NullPointerException {
+    public static <T> T from(final IModel<? extends T> model,
+            final Class<T> type) throws NullPointerException {
 
         Preconditions.checkNotNull(model);
         Preconditions.checkNotNull(type);
 
         ModelFactory.localFrom.set(Preconditions.checkNotNull(model));
-        return ArgumentsFactory.createArgument(Preconditions.checkNotNull(type));
+        return ArgumentsFactory
+                .createArgument(Preconditions.checkNotNull(type));
     }
 
     /**
