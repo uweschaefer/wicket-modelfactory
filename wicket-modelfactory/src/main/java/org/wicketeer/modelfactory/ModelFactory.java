@@ -21,6 +21,9 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.model.IModel;
@@ -48,7 +51,7 @@ public final class ModelFactory {
     /**
      * Proxies the given object in order to be able to call methods on it to
      * create the property path later-on used by model().
-     *
+     * 
      * @param <T>
      *            the type of the parameter
      * @param value
@@ -70,7 +73,7 @@ public final class ModelFactory {
     /**
      * Proxies the Model-Object's type in order to be able to call methods on it
      * to create the property path later-on used by model().
-     *
+     * 
      * @param <T>
      *            type of the model parameter
      * @param model
@@ -90,36 +93,39 @@ public final class ModelFactory {
 
         if (LoadableDetachableModel.class.isAssignableFrom(c)) {
             try {
-                Method method;
-                method = c.getDeclaredMethod("load");
-                type = (Class<T>) method.getReturnType();
-                if ((type == Object.class) || (type == Serializable.class)) {
-                    type = null;
+                Set<Method> m = getAllMethods(c);
+                for (Method meth : m) {
+                    if ("load".equals(meth.getName())) {
+                        type = (Class<T>) meth.getReturnType();
+                        if ((type == Object.class) || (type == Serializable.class)) {
+                            type = null;
+                        } else {
+                            break;
+                        }
+                    }
+
                 }
-            }
-            catch (Throwable e) {
+            } catch (Throwable e) {
                 throw new WicketRuntimeException(e);
             }
         }
 
         if ((type == null) && IModel.class.isAssignableFrom(c)) {
-
-            Method method;
             try {
-                method = c.getMethod("getObject");
-                type = (Class<T>) method.getReturnType();
+                Set<Method> methods = getAllMethods(c);
+                for (Method meth : methods) {
+                    if ("getObject".equals(meth.getName())) {
+                        type = (Class<T>) meth.getReturnType();
+                        if ((type == Object.class) || (type == Serializable.class)) {
+                            type = null;
+                        } else {
+                            break;
+                        }
+                    }
 
-                if ((type == Object.class) || (type == Serializable.class)) {
-                    type = null;
                 }
-            }
-            catch (NoSuchMethodException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            catch (SecurityException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+            } catch (SecurityException e) {
+                throw new WicketRuntimeException(e);
             }
         }
 
@@ -136,8 +142,7 @@ public final class ModelFactory {
             T modelObject = model.getObject();
             if (modelObject != null) {
                 type = (Class<T>) modelObject.getClass();
-            }
-            else {
+            } else {
                 throw new IllegalArgumentException(
                         "Cannot find proper type definition for model given. Please use from(model,Class).");
             }
@@ -146,17 +151,43 @@ public final class ModelFactory {
         return from(model, type);
     }
 
+    private static Set<Method> getAllMethods(final Class<?> type) {
+        Set<Method> result = new HashSet<Method>();
+        result.addAll(getMethods(type));
+        for (Class<?> t : getAllSuperTypes(type)) {
+            result.addAll(getMethods(t));
+        }
+        return result;
+    }
+
+    private static Set<Class<?>> getAllSuperTypes(final Class<?> type) {
+        Set<Class<?>> result = new HashSet<Class<?>>();
+        if (type != null && (!type.equals(Object.class))) {
+            result.add(type);
+            result.addAll(getAllSuperTypes(type.getSuperclass()));
+            for (Class<?> ifc : type.getInterfaces()) {
+                result.addAll(getAllSuperTypes(ifc));
+            }
+        }
+        return result;
+    }
+
+    private static Set<Method> getMethods(Class<?> t) {
+        Set<Method> result = new HashSet<Method>();
+        result.addAll(Arrays.asList(t.isInterface() ? t.getMethods() : t.getDeclaredMethods()));
+        return result;
+    }
+
     /**
      * Gentryfer-magic to find the type of an non model impl. wondering if it is
      * worth the dependency.
-     *
+     * 
      * @param c
      *            the anon class
      * @return the type found or null
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    private static Class<?> tryReflectFromAnonClass(
-            final Class<? extends IModel> c) {
+    private static Class<?> tryReflectFromAnonClass(final Class<? extends IModel> c) {
         TypeVariable<?>[] params = c.getSuperclass().getTypeParameters();
         if ((params != null) && (params.length == 1)) {
             // we might try
@@ -172,7 +203,7 @@ public final class ModelFactory {
     /**
      * creates an actual PropertyModel from the path expressed by the given
      * object.
-     *
+     * 
      * @param path
      *            the object initially created by a from-call
      * @return the actual Model
@@ -199,34 +230,32 @@ public final class ModelFactory {
         try {
             Argument<?> a = ArgumentsFactory.getAndRemoveArgumentFor(path);
             return a.getInkvokedPropertyName();
-        }
-        finally {
+        } finally {
             ModelFactory.localFrom.remove();
         }
     }
 
     /**
-     * starts recording from a class.
-     * this will return a proxy of Type clazz, that should be evaluated by
-     * path(x), rather than model(x). A common usecase is to evaluate to a path
-     * expression, that is used in subsequent PropertyModel constructions.
+     * starts recording from a class. this will return a proxy of Type clazz,
+     * that should be evaluated by path(x), rather than model(x). A common
+     * usecase is to evaluate to a path expression, that is used in subsequent
+     * PropertyModel constructions.
      * <code>new PropertyModel(myModel, ModelFactory.path(x));</code>
-     *
+     * 
      * @param clazz
      *            the type of the proxy to create
      * @return proxy of type clazz
      */
     public static <T> T fromClass(final Class<T> clazz) {
         ModelFactory.localFrom.set(RequestCycleLocalFrom.FROM_CLASS);
-        return ArgumentsFactory.createArgument(Preconditions
-                .checkNotNull(clazz));
+        return ArgumentsFactory.createArgument(Preconditions.checkNotNull(clazz));
     }
 
     /**
      * In cases where you need to hint the Type of the model passed, ecause it
      * cannot be reflected, you can use this method and provide the model
      * objects expected type as parameter.
-     *
+     * 
      * @param model
      *            the model from which to create a proxy
      * @param type
@@ -237,20 +266,19 @@ public final class ModelFactory {
      * @throws NullPointerException
      *             if the model or the type is null
      */
-    public static <T> T from(final IModel<? extends T> model,
-            final Class<T> type) throws NullPointerException {
+    public static <T> T from(final IModel<? extends T> model, final Class<T> type)
+            throws NullPointerException {
 
         Preconditions.checkNotNull(model);
         Preconditions.checkNotNull(type);
 
         ModelFactory.localFrom.set(Preconditions.checkNotNull(model));
-        return ArgumentsFactory
-                .createArgument(Preconditions.checkNotNull(type));
+        return ArgumentsFactory.createArgument(Preconditions.checkNotNull(type));
     }
 
     /**
-     * @return true if current invocation sequence recording was
-     *         started from a root reference (in contrast to being start with
+     * @return true if current invocation sequence recording was started from a
+     *         root reference (in contrast to being start with
      *         <code>fromClass(Class)</code>.
      * @throws IllegalStateException
      *             if not currently in recording thread (either from() has not
