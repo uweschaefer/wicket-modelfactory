@@ -166,9 +166,14 @@ public final class ArgumentsFactory {
                 return (Argument<?>) placeHolder;
             }
 
-            if (lastPlaceHolder != placeHolder) {
-                throw new IllegalStateException("Unknown placeholder "
-                        + placeHolder);
+            if (placeHolder != lastPlaceHolder) {
+                // fixes problems with double
+                if (!placeHolder.equals(lastPlaceHolder)) {
+                    throw new IllegalStateException("Unknown placeholder "
+                            + placeHolder);
+                } else {
+                    return lastArgument;
+                }
             }
             else {
                 return lastArgument;

@@ -53,6 +53,9 @@ public class ModelFactoryTest extends TestCase implements Serializable {
         pm = testSer(pm);
         assertEquals(Integer.valueOf(5), pm.getObject());
 
+        IModel<Double> pm2 = ModelFactory.model(ModelFactory.from(a).getPrimitiveProperty());
+        pm2 = testSer(pm2);
+        assertEquals(5.0, pm2.getObject());
     }
 
     public void testBoolean() throws Exception {
@@ -112,6 +115,15 @@ public class ModelFactoryTest extends TestCase implements Serializable {
 
         private B b;
 
+        private double primitiveProperty = 5;
+
+        public double getPrimitiveProperty() {
+            return primitiveProperty;
+        }
+
+        public void setPrimitiveProperty(final double primitiveProperty) {
+            this.primitiveProperty = primitiveProperty;
+        }
     }
 
     public static class B implements Serializable {
