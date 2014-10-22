@@ -76,6 +76,10 @@ public final class ArgumentsFactory {
         ARG.get().set(State.IGNORE);
         try {
             if (Modifier.isFinal(clazz.getModifiers())) {
+                // Probably safe to create instances of Base objects like String
+                if (!clazz.getName().startsWith("java.")) {
+                    throw new IllegalArgumentException("Modelfactory cannot proxy final Class or Enum '" + clazz +"'");
+                }
                 return objenesis.newInstance(clazz);
             }
             else {
