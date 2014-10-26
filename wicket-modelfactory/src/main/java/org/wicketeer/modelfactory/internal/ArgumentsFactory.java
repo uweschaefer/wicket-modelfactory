@@ -33,196 +33,198 @@ import org.wicketeer.modelfactory.RequestCycleLocal;
  */
 public final class ArgumentsFactory {
 
-    private ArgumentsFactory() {
-    }
+	private ArgumentsFactory() {
+	}
 
-    public static <T> T createArgument(final Class<T> clazz) {
-        return createArgument(clazz, new InvocationSequence(clazz));
-    }
+	public static <T> T createArgument(final Class<T> clazz) {
+		return createArgument(clazz, new InvocationSequence(clazz));
+	}
 
-    @SuppressWarnings("unchecked")
-    static <T> T createArgument(final Class<T> clazz,
-            final InvocationSequence invocationSequence) {
-        T placeholder = (T) createPlaceholder(clazz, invocationSequence);
-        if (ARG.get().getState() == State.ACTIVE) {
-            ARG.get().set(placeholder, new Argument<T>(invocationSequence));
-        }
-        return placeholder;
-    }
+	@SuppressWarnings("unchecked")
+	static <T> T createArgument(final Class<T> clazz,
+			final InvocationSequence invocationSequence) {
+		T placeholder = (T) createPlaceholder(clazz, invocationSequence);
+		if (ARG.get().getState() == State.ACTIVE) {
+			ARG.get().set(placeholder, new Argument<T>(invocationSequence));
+		}
+		return placeholder;
+	}
 
-    private static Object createPlaceholder(final Class<?> clazz,
-            final InvocationSequence invocationSequence) {
+	private static Object createPlaceholder(final Class<?> clazz,
+			final InvocationSequence invocationSequence) {
 
-        State stateBeforeCreationCall = ARG.get().getState();
+		State stateBeforeCreationCall = ARG.get().getState();
 
-        if (clazz == Void.class || "void".equals(clazz.getName())) {
-            if (stateBeforeCreationCall == State.IGNORE) {
-                return null;
-            }
+		if (clazz == Void.class || "void".equals(clazz.getName())) {
+			if (stateBeforeCreationCall == State.IGNORE) {
+				return null;
+			}
 
-            throw new IllegalArgumentException(
-                    "void return type encountered on: " + invocationSequence);
-        }
+			throw new IllegalArgumentException(
+					"void return type encountered on: " + invocationSequence);
+		}
 
-        if (clazz.isPrimitive()) {
-            return createPrimitivePlaceHolder(clazz, invocationSequence);
-        }
+		if (clazz.isPrimitive()) {
+			return createPrimitivePlaceHolder(clazz, invocationSequence);
+		}
 
-        if (clazz.isArray()) {
-            Class<?> arrayType = clazz.getComponentType();
-            return Array.newInstance(arrayType, 0);
-        }
+		if (clazz.isArray()) {
+			Class<?> arrayType = clazz.getComponentType();
+			return Array.newInstance(arrayType, 0);
+		}
 
-        ARG.get().set(State.IGNORE);
-        try {
-            if (Modifier.isFinal(clazz.getModifiers())) {
-                // Probably safe to create instances of Base objects like String
-                if (!clazz.getName().startsWith("java.")) {
-                    throw new IllegalArgumentException("Modelfactory cannot proxy final Class or Enum '" + clazz +"'");
-                }
-                return objenesis.newInstance(clazz);
-            }
-            else {
-                return ProxyUtil.createProxy(new ProxyArgument(clazz,
-                        invocationSequence), clazz, false);
-            }
-        }
-        finally {
-            ARG.get().set(stateBeforeCreationCall);
-        }
-    }
+		ARG.get().set(State.IGNORE);
+		try {
+			if (Modifier.isFinal(clazz.getModifiers())) {
+				// This breaks backward comp. because wicket-modelfactory is
+				// actually used with final classes
+				// TODO
 
-    private static Object createPrimitivePlaceHolder(final Class<?> clazz,
-            final InvocationSequence invocationSequence) {
+				// Probably safe to create instances of Base objects like String
+				// if (!clazz.getName().startsWith("java.")) {
+				// throw new IllegalArgumentException(
+				// "Modelfactory cannot proxy final Class or Enum '"
+				// + clazz + "'");
+				// }
+				return objenesis.newInstance(clazz);
+			} else {
+				return ProxyUtil.createProxy(new ProxyArgument(clazz,
+						invocationSequence), clazz, false);
+			}
+		} finally {
+			ARG.get().set(stateBeforeCreationCall);
+		}
+	}
 
-        if (clazz == boolean.class) {
-            return true;
-        }
+	private static Object createPrimitivePlaceHolder(final Class<?> clazz,
+			final InvocationSequence invocationSequence) {
 
-        if (clazz == int.class) {
-            return 1;
-        }
-        if (clazz == double.class) {
-            return 1d;
-        }
-        if (clazz == long.class) {
-            return 1L;
-        }
+		if (clazz == boolean.class) {
+			return true;
+		}
 
-        if (clazz == short.class) {
-            return (short) 1;
-        }
+		if (clazz == int.class) {
+			return 1;
+		}
+		if (clazz == double.class) {
+			return 1d;
+		}
+		if (clazz == long.class) {
+			return 1L;
+		}
 
-        if (clazz == byte.class) {
-            return (byte) 1;
-        }
+		if (clazz == short.class) {
+			return (short) 1;
+		}
 
-        if (clazz == float.class) {
-            return 1f;
-        }
+		if (clazz == byte.class) {
+			return (byte) 1;
+		}
 
-        if (clazz == char.class) {
-            return 'p';
-        }
+		if (clazz == float.class) {
+			return 1f;
+		}
 
-        throw new IllegalArgumentException("forgotten primitive?");
+		if (clazz == char.class) {
+			return 'p';
+		}
 
-    }
+		throw new IllegalArgumentException("forgotten primitive?");
 
-    private static class ArgumentMapping {
-        private Argument<?> lastArgument;
+	}
 
-        private Object lastPlaceHolder;
+	private static class ArgumentMapping {
+		private Argument<?> lastArgument;
 
-        private State state = State.ACTIVE;
+		private Object lastPlaceHolder;
 
-        public State getState() {
-            return state;
-        }
+		private State state = State.ACTIVE;
 
-        public void set(final Object placeHolder, final Argument<?> arg) {
-            if (state == State.ACTIVE) {
-                lastArgument = arg;
-                lastPlaceHolder = placeHolder;
-            }
-        }
+		public State getState() {
+			return state;
+		}
 
-        public void set(final State stateToSet) {
-            state = stateToSet;
-        }
+		public void set(final Object placeHolder, final Argument<?> arg) {
+			if (state == State.ACTIVE) {
+				lastArgument = arg;
+				lastPlaceHolder = placeHolder;
+			}
+		}
 
-        public Argument<?> getAndClear(final Object placeHolder) {
-            try {
-                return get(placeHolder);
-            }
-            finally {
-                set(null, null);
-            }
-        }
+		public void set(final State stateToSet) {
+			state = stateToSet;
+		}
 
-        public Argument<?> get(final Object placeHolder) {
-            if (placeHolder == null) {
-                throw new IllegalStateException("Unknown placeholder "
-                        + placeHolder);
-            }
+		public Argument<?> getAndClear(final Object placeHolder) {
+			try {
+				return get(placeHolder);
+			} finally {
+				set(null, null);
+			}
+		}
 
-            if (placeHolder instanceof Argument) {
-                return (Argument<?>) placeHolder;
-            }
+		public Argument<?> get(final Object placeHolder) {
+			if (placeHolder == null) {
+				throw new IllegalStateException("Unknown placeholder "
+						+ placeHolder);
+			}
 
-            if (placeHolder != lastPlaceHolder) {
-                // fixes problems with double
-                if (!placeHolder.equals(lastPlaceHolder)) {
-                    throw new IllegalStateException("Unknown placeholder "
-                            + placeHolder);
-                } else {
-                    return lastArgument;
-                }
-            }
-            else {
-                return lastArgument;
-            }
-        }
-    }
+			if (placeHolder instanceof Argument) {
+				return (Argument<?>) placeHolder;
+			}
 
-    private enum State {
-        ACTIVE, IGNORE;
-    }
+			if (placeHolder != lastPlaceHolder) {
+				// fixes problems with double
+				if (!placeHolder.equals(lastPlaceHolder)) {
+					throw new IllegalStateException("Unknown placeholder "
+							+ placeHolder);
+				} else {
+					return lastArgument;
+				}
+			} else {
+				return lastArgument;
+			}
+		}
+	}
 
-    private static class LastArgHolder extends
-            RequestCycleLocal<ArgumentMapping> {
-        private static final MetaDataKey<ArgumentMapping> LAST_ARG_HOLDER_KEY = new MetaDataKey<ArgumentsFactory.ArgumentMapping>() {
+	private enum State {
+		ACTIVE, IGNORE;
+	}
 
-            private static final long serialVersionUID = 1L;
-        };
+	private static class LastArgHolder extends
+			RequestCycleLocal<ArgumentMapping> {
+		private static final MetaDataKey<ArgumentMapping> LAST_ARG_HOLDER_KEY = new MetaDataKey<ArgumentsFactory.ArgumentMapping>() {
 
-        public LastArgHolder() {
-            super(LAST_ARG_HOLDER_KEY);
-        }
+			private static final long serialVersionUID = 1L;
+		};
 
-        @Override
-        public ArgumentMapping get() {
-            ArgumentMapping target = super.get();
-            if (target == null) {
-                target = new ArgumentMapping();
-                set(target);
-            }
-            return target;
-        }
-    }
+		public LastArgHolder() {
+			super(LAST_ARG_HOLDER_KEY);
+		}
 
-    private static LastArgHolder ARG = new LastArgHolder();
+		@Override
+		public ArgumentMapping get() {
+			ArgumentMapping target = super.get();
+			if (target == null) {
+				target = new ArgumentMapping();
+				set(target);
+			}
+			return target;
+		}
+	}
 
-    @SuppressWarnings("unchecked")
-    public static <T> Argument<T> getAndRemoveArgumentFor(final T placeholder) {
-        return (Argument<T>) ARG.get().getAndClear(placeholder);
-    }
+	private static LastArgHolder ARG = new LastArgHolder();
 
-    @SuppressWarnings("unchecked")
-    public static <T> Argument<T> getArgumentFor(final T placeholder) {
-        return (Argument<T>) ARG.get().get(placeholder);
-    }
+	@SuppressWarnings("unchecked")
+	public static <T> Argument<T> getAndRemoveArgumentFor(final T placeholder) {
+		return (Argument<T>) ARG.get().getAndClear(placeholder);
+	}
 
-    private static final Objenesis objenesis = new ObjenesisStd(true);
+	@SuppressWarnings("unchecked")
+	public static <T> Argument<T> getArgumentFor(final T placeholder) {
+		return (Argument<T>) ARG.get().get(placeholder);
+	}
+
+	private static final Objenesis objenesis = new ObjenesisStd(true);
 
 }
