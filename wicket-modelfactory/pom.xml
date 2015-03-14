@@ -3,7 +3,7 @@
  <parent>
   <groupId>org.wicketeer</groupId>
   <artifactId>wicket-modelfactory-parent</artifactId>
-  <version>0.9.4</version>
+  <version>0.9.7</version>
   <relativePath>..</relativePath>
  </parent>
  <artifactId>wicket-modelfactory</artifactId>
@@ -13,8 +13,7 @@
   <dependency>
    <groupId>org.apache.wicket</groupId>
    <artifactId>wicket-core</artifactId>
-   <version>6.0.0</version>
-   <scope>compile</scope>
+   <version>[6.0.0,)</version>
   </dependency>
   <dependency>
    <groupId>com.googlecode.gentyref</groupId>
@@ -30,6 +29,11 @@
    <groupId>cglib</groupId>
    <artifactId>cglib-nodep</artifactId>
    <version>2.2.2</version>
+  </dependency>
+  <dependency>
+  	<groupId>junit</groupId>
+  	<artifactId>junit</artifactId>
+  	<version>4.12</version>
   </dependency>
  </dependencies>
  <build>
