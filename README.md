@@ -1,4 +1,4 @@
-# Wicket-ModelFactory # 
+# Wicket-ModelFactory 
 
 Wicket-modelfactory is an API to create Wicket PropertyModels in a typesafe and refactoring-safe way.
 
