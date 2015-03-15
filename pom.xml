@@ -21,8 +21,8 @@
 		<url>http://wicketeer.org</url>
 	</organization>
 	<issueManagement>
-		<system>bitbucket</system>
-		<url>https://bitbucket.org/uweschaefer/wicket-modelfactory/issues</url>
+		<system>github</system>
+		<url>https://github.com/uweschaefer/wicket-modelfactory.git</url>
 	</issueManagement>
 	<licenses>
 		<license>
@@ -32,9 +32,9 @@
 		</license>
 	</licenses>
 	<scm>
-		<connection>scm:hg:https://bitbucket.org/uweschaefer/wicket-modelfactory</connection>
-		<developerConnection>scm:hg:https://bitbucket.org/uweschaefer/wicket-modelfactory</developerConnection>
-		<url>http://bitbucket.org/uweschaefer/wicket-modelfactory</url>
+		<connection>scm:git:https://github.com/uweschaefer/wicket-modelfactory.git</connection>
+		<developerConnection>scm:git:https://github.com/uweschaefer/wicket-modelfactory.git</developerConnection>
+		<url>https://github.com/uweschaefer/wicket-modelfactory.git</url>
 	</scm>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
