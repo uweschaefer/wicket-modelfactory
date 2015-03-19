@@ -13,7 +13,7 @@
   <dependency>
    <groupId>org.apache.wicket</groupId>
    <artifactId>wicket-core</artifactId>
-   <version>[6.0.0,7.0.0)</version>
+   <version>[6.0.0,6.99)</version>
   </dependency>
   <dependency>
    <groupId>com.googlecode.gentyref</groupId>
