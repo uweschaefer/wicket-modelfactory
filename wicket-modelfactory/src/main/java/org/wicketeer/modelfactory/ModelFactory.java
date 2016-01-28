@@ -94,20 +94,8 @@ public final class ModelFactory {
 
         if (LoadableDetachableModel.class.isAssignableFrom(c)) {
             try {
-                Set<Method> m = getAllMethods(c);
-                for (Method meth : m) {
-                    if ("load".equals(meth.getName())) {
-                        type = (Class<T>) meth.getReturnType();
-                        if ((type == Object.class)
-                                || (type == Serializable.class)) {
-                            type = null;
-                        }
-                        else {
-                            break;
-                        }
-                    }
-
-                }
+            	type=(Class<T>) GenericTypeReflector.getTypeParameter(c,
+        				LoadableDetachableModel.class.getTypeParameters()[0]);
             }
             catch (Throwable e) {
                 throw new WicketRuntimeException(e);
@@ -268,7 +256,7 @@ public final class ModelFactory {
     }
 
     /**
-     * In cases where you need to hint the Type of the model passed, ecause it
+     * In cases where you need to hint the Type of the model passed, because it
      * cannot be reflected, you can use this method and provide the model
      * objects expected type as parameter.
      * 
