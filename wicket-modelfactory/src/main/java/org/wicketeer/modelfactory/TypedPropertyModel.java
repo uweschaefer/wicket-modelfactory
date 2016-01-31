@@ -20,8 +20,8 @@ package org.wicketeer.modelfactory;
 import org.apache.wicket.model.IObjectClassAwareModel;
 import org.apache.wicket.model.PropertyModel;
 
-class TypedPropertyModel<S> extends PropertyModel<S> implements
-        IObjectClassAwareModel<S> {
+class TypedPropertyModel<S> extends PropertyModel<S>
+        implements IObjectClassAwareModel<S> {
     private static final long serialVersionUID = 1L;
     private final Class<S> type;
 

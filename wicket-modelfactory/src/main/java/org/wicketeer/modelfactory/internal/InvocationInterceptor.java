@@ -28,8 +28,8 @@ import net.sf.cglib.proxy.MethodProxy;
  * 
  * @author Mario Fusco
  */
-public abstract class InvocationInterceptor implements MethodInterceptor,
-        java.lang.reflect.InvocationHandler {
+public abstract class InvocationInterceptor
+        implements MethodInterceptor, java.lang.reflect.InvocationHandler {
 
     /**
      * {@inheritDoc}

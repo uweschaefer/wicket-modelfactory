@@ -87,9 +87,8 @@ public class Argument<T> {
      */
     @Override
     public boolean equals(final Object object) {
-        return (object instanceof Argument<?>)
-                && invocationSequence
-                        .equals(((Argument<?>) object).invocationSequence);
+        return (object instanceof Argument<?>) && invocationSequence
+                .equals(((Argument<?>) object).invocationSequence);
     }
 
     /**

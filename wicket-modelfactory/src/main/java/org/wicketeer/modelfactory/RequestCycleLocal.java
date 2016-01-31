@@ -55,7 +55,8 @@ public class RequestCycleLocal<T> {
      *             if there currently is no active RequestCycle. (Remember to
      *             use WicketTester in unit-tests)
      */
-    protected final RequestCycle getRequestCycle() throws IllegalStateException {
+    protected final RequestCycle getRequestCycle()
+            throws IllegalStateException {
         RequestCycle requestCycle = RequestCycle.get();
         if (requestCycle == null) {
             throw new IllegalStateException("Outside of request-cycle");

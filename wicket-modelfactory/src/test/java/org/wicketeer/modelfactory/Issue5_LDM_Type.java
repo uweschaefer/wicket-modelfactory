@@ -2,48 +2,21 @@ package org.wicketeer.modelfactory;
 
 import java.io.Serializable;
 
-import junit.framework.TestCase;
-
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.markup.IMarkupResourceStreamProvider;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
-import org.apache.wicket.model.Model;
 import org.apache.wicket.util.resource.IResourceStream;
 import org.apache.wicket.util.resource.StringResourceStream;
 import org.apache.wicket.util.tester.WicketTester;
 
-public class Issue3_RegressionTest extends TestCase {
+import junit.framework.TestCase;
 
-    public void testShouldThrowIllegalArg() throws Exception {
-        // Empty model
-        try {
-            IModel<Foo> mdl = new Model<Foo>();
-            new WicketTester()
-                    .startComponentInPage(new TestPanel("panel", mdl));
-            fail();
-        }
-        catch (IllegalArgumentException expected) {
-        }
-    }
+public class Issue5_LDM_Type extends TestCase {
 
-    public void testFindTypeFromAnonClass() throws Exception {
-        // Empty model
-        IModel<Foo> mdl = new Model<Foo>() {
-        };
-        WicketTester tester = new WicketTester();
-        TestPanel panel = new TestPanel("panel", mdl);
-
-        TestPanel tp = tester.startComponentInPage(panel);
-        Foo foo = new Foo();
-        foo.setBar("baz");
-        mdl.setObject(foo);
-        tester.assertLabel("panel:label", "baz");
-    }
-
-    public void testFindTypeFromLDM() throws Exception {
+    public void testFindTypeFromAnonLDM() throws Exception {
         // Empty model
         final Foo myFoo = new Foo();
 
@@ -70,49 +43,21 @@ public class Issue3_RegressionTest extends TestCase {
         tester.assertLabel("panel:label", "baz");
     }
 
-    static class MyModel extends Model<Foo> {
-        @Override
-        public Foo getObject() {
-            Foo f = super.getObject();
-            if (f == null) {
-                fail("too early");
-                return null;
-            }
-            else {
-                return f;
-            }
-        }
-    }
-
-    public void testFindTypeFromGetObject() throws Exception {
-        final Foo myFoo = new Foo();
-        IModel<Foo> mdl = new Model<Foo>(myFoo);
+    public void testFindTypeFromHierarchyLDM() throws Exception {
+        IModel<Foo> mdl = new ComplexLDM();
         WicketTester tester = new WicketTester();
-        TestPanel panel = new TestPanel("panel", mdl);
-        myFoo.setBar("baz");
-        TestPanel tp = tester.startComponentInPage(panel);
-        tester.assertLabel("panel:label", "baz");
-    }
-
-    public void testFindTypeFromTypedModel() throws Exception {
-        // Empty model
-
-        IModel<Foo> mdl = new MyModel();
-        WicketTester tester = new WicketTester();
-        TestPanel panel = new TestPanel("panel", mdl);
-
-        final Foo myFoo = new Foo();
-        myFoo.setBar("baz");
-        mdl.setObject(myFoo);
-        TestPanel tp = tester.startComponentInPage(panel);
-        tester.assertLabel("panel:label", "baz");
+        IModel<String> model = ModelFactory
+                .model(ModelFactory.from(mdl).getBar());
+        Label panel = new Label("label", model);
+        tester.startComponentInPage(panel);
+        tester.assertLabel("label", "pc");
     }
 
     private static class Foo implements Serializable {
         private String bar;
 
         public String getBar() {
-            return bar;
+            return this.bar;
         }
 
         public void setBar(final String bar) {
@@ -122,6 +67,8 @@ public class Issue3_RegressionTest extends TestCase {
 
     private static class TestPanel extends GenericPanel<Foo>
             implements IMarkupResourceStreamProvider {
+
+        private static final long serialVersionUID = 1L;
 
         private TestPanel(final String id, final IModel<Foo> model) {
             super(id, model);
@@ -144,5 +91,24 @@ public class Issue3_RegressionTest extends TestCase {
             return new StringResourceStream(
                     "<wicket:panel><span wicket:id=\"label\"></span></wicket:panel>");
         }
+    }
+
+    static class ComplexLDM extends ParameterizedClass<Integer, Long> {
+
+        private static final long serialVersionUID = 1L;
+
+    }
+
+    static class ParameterizedClass<X, Y> extends LoadableDetachableModel<Foo> {
+
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        protected Foo load() {
+            Foo foo = new Foo();
+            foo.setBar("pc");
+            return foo;
+        }
+
     }
 }

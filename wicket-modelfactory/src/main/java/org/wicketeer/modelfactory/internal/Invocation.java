@@ -45,8 +45,8 @@ final class Invocation {
         if ((args != null) && (args.length > 0)) {
             weakArgs = new ParameterReference[args.length];
             for (int i = 0; i < args.length; i++) {
-                weakArgs[i] = invokedMethod.getParameterTypes()[i]
-                        .isPrimitive() ? new StrongParameterReference(args[i])
+                weakArgs[i] = invokedMethod.getParameterTypes()[i].isPrimitive()
+                        ? new StrongParameterReference(args[i])
                         : new WeakParameterReference(args[i]);
             }
         }
@@ -88,8 +88,8 @@ final class Invocation {
 
     Object invokeOn(final Object object) {
         try {
-            return object == null ? null : invokedMethod.invoke(object,
-                    getConcreteArgs());
+            return object == null ? null
+                    : invokedMethod.invoke(object, getConcreteArgs());
         }
         catch (Exception e) {
             if (e instanceof RuntimeException) {
@@ -155,8 +155,8 @@ final class Invocation {
     }
 
     static boolean areNullSafeEquals(final Object first, final Object second) {
-        return (first == second)
-                || ((first != null) && (second != null) && first.equals(second));
+        return (first == second) || ((first != null) && (second != null)
+                && first.equals(second));
     }
 
     private static abstract class ParameterReference {
@@ -164,14 +164,13 @@ final class Invocation {
 
         @Override
         public final boolean equals(final Object obj) {
-            return (obj instanceof ParameterReference)
-                    && areNullSafeEquals(get(),
-                            ((ParameterReference) obj).get());
+            return (obj instanceof ParameterReference) && areNullSafeEquals(
+                    get(), ((ParameterReference) obj).get());
         }
     }
 
-    private static final class StrongParameterReference extends
-            ParameterReference {
+    private static final class StrongParameterReference
+            extends ParameterReference {
         private final Object strongRef;
 
         private StrongParameterReference(final Object referent) {
@@ -184,8 +183,8 @@ final class Invocation {
         }
     }
 
-    private static final class WeakParameterReference extends
-            ParameterReference {
+    private static final class WeakParameterReference
+            extends ParameterReference {
         private final WeakReference<Object> weakRef;
 
         private WeakParameterReference(final Object referent) {

@@ -49,8 +49,8 @@ class ChainFrom extends RequestCycleLocal<Object> {
         StackTraceElement[] st = invokationPath.getStackTrace();
         for (StackTraceElement stackTraceElement : st) {
             String cn = stackTraceElement.getClassName();
-            if (!cn.contains(ModelFactory.class.getSimpleName())
-                    && !(cn.contains(ModelFactory.class.getPackage().getName()))) {
+            if (!cn.contains(ModelFactory.class.getSimpleName()) && !(cn
+                    .contains(ModelFactory.class.getPackage().getName()))) {
                 String mn = stackTraceElement.getMethodName();
                 int ln = stackTraceElement.getLineNumber();
                 String scn = cn.substring(cn.lastIndexOf('.') + 1);
@@ -66,7 +66,8 @@ class ChainFrom extends RequestCycleLocal<Object> {
         Reference ref = (Reference) super.get();
         if (ref == null) {
             super.remove();
-            throw new IllegalStateException("no from() call registered before!");
+            throw new IllegalStateException(
+                    "no from() call registered before!");
         }
 
         return ref.getObject();

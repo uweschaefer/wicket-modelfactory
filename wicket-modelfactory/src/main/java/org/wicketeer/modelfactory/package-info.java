@@ -21,4 +21,3 @@
  * IDE.
  */
 package org.wicketeer.modelfactory;
-

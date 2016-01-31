@@ -16,8 +16,8 @@
 //
 
 /**
- * Internal Package: Mainly contains a slightly trimmed parts of LambdaJ needed for wicket-modelfactory
+ * Internal Package: Mainly contains a slightly trimmed parts of LambdaJ needed
+ * for wicket-modelfactory
  * All Kudos to Mario Fusco
  */
 package org.wicketeer.modelfactory.internal;
-

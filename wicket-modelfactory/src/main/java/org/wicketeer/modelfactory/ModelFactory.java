@@ -28,7 +28,6 @@ import java.util.Set;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.IObjectClassAwareModel;
-import org.apache.wicket.model.LoadableDetachableModel;
 import org.wicketeer.modelfactory.internal.Argument;
 import org.wicketeer.modelfactory.internal.ArgumentsFactory;
 
@@ -52,7 +51,7 @@ public final class ModelFactory {
     /**
      * Proxies the given object in order to be able to call methods on it to
      * create the property path later-on used by model().
-     * 
+     *
      * @param <T>
      *            the type of the parameter
      * @param value
@@ -74,7 +73,7 @@ public final class ModelFactory {
     /**
      * Proxies the Model-Object's type in order to be able to call methods on it
      * to create the property path later-on used by model().
-     * 
+     *
      * @param <T>
      *            type of the model parameter
      * @param model
@@ -84,23 +83,15 @@ public final class ModelFactory {
      *             if the model is null
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static <T> T from(final IModel<T> model) throws NullPointerException {
+    public static <T> T from(final IModel<T> model)
+            throws NullPointerException {
 
         Preconditions.checkNotNull(model);
 
         Class<? extends IModel> c = model.getClass();
 
-        Class<T> type = null;
-
-        if (LoadableDetachableModel.class.isAssignableFrom(c)) {
-            try {
-            	type=(Class<T>) GenericTypeReflector.getTypeParameter(c,
-        				LoadableDetachableModel.class.getTypeParameters()[0]);
-            }
-            catch (Throwable e) {
-                throw new WicketRuntimeException(e);
-            }
-        }
+        Class<T> type = (Class<T>) GenericTypeReflector.getTypeParameter(c,
+                IModel.class.getTypeParameters()[0]);
 
         if ((type == null) && IModel.class.isAssignableFrom(c)) {
             try {
@@ -133,7 +124,7 @@ public final class ModelFactory {
         }
 
         if (type == null) {
-            // last possibility
+            // last resort
             T modelObject = model.getObject();
             if (modelObject != null) {
                 type = (Class<T>) modelObject.getClass();
@@ -158,7 +149,7 @@ public final class ModelFactory {
 
     private static Set<Class<?>> getAllSuperTypes(final Class<?> type) {
         Set<Class<?>> result = new HashSet<Class<?>>();
-        if (type != null && (!type.equals(Object.class))) {
+        if ((type != null) && (!type.equals(Object.class))) {
             result.add(type);
             result.addAll(getAllSuperTypes(type.getSuperclass()));
             for (Class<?> ifc : type.getInterfaces()) {
@@ -170,15 +161,15 @@ public final class ModelFactory {
 
     private static Set<Method> getMethods(Class<?> t) {
         Set<Method> result = new HashSet<Method>();
-        result.addAll(Arrays.asList(t.isInterface() ? t.getMethods() : t
-                .getDeclaredMethods()));
+        result.addAll(Arrays.asList(
+                t.isInterface() ? t.getMethods() : t.getDeclaredMethods()));
         return result;
     }
 
     /**
      * Gentryfer-magic to find the type of an non model impl. wondering if it is
      * worth the dependency.
-     * 
+     *
      * @param c
      *            the anon class
      * @return the type found or null
@@ -201,7 +192,7 @@ public final class ModelFactory {
     /**
      * creates an actual PropertyModel from the path expressed by the given
      * object.
-     * 
+     *
      * @param path
      *            the object initially created by a from-call
      * @param <T>
@@ -242,7 +233,7 @@ public final class ModelFactory {
      * usecase is to evaluate to a path expression, that is used in subsequent
      * PropertyModel constructions.
      * <code>new PropertyModel(myModel, ModelFactory.path(x));</code>
-     * 
+     *
      * @param clazz
      *            the type of the proxy to create
      * @param <T>
@@ -251,15 +242,15 @@ public final class ModelFactory {
      */
     public static <T> T fromClass(final Class<T> clazz) {
         ModelFactory.localFrom.set(RequestCycleLocalFrom.FROM_CLASS);
-        return ArgumentsFactory.createArgument(Preconditions
-                .checkNotNull(clazz));
+        return ArgumentsFactory
+                .createArgument(Preconditions.checkNotNull(clazz));
     }
 
     /**
      * In cases where you need to hint the Type of the model passed, because it
      * cannot be reflected, you can use this method and provide the model
      * objects expected type as parameter.
-     * 
+     *
      * @param model
      *            the model from which to create a proxy
      * @param type

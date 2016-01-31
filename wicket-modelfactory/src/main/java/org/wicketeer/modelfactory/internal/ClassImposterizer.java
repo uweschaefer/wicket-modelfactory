@@ -123,7 +123,8 @@ final class ClassImposterizer {
 
     private void setConstructorsAccessible(final Class<?> mockedType,
             final boolean accessible) {
-        for (Constructor<?> constructor : mockedType.getDeclaredConstructors()) {
+        for (Constructor<?> constructor : mockedType
+                .getDeclaredConstructors()) {
             constructor.setAccessible(accessible);
         }
     }
@@ -139,11 +140,11 @@ final class ClassImposterizer {
         enhancer.setSuperclass(mockedType);
         enhancer.setInterfaces(interfaces);
 
-        enhancer.setCallbackTypes(new Class[] { MethodInterceptor.class,
-                NoOp.class });
+        enhancer.setCallbackTypes(
+                new Class[] { MethodInterceptor.class, NoOp.class });
         enhancer.setCallbackFilter(IGNORE_BRIDGE_METHODS);
-        enhancer.setNamingPolicy(mockedType.getSigners() != null ? SIGNED_CLASSES_POLICY
-                : DEFAULT_POLICY);
+        enhancer.setNamingPolicy(mockedType.getSigners() != null
+                ? SIGNED_CLASSES_POLICY : DEFAULT_POLICY);
 
         return enhancer.createClass();
     }

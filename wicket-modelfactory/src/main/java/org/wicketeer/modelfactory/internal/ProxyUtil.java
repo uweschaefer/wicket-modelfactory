@@ -47,10 +47,8 @@ public final class ProxyUtil {
             final Class<T> clazz, final boolean failSafe,
             final Class<?>... implementedInterface) {
         if (clazz.isInterface()) {
-            return (T) createNativeJavaProxy(
-                    clazz.getClassLoader(),
-                    interceptor,
-                    concatClasses(new Class<?>[] { clazz },
+            return (T) createNativeJavaProxy(clazz.getClassLoader(),
+                    interceptor, concatClasses(new Class<?>[] { clazz },
                             implementedInterface));
         }
         try {
@@ -60,10 +58,8 @@ public final class ProxyUtil {
         }
         catch (IllegalArgumentException iae) {
             if (Proxy.isProxyClass(clazz)) {
-                return (T) createNativeJavaProxy(
-                        clazz.getClassLoader(),
-                        interceptor,
-                        concatClasses(implementedInterface,
+                return (T) createNativeJavaProxy(clazz.getClassLoader(),
+                        interceptor, concatClasses(implementedInterface,
                                 clazz.getInterfaces()));
             }
             if (isProxable(clazz)) {
@@ -75,7 +71,8 @@ public final class ProxyUtil {
 
     }
 
-    public static String enumerate(final Collection<?> l, final String delimiter) {
+    public static String enumerate(final Collection<?> l,
+            final String delimiter) {
         StringBuffer sb = new StringBuffer(128);
         boolean first = true;
         for (Object object : l) {

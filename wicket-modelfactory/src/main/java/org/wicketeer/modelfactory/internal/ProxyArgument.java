@@ -65,7 +65,7 @@ class ProxyArgument extends InvocationInterceptor {
         // Adds this invocation to the current invocation sequence and creates a
         // new proxy propagating the invocation sequence
         return ArgumentsFactory.createArgument(returnType,
-                new InvocationSequence(invocationSequence, new Invocation(
-                        proxiedClass, method, args)));
+                new InvocationSequence(invocationSequence,
+                        new Invocation(proxiedClass, method, args)));
     }
 }

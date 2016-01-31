@@ -48,8 +48,9 @@ class RequestCycleLocalFrom extends RequestCycleLocal<Object> {
             StringBuilder sb = new StringBuilder(
                     "mutliple from() calls. You need to call 'model()' or 'path()' first.");
             if (path != null) {
-                sb.append(" First (probably missing a 'model()'- or 'path()'-call) invokation of from() at "
-                        + render(path));
+                sb.append(
+                        " First (probably missing a 'model()'- or 'path()'-call) invokation of from() at "
+                                + render(path));
             }
 
             throw new IllegalStateException(sb.toString());
@@ -62,9 +63,8 @@ class RequestCycleLocalFrom extends RequestCycleLocal<Object> {
             StackTraceElement[] st = invokationPath.getStackTrace();
             for (StackTraceElement stackTraceElement : st) {
                 String cn = stackTraceElement.getClassName();
-                if (!cn.contains(ModelFactory.class.getSimpleName())
-                        && !(cn.contains(ModelFactory.class.getPackage()
-                                .getName()))) {
+                if (!cn.contains(ModelFactory.class.getSimpleName()) && !(cn
+                        .contains(ModelFactory.class.getPackage().getName()))) {
                     String mn = stackTraceElement.getMethodName();
                     int ln = stackTraceElement.getLineNumber();
                     String scn = cn.substring(cn.lastIndexOf('.') + 1);

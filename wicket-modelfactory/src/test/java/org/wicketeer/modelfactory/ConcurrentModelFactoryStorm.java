@@ -92,40 +92,40 @@ public class ConcurrentModelFactoryStorm {
                     e.printStackTrace();
                 }
                 if (Math.random() > .5) {
-                    String b = ModelFactory.path(ModelFactory.from(new A())
-                            .getB());
+                    String b = ModelFactory
+                            .path(ModelFactory.from(new A()).getB());
                     if (!b.equals("b")) {
                         System.out.println("NARF " + b);
                     }
                 }
 
                 {
-                    String path = ModelFactory.path(ModelFactory.from(new A())
-                            .getB().getS());
+                    String path = ModelFactory
+                            .path(ModelFactory.from(new A()).getB().getS());
                     if (!path.equals("b.s")) {
                         System.out.println("POIT " + path);
                     }
                 }
 
                 {
-                    String path = ModelFactory.path(ModelFactory.from(new A())
-                            .getB().getU());
+                    String path = ModelFactory
+                            .path(ModelFactory.from(new A()).getB().getU());
                     if (!path.equals("b.u")) {
                         System.out.println("UUID " + path);
                     }
                 }
 
                 {
-                    String path = ModelFactory.path(ModelFactory.from(new A())
-                            .getB().getE());
+                    String path = ModelFactory
+                            .path(ModelFactory.from(new A()).getB().getE());
                     if (!path.equals("b.e")) {
                         System.out.println("Enum " + path);
                     }
                 }
 
                 {
-                    String path = ModelFactory.path(ModelFactory.from(new A())
-                            .getB().isB());
+                    String path = ModelFactory
+                            .path(ModelFactory.from(new A()).getB().isB());
                     if (!path.equals("b.b")) {
                         System.out.println("bool " + path);
                     }
@@ -134,38 +134,38 @@ public class ConcurrentModelFactoryStorm {
                 t.destroy();
             }
             catch (Throwable e) {
-                System.out
-                        .println("**************************************************");
-                System.out
-                        .println("**************************************************");
-                System.out
-                        .println("**************************************************");
-                System.out
-                        .println("**************************************************");
-                System.out
-                        .println("**************************************************");
-                System.out
-                        .println("**************************************************");
-                System.out
-                        .println("**************************************************");
-                System.out
-                        .println("**************************************************");
-                System.out
-                        .println("**************************************************");
-                System.out
-                        .println("**************************************************");
-                System.out
-                        .println("**************************************************");
-                System.out
-                        .println("**************************************************");
-                System.out
-                        .println("**************************************************");
-                System.out
-                        .println("**************************************************");
-                System.out
-                        .println("**************************************************");
-                System.out
-                        .println("**************************************************");
+                System.out.println(
+                        "**************************************************");
+                System.out.println(
+                        "**************************************************");
+                System.out.println(
+                        "**************************************************");
+                System.out.println(
+                        "**************************************************");
+                System.out.println(
+                        "**************************************************");
+                System.out.println(
+                        "**************************************************");
+                System.out.println(
+                        "**************************************************");
+                System.out.println(
+                        "**************************************************");
+                System.out.println(
+                        "**************************************************");
+                System.out.println(
+                        "**************************************************");
+                System.out.println(
+                        "**************************************************");
+                System.out.println(
+                        "**************************************************");
+                System.out.println(
+                        "**************************************************");
+                System.out.println(
+                        "**************************************************");
+                System.out.println(
+                        "**************************************************");
+                System.out.println(
+                        "**************************************************");
                 e.printStackTrace();
             }
         }
