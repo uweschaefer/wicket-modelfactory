@@ -89,9 +89,13 @@ public final class ModelFactory {
         Preconditions.checkNotNull(model);
 
         Class<? extends IModel> c = model.getClass();
+        Class<T> type = null;
 
-        Class<T> type = (Class<T>) GenericTypeReflector.getTypeParameter(c,
+        Type typeParameter = GenericTypeReflector.getTypeParameter(c,
                 IModel.class.getTypeParameters()[0]);
+        if (typeParameter instanceof Class) {
+            type = (Class<T>) typeParameter;
+        }
 
         if ((type == null) && IModel.class.isAssignableFrom(c)) {
             try {
