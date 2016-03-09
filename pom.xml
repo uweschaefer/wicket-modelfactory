@@ -10,7 +10,7 @@
 
 	<groupId>org.wicketeer</groupId>
 	<artifactId>wicket-modelfactory-parent</artifactId>
-	<version>0.9.12</version>
+	<version>0.9.13-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>wicket-modelfactory-parent</name>
 	<description>Wicket-modelfactory is an API to create Wicket PropertyModels in a typesafe and refactoring-safe way.</description>
