@@ -19,6 +19,8 @@ package org.wicketeer.modelfactory.internal;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Modifier;
+import java.util.IdentityHashMap;
+import java.util.Map;
 
 import org.apache.wicket.MetaDataKey;
 import org.objenesis.Objenesis;
@@ -35,6 +37,18 @@ public final class ArgumentsFactory {
 
     private static final LastArgHolder ARG = new LastArgHolder();
     private static final Objenesis objenesis = new ObjenesisStd(true);
+    private static final Map<Class<?>, Object> primitives = new IdentityHashMap<Class<?>, Object>();
+
+    static {
+        primitives.put(boolean.class, true);
+        primitives.put(int.class, 1);
+        primitives.put(double.class, 1D);
+        primitives.put(float.class, 1F);
+        primitives.put(long.class, 1L);
+        primitives.put(short.class, (short) 1);
+        primitives.put(byte.class, (byte) 1);
+        primitives.put(char.class, 'p');
+    }
 
     private ArgumentsFactory() {
     }
@@ -105,38 +119,11 @@ public final class ArgumentsFactory {
     private static Object createPrimitivePlaceHolder(final Class<?> clazz,
             final InvocationSequence invocationSequence) {
 
-        if (clazz == boolean.class) {
-            return true;
-        }
-
-        if (clazz == int.class) {
-            return 1;
-        }
-        if (clazz == double.class) {
-            return 1d;
-        }
-        if (clazz == long.class) {
-            return 1L;
-        }
-
-        if (clazz == short.class) {
-            return (short) 1;
-        }
-
-        if (clazz == byte.class) {
-            return (byte) 1;
-        }
-
-        if (clazz == float.class) {
-            return 1f;
-        }
-
-        if (clazz == char.class) {
-            return 'p';
-        }
-
-        throw new IllegalArgumentException("forgotten primitive?");
-
+        Object ret = primitives.get(clazz);
+        if (ret == null)
+            throw new IllegalArgumentException("forgotten primitive?");
+        else
+            return ret;
     }
 
     private static class ArgumentMapping {
