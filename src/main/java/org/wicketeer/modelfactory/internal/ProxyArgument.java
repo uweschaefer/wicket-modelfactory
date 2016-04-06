@@ -42,30 +42,30 @@ class ProxyArgument extends InvocationInterceptor {
             final Object[] args) {
 
         String name = method.getName();
-        if (name.equals("hashCode")) {
-            return invocationSequence.hashCode();
+        if ("hashCode".equals(name)) {
+            return this.invocationSequence.hashCode();
         }
-        if (name.equals("finalize")) {
+        if ("finalize".equals(name)) {
             return null;
         }
-        if (name.equals("wait")) {
+        if ("wait".equals(name)) {
             return null;
         }
-        if (name.equals("notify")) {
+        if ("notify".equals(name)) {
             return null;
         }
-        if (name.equals("notifyAll")) {
+        if ("notifyAll".equals(name)) {
             return null;
         }
-        if (name.equals("equals")) {
-            return invocationSequence.equals(args[0]);
+        if ("equals".equals(name)) {
+            return this.invocationSequence.equals(args[0]);
         }
         Class<?> returnType = method.getReturnType();
 
         // Adds this invocation to the current invocation sequence and creates a
         // new proxy propagating the invocation sequence
         return ArgumentsFactory.createArgument(returnType,
-                new InvocationSequence(invocationSequence,
-                        new Invocation(proxiedClass, method, args)));
+                new InvocationSequence(this.invocationSequence,
+                        new Invocation(this.proxiedClass, method, args)));
     }
 }
