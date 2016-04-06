@@ -32,7 +32,7 @@ import org.apache.wicket.RuntimeConfigurationType;
 class Reference {
     private final Object object;
     private final Exception invokationPath;
-    private static volatile Boolean createExceptionForDebug = null;
+    private volatile Boolean createExceptionForDebug = null;
 
     /**
      * @param objectToReference
@@ -43,12 +43,12 @@ class Reference {
     protected Reference(final Object objectToReference) throws NullPointerException {
         object = checkNotNull(objectToReference);
 
-        if (Reference.createExceptionForDebug == null) {
-            Reference.createExceptionForDebug = RuntimeConfigurationType.DEVELOPMENT
+        if (createExceptionForDebug == null) {
+            createExceptionForDebug = RuntimeConfigurationType.DEVELOPMENT
                     .equals(Application.get().getConfigurationType());
         }
 
-        if (Reference.createExceptionForDebug) {
+        if (createExceptionForDebug) {
             invokationPath = new Exception();
         }
         else {
