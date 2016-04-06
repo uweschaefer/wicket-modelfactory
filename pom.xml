@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
@@ -7,11 +8,12 @@
 		<version>7</version>
 	</parent>
 
+
 	<groupId>org.wicketeer</groupId>
-	<artifactId>wicket-modelfactory-parent</artifactId>
 	<version>0.9.14-SNAPSHOT</version>
-	<packaging>pom</packaging>
-	<name>wicket-modelfactory-parent</name>
+	<artifactId>wicket-modelfactory</artifactId>
+	<packaging>jar</packaging>
+	<name>wicket-modelfactory</name>
 	<description>Wicket-modelfactory is an API to create Wicket PropertyModels in a typesafe and refactoring-safe way.</description>
 	<url>http://wicketeer.org/wicket-modelfactory</url>
 	<inceptionYear>2012</inceptionYear>
@@ -54,9 +56,6 @@
 			</roles>
 		</developer>
 	</developers>
-	<modules>
-		<module>wicket-modelfactory</module>
-	</modules>
 	<distributionManagement>
 		<site>
 			<id>wicket-modelfactory</id>
@@ -195,8 +194,42 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>2.1</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<artifactSet>
+								<includes>
+									<include>com.googlecode.gentyref:gentyref</include>
+									<include>org.objenesis:objenesis</include>
+								</includes>
+							</artifactSet>
+							<relocations>
+								<relocation>
+									<pattern>com.googlecode.gentyref</pattern>
+									<shadedPattern>org.wicketeer.modelfactory.shaded.com.googlecode.gentyref</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>org.objenesis</pattern>
+									<shadedPattern>org.wicketeer.modelfactory.shaded.org.objenesis</shadedPattern>
+								</relocation>
+							</relocations>
+							<shadedArtifactAttached>false</shadedArtifactAttached>
+							<shadedClassifierName>nodep</shadedClassifierName>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
+
 	<dependencies>
 		<!-- test deps -->
 		<dependency>
@@ -223,7 +256,34 @@
 			<artifactId>slf4j-api</artifactId>
 			<version>1.6.4</version>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.wicket</groupId>
+			<artifactId>wicket-core</artifactId>
+			<version>[6.0.0,7.99)</version>
+		</dependency>
+		<dependency>
+			<groupId>com.googlecode.gentyref</groupId>
+			<artifactId>gentyref</artifactId>
+			<version>1.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.objenesis</groupId>
+			<artifactId>objenesis</artifactId>
+			<version>1.2</version>
+		</dependency>
+		<dependency>
+			<groupId>cglib</groupId>
+			<artifactId>cglib-nodep</artifactId>
+			<version>2.2.2</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+		</dependency>
 	</dependencies>
+
+
 	<profiles>
 		<profile>
 			<id>default</id>
@@ -306,6 +366,5 @@
 				</plugins>
 			</build>
 		</profile>
-
 	</profiles>
 </project>
