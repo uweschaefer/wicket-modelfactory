@@ -23,11 +23,12 @@ package org.wicketeer.modelfactory;
 import org.apache.wicket.MetaDataKey;
 
 class ChainFrom extends RequestCycleLocal<Object> {
+    private static final MetaDataKey<Object> key = new Key();
+
     static class Key extends MetaDataKey<Object> {
         private static final long serialVersionUID = 1L;
     };
 
-    private static MetaDataKey<Object> key = new Key();
 
     public ChainFrom() {
         super(key);

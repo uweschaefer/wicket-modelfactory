@@ -28,11 +28,12 @@ class RequestCycleLocalFrom extends RequestCycleLocal<Object> {
      */
     protected static final Object FROM_CLASS = new Object();
 
+    private static final MetaDataKey<Object> key = new Key();
+
     protected static class Key extends MetaDataKey<Object> {
         private static final long serialVersionUID = 1L;
     }
 
-    private static MetaDataKey<Object> key = new Key();
 
     public RequestCycleLocalFrom() {
         super(RequestCycleLocalFrom.key);

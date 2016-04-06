@@ -40,13 +40,15 @@ import com.googlecode.gentyref.GenericTypeReflector;
  * IModel&lt;Person&gt;.
  */
 public final class ModelFactory {
+
+    private static final RequestCycleLocalFrom localFrom = new RequestCycleLocalFrom();
+
     /**
      * hide constructor.
      */
     private ModelFactory() {
     }
 
-    private static RequestCycleLocalFrom localFrom = new RequestCycleLocalFrom();
 
     /**
      * Proxies the given object in order to be able to call methods on it to
