@@ -35,7 +35,7 @@ final class Invocation {
     private String invokedPropertyName;
     private ParameterReference[] weakArgs;
     private transient int hashCode;
-    Invocation previousInvocation;
+    protected Invocation previousInvocation;
 
     Invocation(final Class<?> invokedClass, final Method invokedMethod,
             final Object[] args) {
@@ -52,7 +52,7 @@ final class Invocation {
         }
     }
 
-    boolean hasArguments() {
+    protected boolean hasArguments() {
         return this.weakArgs != null;
     }
 
@@ -67,26 +67,26 @@ final class Invocation {
         return args;
     }
 
-    Class<?> getInvokedClass() {
+    protected Class<?> getInvokedClass() {
         return this.invokedClass;
     }
 
-    Method getInvokedMethod() {
+    protected Method getInvokedMethod() {
         return this.invokedMethod;
     }
 
-    Class<?> getReturnType() {
+    protected Class<?> getReturnType() {
         return this.invokedMethod.getReturnType();
     }
 
-    String getInvokedPropertyName() {
+    protected String getInvokedPropertyName() {
         if (this.invokedPropertyName == null) {
             this.invokedPropertyName = getPropertyName(this.invokedMethod);
         }
         return this.invokedPropertyName;
     }
 
-    Object invokeOn(final Object object) {
+    protected Object invokeOn(final Object object) {
         try {
             return object == null ? null
                     : this.invokedMethod.invoke(object, getConcreteArgs());
@@ -154,7 +154,8 @@ final class Invocation {
                 && Arrays.equals(this.weakArgs, otherInvocation.weakArgs);
     }
 
-    static boolean areNullSafeEquals(final Object first, final Object second) {
+    protected static boolean areNullSafeEquals(final Object first,
+            final Object second) {
         return (first == second) || ((first != null) && (second != null)
                 && first.equals(second));
     }
