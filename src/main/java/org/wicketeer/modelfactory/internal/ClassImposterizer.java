@@ -71,12 +71,13 @@ import org.objenesis.ObjenesisStd;
  */
 final class ClassImposterizer {
 
-    static final ClassImposterizer INSTANCE = new ClassImposterizer();
+    private final Objenesis objenesis = new ObjenesisStd();
+    
+    protected static final ClassImposterizer INSTANCE = new ClassImposterizer();
 
     private ClassImposterizer() {
     }
 
-    private final Objenesis objenesis = new ObjenesisStd();
 
     private static final NamingPolicy DEFAULT_POLICY = new DefaultNamingPolicy() {
         /**
@@ -114,7 +115,7 @@ final class ClassImposterizer {
         }
     };
 
-    <T> T imposterise(final Callback callback, final Class<T> mockedType,
+    protected <T> T imposterise(final Callback callback, final Class<T> mockedType,
             final Class<?>... ancillaryTypes) {
         setConstructorsAccessible(mockedType, true);
         Class<?> proxyClass = createProxyClass(mockedType, ancillaryTypes);
@@ -131,19 +132,23 @@ final class ClassImposterizer {
 
     private Class<?> createProxyClass(Class<?> mockedType,
             final Class<?>... interfaces) {
+        
+        
+        Class<?> type;
         if (mockedType == Object.class) {
-            mockedType = ClassWithSuperclassToWorkAroundCglibBug.class;
+            type = ClassWithSuperclassToWorkAroundCglibBug.class;
         }
+        else type=mockedType;
 
         Enhancer enhancer = new ClassEnhancer();
         enhancer.setUseFactory(true);
-        enhancer.setSuperclass(mockedType);
+        enhancer.setSuperclass(type);
         enhancer.setInterfaces(interfaces);
 
         enhancer.setCallbackTypes(
                 new Class[] { MethodInterceptor.class, NoOp.class });
         enhancer.setCallbackFilter(IGNORE_BRIDGE_METHODS);
-        enhancer.setNamingPolicy(mockedType.getSigners() != null
+        enhancer.setNamingPolicy(type.getSigners() != null
                 ? SIGNED_CLASSES_POLICY : DEFAULT_POLICY);
 
         return enhancer.createClass();
@@ -157,6 +162,7 @@ final class ClassImposterizer {
         @Override
         protected void filterConstructors(final Class sc,
                 final List constructors) {
+            // nothing to filter
         }
     }
 
