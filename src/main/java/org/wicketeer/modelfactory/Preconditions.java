@@ -40,7 +40,7 @@ final class Preconditions {
      * @throws NullPointerException
      *             if the given object was null
      */
-    static <T> T checkNotNull(final T t) {
+    public static <T> T checkNotNull(final T t) {
         if (t == null) {
             throw new NullPointerException();
         }
@@ -54,7 +54,7 @@ final class Preconditions {
      * @throws IllegalStateException
      *             if the given object was NOT null
      */
-    static <T> T checkNull(final T t) {
+    public static <T> T checkNull(final T t) {
         if (t != null) {
             throw new IllegalStateException();
         }
