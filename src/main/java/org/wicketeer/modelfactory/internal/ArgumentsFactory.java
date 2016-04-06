@@ -28,10 +28,13 @@ import org.wicketeer.modelfactory.RequestCycleLocal;
 /**
  * An utility class of static factory methods that creates arguments and binds
  * them with their placeholders
- * 
+ *
  * @author Mario Fusco
  */
 public final class ArgumentsFactory {
+
+    private static final LastArgHolder ARG = new LastArgHolder();
+    private static final Objenesis objenesis = new ObjenesisStd(true);
 
     private ArgumentsFactory() {
     }
@@ -41,7 +44,7 @@ public final class ArgumentsFactory {
     }
 
     @SuppressWarnings("unchecked")
-    static <T> T createArgument(final Class<T> clazz,
+    protected static <T> T createArgument(final Class<T> clazz,
             final InvocationSequence invocationSequence) {
         T placeholder = (T) createPlaceholder(clazz, invocationSequence);
         if (ARG.get().getState() == State.ACTIVE) {
@@ -55,7 +58,7 @@ public final class ArgumentsFactory {
 
         State stateBeforeCreationCall = ARG.get().getState();
 
-        if (clazz == Void.class || "void".equals(clazz.getName())) {
+        if ((clazz == Void.class) || "void".equals(clazz.getName())) {
             if (stateBeforeCreationCall == State.IGNORE) {
                 return null;
             }
@@ -144,18 +147,18 @@ public final class ArgumentsFactory {
         private State state = State.ACTIVE;
 
         public State getState() {
-            return state;
+            return this.state;
         }
 
         public void set(final Object placeHolder, final Argument<?> arg) {
-            if (state == State.ACTIVE) {
-                lastArgument = arg;
-                lastPlaceHolder = placeHolder;
+            if (this.state == State.ACTIVE) {
+                this.lastArgument = arg;
+                this.lastPlaceHolder = placeHolder;
             }
         }
 
         public void set(final State stateToSet) {
-            state = stateToSet;
+            this.state = stateToSet;
         }
 
         public Argument<?> getAndClear(final Object placeHolder) {
@@ -177,18 +180,18 @@ public final class ArgumentsFactory {
                 return (Argument<?>) placeHolder;
             }
 
-            if (placeHolder != lastPlaceHolder) {
+            if (placeHolder != this.lastPlaceHolder) {
                 // fixes problems with double
-                if (!placeHolder.equals(lastPlaceHolder)) {
+                if (!placeHolder.equals(this.lastPlaceHolder)) {
                     throw new IllegalStateException(
                             "Unknown placeholder " + placeHolder);
                 }
                 else {
-                    return lastArgument;
+                    return this.lastArgument;
                 }
             }
             else {
-                return lastArgument;
+                return this.lastArgument;
             }
         }
     }
@@ -219,8 +222,6 @@ public final class ArgumentsFactory {
         }
     }
 
-    private static LastArgHolder ARG = new LastArgHolder();
-
     @SuppressWarnings("unchecked")
     public static <T> Argument<T> getAndRemoveArgumentFor(final T placeholder) {
         return (Argument<T>) ARG.get().getAndClear(placeholder);
@@ -230,7 +231,5 @@ public final class ArgumentsFactory {
     public static <T> Argument<T> getArgumentFor(final T placeholder) {
         return (Argument<T>) ARG.get().get(placeholder);
     }
-
-    private static final Objenesis objenesis = new ObjenesisStd(true);
 
 }
