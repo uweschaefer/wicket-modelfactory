@@ -40,7 +40,7 @@ class Reference {
      * @throws NullPointerException
      *             if the object to reference if null
      */
-    Reference(final Object objectToReference) throws NullPointerException {
+    protected Reference(final Object objectToReference) throws NullPointerException {
         object = checkNotNull(objectToReference);
 
         if (Reference.createExceptionForDebug == null) {
@@ -59,7 +59,7 @@ class Reference {
     /**
      * @return the object passed in on creation
      */
-    Object getObject() {
+    protected Object getObject() {
         return object;
     }
 
@@ -67,7 +67,7 @@ class Reference {
      * @return Exception that was create on creation or null, if called within
      *         RuntimeConfigurationType.DEPLOYMENT
      */
-    Exception getInvokationPath() {
+    protected Exception getInvokationPath() {
         return invokationPath;
     }
 

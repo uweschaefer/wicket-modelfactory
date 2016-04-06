@@ -73,7 +73,7 @@ final class InvocationSequence implements Invoker {
         sb.append(".").append(inv.getInvokedPropertyName());
     }
 
-    Class<?> getReturnType() {
+    protected Class<?> getReturnType() {
         return this.lastInvocation.getReturnType();
     }
 

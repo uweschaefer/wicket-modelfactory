@@ -26,9 +26,9 @@ class RequestCycleLocalFrom extends RequestCycleLocal<Object> {
     /**
      * marker object that should make model() impossible, but let path() happen.
      */
-    static final Object FROM_CLASS = new Object();
+    protected static final Object FROM_CLASS = new Object();
 
-    static class Key extends MetaDataKey<Object> {
+    protected static class Key extends MetaDataKey<Object> {
         private static final long serialVersionUID = 1L;
     }
 

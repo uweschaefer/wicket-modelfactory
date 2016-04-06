@@ -43,7 +43,7 @@ public final class ProxyUtil {
                 && !clazz.isAnonymousClass();
     }
 
-    static <T> T createProxy(final InvocationInterceptor interceptor,
+    protected static <T> T createProxy(final InvocationInterceptor interceptor,
             final Class<T> clazz, final boolean failSafe,
             final Class<?>... implementedInterface) {
         if (clazz.isInterface()) {
