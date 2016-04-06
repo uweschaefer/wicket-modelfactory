@@ -43,58 +43,58 @@ final class Invocation {
         this.invokedMethod = invokedMethod;
         invokedMethod.setAccessible(true);
         if ((args != null) && (args.length > 0)) {
-            weakArgs = new ParameterReference[args.length];
+            this.weakArgs = new ParameterReference[args.length];
             for (int i = 0; i < args.length; i++) {
-                weakArgs[i] = invokedMethod.getParameterTypes()[i].isPrimitive()
-                        ? new StrongParameterReference(args[i])
-                        : new WeakParameterReference(args[i]);
+                this.weakArgs[i] = invokedMethod.getParameterTypes()[i]
+                        .isPrimitive() ? new StrongParameterReference(args[i])
+                                : new WeakParameterReference(args[i]);
             }
         }
     }
 
     boolean hasArguments() {
-        return weakArgs != null;
+        return this.weakArgs != null;
     }
 
     private Object[] getConcreteArgs() {
-        if (weakArgs == null) {
+        if (this.weakArgs == null) {
             return new Object[0];
         }
-        Object[] args = new Object[weakArgs.length];
-        for (int i = 0; i < weakArgs.length; i++) {
-            args[i] = weakArgs[i].get();
+        Object[] args = new Object[this.weakArgs.length];
+        for (int i = 0; i < this.weakArgs.length; i++) {
+            args[i] = this.weakArgs[i].get();
         }
         return args;
     }
 
     Class<?> getInvokedClass() {
-        return invokedClass;
+        return this.invokedClass;
     }
 
     Method getInvokedMethod() {
-        return invokedMethod;
+        return this.invokedMethod;
     }
 
     Class<?> getReturnType() {
-        return invokedMethod.getReturnType();
+        return this.invokedMethod.getReturnType();
     }
 
     String getInvokedPropertyName() {
-        if (invokedPropertyName == null) {
-            invokedPropertyName = getPropertyName(invokedMethod);
+        if (this.invokedPropertyName == null) {
+            this.invokedPropertyName = getPropertyName(this.invokedMethod);
         }
-        return invokedPropertyName;
+        return this.invokedPropertyName;
     }
 
     Object invokeOn(final Object object) {
         try {
             return object == null ? null
-                    : invokedMethod.invoke(object, getConcreteArgs());
+                    : this.invokedMethod.invoke(object, getConcreteArgs());
+        }
+        catch (RuntimeException re) {
+            throw re;
         }
         catch (Exception e) {
-            if (e instanceof RuntimeException) {
-                throw (RuntimeException) e;
-            }
             throw new RuntimeException(e);
         }
     }
@@ -104,13 +104,13 @@ final class Invocation {
      */
     @Override
     public String toString() {
-        if (weakArgs == null) {
-            return invokedMethod.toString();
+        if (this.weakArgs == null) {
+            return this.invokedMethod.toString();
         }
-        StringBuilder sb = new StringBuilder(invokedMethod.toString());
+        StringBuilder sb = new StringBuilder(this.invokedMethod.toString());
         sb.append(" with args ");
         boolean first = true;
-        for (ParameterReference arg : weakArgs) {
+        for (ParameterReference arg : this.weakArgs) {
             sb.append(first ? "" : ", ").append(arg.get());
             first = false;
         }
@@ -122,18 +122,18 @@ final class Invocation {
      */
     @Override
     public int hashCode() {
-        if (hashCode != 0) {
-            return hashCode;
+        if (this.hashCode != 0) {
+            return this.hashCode;
         }
-        hashCode = (13 * invokedClass.hashCode())
-                + (17 * invokedMethod.hashCode());
-        if (weakArgs != null) {
-            hashCode += 19 * weakArgs.length;
+        this.hashCode = (13 * this.invokedClass.hashCode())
+                + (17 * this.invokedMethod.hashCode());
+        if (this.weakArgs != null) {
+            this.hashCode += 19 * this.weakArgs.length;
         }
-        if (previousInvocation != null) {
-            hashCode += 23 * previousInvocation.hashCode();
+        if (this.previousInvocation != null) {
+            this.hashCode += 23 * this.previousInvocation.hashCode();
         }
-        return hashCode;
+        return this.hashCode;
     }
 
     /**
@@ -145,13 +145,13 @@ final class Invocation {
             return false;
         }
         Invocation otherInvocation = (Invocation) object;
-        return areNullSafeEquals(invokedClass,
+        return areNullSafeEquals(this.invokedClass,
                 otherInvocation.getInvokedClass())
-                && areNullSafeEquals(invokedMethod,
+                && areNullSafeEquals(this.invokedMethod,
                         otherInvocation.getInvokedMethod())
-                && areNullSafeEquals(previousInvocation,
+                && areNullSafeEquals(this.previousInvocation,
                         otherInvocation.previousInvocation)
-                && Arrays.equals(weakArgs, otherInvocation.weakArgs);
+                && Arrays.equals(this.weakArgs, otherInvocation.weakArgs);
     }
 
     static boolean areNullSafeEquals(final Object first, final Object second) {
@@ -174,12 +174,12 @@ final class Invocation {
         private final Object strongRef;
 
         private StrongParameterReference(final Object referent) {
-            strongRef = referent;
+            this.strongRef = referent;
         }
 
         @Override
         protected Object get() {
-            return strongRef;
+            return this.strongRef;
         }
     }
 
@@ -188,12 +188,12 @@ final class Invocation {
         private final WeakReference<Object> weakRef;
 
         private WeakParameterReference(final Object referent) {
-            weakRef = new WeakReference<Object>(referent);
+            this.weakRef = new WeakReference<Object>(referent);
         }
 
         @Override
         protected Object get() {
-            return weakRef.get();
+            return this.weakRef.get();
         }
     }
 

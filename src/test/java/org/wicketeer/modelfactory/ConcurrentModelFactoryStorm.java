@@ -15,7 +15,7 @@ public class ConcurrentModelFactoryStorm {
         B b;
 
         public B getB() {
-            return b;
+            return this.b;
         }
 
         public void setB(final B b) {
@@ -40,7 +40,7 @@ public class ConcurrentModelFactoryStorm {
         Enamm e = Enamm.C;
 
         public Enamm getE() {
-            return e;
+            return this.e;
         }
 
         public void setE(final Enamm e) {
@@ -48,7 +48,7 @@ public class ConcurrentModelFactoryStorm {
         }
 
         public Boolean isB() {
-            return b;
+            return this.b;
         }
 
         public void setB(final Boolean b) {
@@ -56,7 +56,7 @@ public class ConcurrentModelFactoryStorm {
         }
 
         public UUID getU() {
-            return u;
+            return this.u;
         }
 
         public void setU(final UUID u) {
@@ -64,7 +64,7 @@ public class ConcurrentModelFactoryStorm {
         }
 
         public String getS() {
-            return s;
+            return this.s;
         }
 
         public void setS(final String s) {
@@ -102,7 +102,7 @@ public class ConcurrentModelFactoryStorm {
                 {
                     String path = ModelFactory
                             .path(ModelFactory.from(new A()).getB().getS());
-                    if (!path.equals("b.s")) {
+                    if (!"b.s".equals(path)) {
                         System.out.println("POIT " + path);
                     }
                 }
@@ -110,7 +110,7 @@ public class ConcurrentModelFactoryStorm {
                 {
                     String path = ModelFactory
                             .path(ModelFactory.from(new A()).getB().getU());
-                    if (!path.equals("b.u")) {
+                    if (!"b.u".equals(path)) {
                         System.out.println("UUID " + path);
                     }
                 }
@@ -118,7 +118,7 @@ public class ConcurrentModelFactoryStorm {
                 {
                     String path = ModelFactory
                             .path(ModelFactory.from(new A()).getB().getE());
-                    if (!path.equals("b.e")) {
+                    if (!"b.e".equals(path)) {
                         System.out.println("Enum " + path);
                     }
                 }
@@ -126,7 +126,7 @@ public class ConcurrentModelFactoryStorm {
                 {
                     String path = ModelFactory
                             .path(ModelFactory.from(new A()).getB().isB());
-                    if (!path.equals("b.b")) {
+                    if (!"b.b".equals(path)) {
                         System.out.println("bool " + path);
                     }
                 }
