@@ -19,7 +19,7 @@ package org.wicketeer.modelfactory.internal;
 
 /**
  * Registers a sequence of method invocations
- * 
+ *
  * @author Mario Fusco
  * @author Frode Carlsen
  */
@@ -27,41 +27,41 @@ final class InvocationSequence implements Invoker {
 
     private final Class<?> rootInvokedClass;
     private String inkvokedPropertyName;
-    Invocation lastInvocation;
+    protected Invocation lastInvocation;
     private int hashCode;
 
     private Invoker invoker = this;
 
-    InvocationSequence(final Class<?> rootInvokedClass) {
+    protected InvocationSequence(final Class<?> rootInvokedClass) {
         this.rootInvokedClass = rootInvokedClass;
     }
 
-    InvocationSequence(final InvocationSequence sequence,
+    protected InvocationSequence(final InvocationSequence sequence,
             final Invocation invocation) {
-        rootInvokedClass = sequence.getRootInvokedClass();
+        this.rootInvokedClass = sequence.getRootInvokedClass();
         invocation.previousInvocation = sequence.lastInvocation;
-        lastInvocation = invocation;
+        this.lastInvocation = invocation;
     }
 
-    Class<?> getRootInvokedClass() {
-        return rootInvokedClass;
+    protected Class<?> getRootInvokedClass() {
+        return this.rootInvokedClass;
     }
 
-    String getInkvokedPropertyName() {
-        if (inkvokedPropertyName == null) {
-            inkvokedPropertyName = calcInkvokedPropertyName();
+    protected String getInkvokedPropertyName() {
+        if (this.inkvokedPropertyName == null) {
+            this.inkvokedPropertyName = calcInkvokedPropertyName();
         }
-        return inkvokedPropertyName;
+        return this.inkvokedPropertyName;
     }
 
     private String calcInkvokedPropertyName() {
-        if (null == lastInvocation) {
+        if (null == this.lastInvocation) {
             return "";
         }
         StringBuilder sb = new StringBuilder();
 
-        calcInkvokedPropertyName(lastInvocation,
-                lastInvocation.previousInvocation, sb);
+        calcInkvokedPropertyName(this.lastInvocation,
+                this.lastInvocation.previousInvocation, sb);
         return sb.substring(1);
     }
 
@@ -74,7 +74,7 @@ final class InvocationSequence implements Invoker {
     }
 
     Class<?> getReturnType() {
-        return lastInvocation.getReturnType();
+        return this.lastInvocation.getReturnType();
     }
 
     /**
@@ -90,16 +90,16 @@ final class InvocationSequence implements Invoker {
      */
     @Override
     public int hashCode() {
-        if (hashCode != 0) {
-            return hashCode;
+        if (this.hashCode != 0) {
+            return this.hashCode;
         }
-        hashCode = 13 * rootInvokedClass.hashCode();
+        this.hashCode = 13 * this.rootInvokedClass.hashCode();
         int factor = 17;
-        for (Invocation invocation = lastInvocation; invocation != null; invocation = invocation.previousInvocation) {
-            hashCode += factor * invocation.hashCode();
+        for (Invocation invocation = this.lastInvocation; invocation != null; invocation = invocation.previousInvocation) {
+            this.hashCode += factor * invocation.hashCode();
             factor += 2;
         }
-        return hashCode;
+        return this.hashCode;
     }
 
     public Object evaluate(final Object object) {
@@ -114,34 +114,37 @@ final class InvocationSequence implements Invoker {
         // });
         // }
         // }
-        return invoker.invokeOn(object);
+        return this.invoker.invokeOn(object);
     }
 
     @Override
     public Object invokeOn(final Object object) {
-        return invokeOn(lastInvocation, object);
+        return invokeOn(this.lastInvocation, object);
     }
 
     private Object invokeOn(final Invocation invocation, Object value) {
+
+        Object ret = value;
+
         if (invocation == null) {
-            return value;
+            return ret;
         }
         if (invocation.previousInvocation != null) {
-            value = invokeOn(invocation.previousInvocation, value);
+            ret = invokeOn(invocation.previousInvocation, ret);
         }
-        return invocation.invokeOn(value);
+        return invocation.invokeOn(ret);
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(100);
         sb.append("[");
-        if (lastInvocation == null) {
-            sb.append(rootInvokedClass);
+        if (this.lastInvocation == null) {
+            sb.append(this.rootInvokedClass);
         }
         else {
-            toString(lastInvocation, lastInvocation.previousInvocation, sb,
-                    true);
+            toString(this.lastInvocation,
+                    this.lastInvocation.previousInvocation, sb, true);
         }
         sb.append("]");
         return sb.toString();
