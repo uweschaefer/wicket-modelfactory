@@ -19,7 +19,7 @@ public class ModelFactoryTest extends TestCase implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private A a;
-    private C c;
+    
     public IModel<A> nullModel;
 
     @Override
@@ -27,7 +27,7 @@ public class ModelFactoryTest extends TestCase implements Serializable {
         super.setUp();
         new WicketTester();
         a = new A();
-        c = new C();
+        
     }
 
     public void testSimpleCallChain() throws Exception {
@@ -39,7 +39,7 @@ public class ModelFactoryTest extends TestCase implements Serializable {
 
     public void testInFinal() throws Exception {
         try {
-            IModel<C> pm = ModelFactory
+            ModelFactory
                     .model(ModelFactory.from(new R3()).getC());
         }
         catch (IllegalArgumentException e) {
@@ -203,6 +203,10 @@ public class ModelFactoryTest extends TestCase implements Serializable {
      * final class
      */
     public static final class C implements Serializable {
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 1L;
         String foo;
 
         public String getFoo() {
@@ -215,6 +219,10 @@ public class ModelFactoryTest extends TestCase implements Serializable {
     }
 
     public static class R3 implements Serializable {
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 1L;
         C c;
 
         public C getC() {

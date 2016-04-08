@@ -32,11 +32,16 @@ public class Issue3_RegressionTest extends TestCase {
     public void testFindTypeFromAnonClass() throws Exception {
         // Empty model
         IModel<Foo> mdl = new Model<Foo>() {
+
+            /**
+             * 
+             */
+            private static final long serialVersionUID = 1L;
         };
         WicketTester tester = new WicketTester();
         TestPanel panel = new TestPanel("panel", mdl);
 
-        TestPanel tp = tester.startComponentInPage(panel);
+        tester.startComponentInPage(panel);
         Foo foo = new Foo();
         foo.setBar("baz");
         mdl.setObject(foo);
@@ -48,6 +53,11 @@ public class Issue3_RegressionTest extends TestCase {
         final Foo myFoo = new Foo();
 
         IModel<Foo> mdl = new LoadableDetachableModel<Foo>() {
+
+            /**
+             * 
+             */
+            private static final long serialVersionUID = 1L;
 
             @Override
             protected Foo load() {
@@ -66,11 +76,16 @@ public class Issue3_RegressionTest extends TestCase {
         TestPanel panel = new TestPanel("panel", mdl);
 
         myFoo.setBar("baz");
-        TestPanel tp = tester.startComponentInPage(panel);
+        tester.startComponentInPage(panel);
         tester.assertLabel("panel:label", "baz");
     }
 
     static class MyModel extends Model<Foo> {
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 1L;
+
         @Override
         public Foo getObject() {
             Foo f = super.getObject();
@@ -90,7 +105,7 @@ public class Issue3_RegressionTest extends TestCase {
         WicketTester tester = new WicketTester();
         TestPanel panel = new TestPanel("panel", mdl);
         myFoo.setBar("baz");
-        TestPanel tp = tester.startComponentInPage(panel);
+        tester.startComponentInPage(panel);
         tester.assertLabel("panel:label", "baz");
     }
 
@@ -104,11 +119,15 @@ public class Issue3_RegressionTest extends TestCase {
         final Foo myFoo = new Foo();
         myFoo.setBar("baz");
         mdl.setObject(myFoo);
-        TestPanel tp = tester.startComponentInPage(panel);
+        tester.startComponentInPage(panel);
         tester.assertLabel("panel:label", "baz");
     }
 
     private static class Foo implements Serializable {
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 1L;
         private String bar;
 
         public String getBar() {
@@ -122,6 +141,11 @@ public class Issue3_RegressionTest extends TestCase {
 
     private static class TestPanel extends GenericPanel<Foo>
             implements IMarkupResourceStreamProvider {
+
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 1L;
 
         private TestPanel(final String id, final IModel<Foo> model) {
             super(id, model);

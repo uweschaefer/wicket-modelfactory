@@ -22,6 +22,11 @@ public class Issue5_LDM_Type extends TestCase {
 
         IModel<Foo> mdl = new LoadableDetachableModel<Foo>() {
 
+            /**
+             * 
+             */
+            private static final long serialVersionUID = 1L;
+
             @Override
             protected Foo load() {
                 String bar = myFoo.getBar();
@@ -39,7 +44,7 @@ public class Issue5_LDM_Type extends TestCase {
         TestPanel panel = new TestPanel("panel", mdl);
 
         myFoo.setBar("baz");
-        TestPanel tp = tester.startComponentInPage(panel);
+        tester.startComponentInPage(panel);
         tester.assertLabel("panel:label", "baz");
     }
 
@@ -54,6 +59,10 @@ public class Issue5_LDM_Type extends TestCase {
     }
 
     private static class Foo implements Serializable {
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 1L;
         private String bar;
 
         public String getBar() {
