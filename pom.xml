@@ -9,7 +9,7 @@
 
 
 	<groupId>org.wicketeer</groupId>
-	<version>7.9.16</version>
+	<version>7.9.17-SNAPSHOT</version>
 	<artifactId>wicket-modelfactory</artifactId>
 	<packaging>jar</packaging>
 	<name>wicket-modelfactory</name>
