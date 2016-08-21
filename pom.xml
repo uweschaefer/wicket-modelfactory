@@ -9,7 +9,7 @@
 
 
 	<groupId>org.wicketeer</groupId>
-	<version>7.9.17-SNAPSHOT</version>
+	<version>6.9.17-SNAPSHOT</version>
 	<artifactId>wicket-modelfactory</artifactId>
 	<packaging>jar</packaging>
 	<name>wicket-modelfactory</name>
@@ -258,7 +258,7 @@
 		<dependency>
 			<groupId>org.apache.wicket</groupId>
 			<artifactId>wicket-core</artifactId>
-			<version>7.4.0</version>
+			<version>6.24.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.googlecode.gentyref</groupId>
