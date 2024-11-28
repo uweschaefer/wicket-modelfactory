@@ -1,29 +1,14 @@
-//
-//
-// Copyright 2012-2012 Uwe Schäfer <uwe@codesmell.de>
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-//
-
 package org.wicketeer.modelfactory.internal;
+
+import net.bytebuddy.ByteBuddy;
+import net.bytebuddy.dynamic.DynamicType;
+import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
+import net.bytebuddy.implementation.InvocationHandlerAdapter;
+import net.bytebuddy.matcher.ElementMatchers;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.Proxy;
 import java.util.Collection;
-
-import net.sf.cglib.proxy.Enhancer;
-import net.sf.cglib.proxy.MethodInterceptor;
 
 /**
  * An utility class of static factory methods that provide facilities to create
@@ -43,7 +28,7 @@ public final class ProxyUtil {
                 && !clazz.isAnonymousClass();
     }
 
-    protected static <T> T createProxy(final InvocationInterceptor interceptor,
+    protected static <T> T createProxy(final InvocationHandler interceptor,
             final Class<T> clazz, final boolean failSafe,
             final Class<?>... implementedInterface) {
         if (clazz.isInterface()) {
@@ -52,34 +37,24 @@ public final class ProxyUtil {
                             implementedInterface));
         }
         try {
-            Enhancer e = createEnhancer(interceptor, clazz,
-                    implementedInterface);
-            return (T) e.create();
+            return (T) createByteBuddyProxy(clazz, interceptor, implementedInterface);
         }
         catch (IllegalArgumentException iae) {
-            if (Proxy.isProxyClass(clazz)) {
-                return (T) createNativeJavaProxy(clazz.getClassLoader(),
-                        interceptor, concatClasses(implementedInterface,
-                                clazz.getInterfaces()));
-            }
             if (isProxable(clazz)) {
-                return ClassImposterizer.INSTANCE.imposterise(interceptor,
-                        clazz, implementedInterface);
+                return createByteBuddyProxy(clazz, interceptor, implementedInterface);
             }
             return manageUnproxableClass(clazz, failSafe);
         }
-
     }
 
     public static String enumerate(final Collection<?> l,
             final String delimiter) {
-        StringBuffer sb = new StringBuffer(128);
+        StringBuilder sb = new StringBuilder(128);
         boolean first = true;
         for (Object object : l) {
             if (!first) {
                 sb.append(delimiter);
-            }
-            else {
+            } else {
                 first = false;
             }
             sb.append(object);
@@ -99,20 +74,28 @@ public final class ProxyUtil {
     // /// Private
     // ////////////////////////////////////////////////////////////////////////
 
-    private static Enhancer createEnhancer(final MethodInterceptor interceptor,
-            final Class<?> clazz, final Class<?>... interfaces) {
-        Enhancer enhancer = new Enhancer();
-        enhancer.setCallback(interceptor);
-        enhancer.setSuperclass(clazz);
-        if (interfaces != null && interfaces.length > 0) {
-            enhancer.setInterfaces(interfaces);
+    private static <T> T createByteBuddyProxy(Class<T> clazz, InvocationHandler interceptor,
+            Class<?>... interfaces) {
+        try {
+            DynamicType.Builder<T> builder = new ByteBuddy()
+                    .subclass(clazz)
+                    .implement(interfaces)
+                    .method(ElementMatchers.any())
+                    .intercept(InvocationHandlerAdapter.of((InvocationHandler) interceptor));
+
+            return builder.make()
+                    .load(clazz.getClassLoader(), ClassLoadingStrategy.Default.INJECTION)
+                    .getLoaded()
+                    .getDeclaredConstructor()
+                    .newInstance();
+        } catch (Exception e) {
+            throw new RuntimeException("Error creating proxy with ByteBuddy", e);
         }
-        return enhancer;
     }
 
     private static Object createNativeJavaProxy(final ClassLoader classLoader,
             final InvocationHandler interceptor, final Class<?>... interfaces) {
-        return Proxy.newProxyInstance(classLoader, interfaces, interceptor);
+        return java.lang.reflect.Proxy.newProxyInstance(classLoader, interfaces, interceptor);
     }
 
     private static Class<?>[] concatClasses(final Class<?>[] first,

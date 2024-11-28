@@ -17,12 +17,13 @@
 
 package org.wicketeer.modelfactory.internal;
 
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
 /**
  * @author Mario Fusco
  */
-class ProxyArgument extends InvocationInterceptor {
+class ProxyArgument implements InvocationHandler {
 
     private final Class<?> proxiedClass;
 
