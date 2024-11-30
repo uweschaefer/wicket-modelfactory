@@ -1,3 +1,6 @@
+⚠️ This project is stale for years and will likely not see any updates. Please head over to https://github.com/wicketstuff/core/tree/master/wicketstuff-lazymodel to find a more recent implementation of a similar idea.
+
+
 # Wicket-ModelFactory 
 
 Wicket-modelfactory is an API to create Wicket PropertyModels in a typesafe and refactoring-safe way.
